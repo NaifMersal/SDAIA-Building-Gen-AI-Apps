@@ -24,7 +24,7 @@ Design 3 prompts that test different capabilities:
 ### 3. Run the Bake-off
 ```bash
 cd 01_architecture_fundamentals/homework
-pip install requests python-dotenv
+uv pip install requests python-dotenv
 python bakeoff_template.py
 ```
 

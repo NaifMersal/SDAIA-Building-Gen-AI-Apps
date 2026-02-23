@@ -1,61 +1,53 @@
-# Lab 2: Building a Production-Grade API Client
+# Lab 2: API Client Integration
 
-## Overview
-In this lab you will progressively build a robust Hugging Face API client — from a simple "hello world" request to a cached, retry-aware production pattern.
+In this lab, you will build the foundational API integration layer for your Gen-AI applications using **LiteLLM** and **OpenRouter**. 
 
-## Prerequisites
-- Python 3.10+
-- A free Hugging Face account with an API token ([huggingface.co/settings/tokens](https://huggingface.co/settings/tokens))
-- Completion of Session 2 slides (API landscape, security)
+By the end of this lab, you will have a production-ready API client that can securely authenticate, handle rate limits, and implement local caching to save time and API costs during development.
 
-## Setup
+---
+
+## Lab Structure
+
+This lab is divided into five steps. You will work primarily in the `starter/` directory. If you get stuck, reference the `solutions/` directory.
+
+### Step 1: Environment Setup
+Learn how to securely manage API keys using environment variables. You will inspect how tokens are loaded from a `.env` file instead of being hardcoded into scripts.
+
+### Step 2: Your First API Call
+Write a basic script to query an open-source model via OpenRouter using the `litellm` library.
+
+### Step 3: Handling Errors (Rate Limits)
+Implement exponential backoff to gracefully handle `RateLimitError` when you exceed your free tier limits.
+
+### Step 4: Building a Reusable Client
+Wrap your API logic into a reusable `LiteLLMClient` class that you can import into future projects.
+
+### Step 5: Caching Responses
+Extend your client to cache API responses locally. This is a critical skill for development: it allows you to iterate on your application logic without repeatedly waiting for, or paying for, the same expensive API calls.
+
+---
+
+## Setup Instructions
+
+1. Ensure you have Python 3.10+ installed.
+2. Install the required dependencies:
+   ```bash
+   uv pip install -r requirements.txt
+   ```
+3. Copy `.env.example` to a new file named `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+4. Create an OpenRouter account at [openrouter.ai](https://openrouter.ai), generate an API key, and paste it into your `.env` file.
+
+---
+
+## Running the Code
+
+Navigate to the `starter/` directory and run the scripts as you complete them:
 
 ```bash
-pip install -r requirements.txt
-cp .env.example .env
-# Edit .env and paste your Hugging Face token
+python hello_litellm.py
+python litellm_client.py
+python cached_client.py
 ```
-
-## 5-Step Progression
-
-### Step 1: Security First
-Open `starter/hello_hf.py`. The `.env` loading and `get_api_token()` function are provided. Read through them — understand *why* we never hardcode tokens.
-
-### Step 2: Hello World
-In the same file, complete the **TODO** to make a raw `requests.post` call to the Hugging Face Inference API. Run the script and confirm you get a generated response.
-
-```bash
-python starter/hello_hf.py
-```
-
-### Step 3: The Wrapper Class
-Open `starter/hf_client.py`. The `HuggingFaceClient` class skeleton is provided with `__init__` complete. The helper functions (`text_generation`, `summarization`, `text_classification`) are also provided. Your job is to implement the `query()` method with error handling.
-
-### Step 4: Resilience
-Still in `hf_client.py`, complete the three **TODO** blocks inside `query()`:
-1. Handle **503** (model loading / cold start) — wait the estimated time, then retry
-2. Handle **429** (rate limit) — exponential backoff
-3. Handle **timeout** — retry with delay
-
-### Step 5: Caching
-Open `starter/cached_client.py`. Cache directory setup and key generation are provided. Complete the **TODO** blocks to:
-1. Check if a cached response exists
-2. Write new responses to cache
-3. Return cached responses on hit
-
-```bash
-python starter/cached_client.py
-# Run it twice — the second run should show "[Cache HIT]"
-```
-
-## Checking Your Work
-Compare your implementations against the files in `solutions/`. The solution files are complete, working versions.
-
-## Troubleshooting
-
-| Issue | Fix |
-|-------|-----|
-| `EnvironmentError: HUGGINGFACE_API_TOKEN not found` | Copy `.env.example` to `.env` and add your token |
-| `401 Unauthorized` | Token may be expired — generate a new one on HF |
-| `503 Model loading` | Normal on free tier — the retry logic handles this |
-| `ModuleNotFoundError: dotenv` | Run `pip install -r requirements.txt` |
