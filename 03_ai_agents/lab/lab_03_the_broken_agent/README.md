@@ -7,14 +7,14 @@ You are given a **broken agent** that enters infinite loops and wastes tokens. Y
 1. **Instrument** the agent with structured tracing
 2. **Diagnose** the problem by reading trace logs
 3. **Fix** the agent with a circuit breaker (loop detection)
-4. **Verify** the fix works
+4. **Verify** the fix works with DeepEval
 
 ## Learning Goals
 
 1. Build an `AgentTracer` that captures every step of agent execution
 2. Implement an `AdvancedLoopDetector` with exact, fuzzy, and stagnation detection
 3. Integrate loop detection as a circuit breaker in the agent loop
-4. Use structured traces to diagnose and fix agent failures
+4. Use DeepEval's `@observe` decorator for tracing and `TaskCompletionMetric` for evaluation
 
 ## Prerequisites
 
@@ -33,6 +33,9 @@ solutions/
   tracer.py           # Complete AgentTracer
   loop_detector.py    # Complete AdvancedLoopDetector
   broken_agent.py     # Fixed agent with circuit breaker
+
+evaluation/
+  deepeval_test.py    # DeepEval test cases for verification
 ```
 
 ## Steps
@@ -59,13 +62,18 @@ The broken agent is provided — it loops on certain queries. Your job:
 2. Add the `AdvancedLoopDetector` as a circuit breaker
 3. When a loop is detected, inject a warning message instead of executing the tool
 
-### Step 4: Test the Fix
+### Step 4: Verify with DeepEval (`evaluation/deepeval_test.py`)
+
+Run DeepEval to verify the fixed agent works correctly:
 
 ```bash
-python starter/broken_agent.py
+cd evaluation
+pytest deepeval_test.py -v
 ```
 
-The agent should now detect loops and recover instead of spinning forever.
+This uses:
+- `TaskCompletionMetric` — Did the agent accomplish the task?
+- `ToolCorrectnessMetric` — Were the right tools called?
 
 ## Time
 
@@ -75,3 +83,25 @@ The agent should now detect loops and recover instead of spinning forever.
 
 Compare with the full project at:
 `project/src/observability/tracer.py` and `project/src/observability/loop_detector.py`
+
+## DeepEval Quick Reference
+
+```python
+from deepeval.tracing import observe
+from deepeval import evaluate
+from deepeval.test_case import LLMTestCase, ToolCall
+from deepeval.metrics import TaskCompletionMetric, ToolCorrectnessMetric
+
+# Trace your agent
+@observe(metrics=[TaskCompletionMetric(threshold=0.7)])
+def run_agent(query: str) -> str:
+    ...
+
+# Evaluate with test cases
+test_case = LLMTestCase(
+    input="What is the population of Paris?",
+    expected_output="approximately 2.1 million",
+    tools_called=[ToolCall(name="search", args={"query": "population of Paris"})]
+)
+evaluate(test_cases=[test_case], metrics=[TaskCompletionMetric()])
+```
