@@ -1,0 +1,1892 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="01_genai_fundamentals_files/libs/clipboard/clipboard.min.js"></script>
+<script src="01_genai_fundamentals_files/libs/quarto-html/tabby.min.js"></script>
+<script src="01_genai_fundamentals_files/libs/quarto-html/popper.min.js"></script>
+<script src="01_genai_fundamentals_files/libs/quarto-html/tippy.umd.min.js"></script>
+<link href="01_genai_fundamentals_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="01_genai_fundamentals_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="01_genai_fundamentals_files/libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.8.26">
+
+  <meta name="dcterms.date" content="2026-02-27">
+  <title>Generative AI Fundamentals</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="01_genai_fundamentals_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="01_genai_fundamentals_files/libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="01_genai_fundamentals_files/libs/revealjs/dist/theme/quarto-11fb225df25554060309039e467d350a.css">
+  <link href="01_genai_fundamentals_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="01_genai_fundamentals_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="01_genai_fundamentals_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="01_genai_fundamentals_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+  <script src="01_genai_fundamentals_files/libs/quarto-diagram/mermaid.min.js"></script>
+  <script src="01_genai_fundamentals_files/libs/quarto-diagram/mermaid-init.js"></script>
+  <link href="01_genai_fundamentals_files/libs/quarto-diagram/mermaid.css" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MCA4MCI+DQogIDxkZWZzPg0KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYSIgeDE9Ii0xLjkxMSIgeDI9IjIuOTg1IiB5MT0iLS44NDEiIHkyPSIxLjQxNCIgZ3JhZGllbnRVbml0cz0ib2JqZWN0Qm91bmRpbmdCb3giPg0KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjOTlkNjMzIi8+DQogICAgICA8c3RvcCBvZmZzZXQ9Ii41IiBzdG9wLWNvbG9yPSIjM2M5Ii8+DQogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMyNzM0NzAiLz4NCiAgICA8L2xpbmVhckdyYWRpZW50Pg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYSIgaWQ9ImQiIHgxPSItMy41NjkiIHgyPSIxLjMyOCIgeTE9Ii0xLjYwNSIgeTI9Ii42NTEiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2EiIGlkPSJlIiB4MT0iLTMuMDQ3IiB4Mj0iMS44NDkiIHkxPSItLjkwNCIgeTI9IjEuMzUyIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0iZiIgeDE9Ii0yLjg5IiB4Mj0iMi4wMDciIHkxPSItMS4yOTIiIHkyPSIuOTY0Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0iZyIgeDE9Ii0yLjQiIHgyPSIyLjQ5NyIgeTE9Ii0xLjA2NiIgeTI9IjEuMTg5Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0iaCIgeDE9Ii0uOTkyIiB4Mj0iMi42NzkiIHkxPSItLjQxOCIgeTI9IjEuMjczIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0iaSIgeDE9Ii0xLjUxMiIgeDI9IjIuMTU5IiB5MT0iLS4xOTciIHkyPSIxLjQ5NSIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYSIgaWQ9ImoiIHgxPSItLjkxNCIgeDI9IjIuNzU4IiB5MT0iLjA3OSIgeTI9IjEuNzcxIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0iayIgeDE9Ii0zLjQwNSIgeDI9IjEuNDkzIiB5MT0iLTEuMDY4IiB5Mj0iMS4xODciLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2EiIGlkPSJsIiB4MT0iLjM0NyIgeDI9IjMuMjg1IiB5MT0iLjE5OSIgeTI9IjEuNTUyIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0ibSIgeDE9Ii0uOTA1IiB4Mj0iMi43NjciIHkxPSIuMDgzIiB5Mj0iMS43NzUiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2EiIGlkPSJuIiB4MT0iLTIuMTE5IiB4Mj0iMi43NzgiIHkxPSItLjQ3NiIgeTI9IjEuNzc5Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0ibyIgeDE9Ii01LjY0NCIgeDI9Ii40ODYiIHkxPSItMi45OTgiIHkyPSIuNzQxIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0icCIgeDE9Ii0zLjQ5NSIgeDI9IjIuNjM2IiB5MT0iLTEuNjg3IiB5Mj0iMi4wNTMiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2EiIGlkPSJxIiB4MT0iLTEuNDIyIiB4Mj0iMy4xNzUiIHkxPSItLjkyMyIgeTI9IjEuODgyIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0iciIgeDE9Ii0zLjMwNiIgeDI9IjIuODI1IiB5MT0iLTIuMDcyIiB5Mj0iMS42NjgiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2EiIGlkPSJzIiB4MT0iLTEuNjgzIiB4Mj0iMi45MTQiIHkxPSItMS4wODEiIHkyPSIxLjcyMyIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYSIgaWQ9InQiIHgxPSItMS4xNTgiIHgyPSIyLjUyMSIgeTE9Ii0uMjYxIiB5Mj0iMS45ODMiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImIiIHgxPSIuMjYxIiB4Mj0iLjYyNCIgeTE9IjMuNTYiIHkyPSItMS40NjkiIGdyYWRpZW50VW5pdHM9Im9iamVjdEJvdW5kaW5nQm94Ij4NCiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzZjZiIvPg0KICAgICAgPHN0b3Agb2Zmc2V0PSIuNSIgc3RvcC1jb2xvcj0iIzYyNThhNiIvPg0KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMjczNDcwIi8+DQogICAgPC9saW5lYXJHcmFkaWVudD4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJ1IiB4MT0iLjE2MyIgeDI9Ii41MjYiIHkxPSI0LjkyNCIgeTI9Ii0uMTAzIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNiIiBpZD0idiIgeDE9Ii4zODYiIHgyPSIuNjU4IiB5MT0iMS44MjUiIHkyPSItMS45NDUiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJ3IiB4MT0iLjI1MiIgeDI9Ii42MTUiIHkxPSI0LjE4MiIgeTI9Ii0uODQ1Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNiIiBpZD0ieCIgeDE9Ii40MTciIHgyPSIuNjg5IiB5MT0iMS45IiB5Mj0iLTEuODciLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJ5IiB4MT0iLjQ4NSIgeDI9Ii43MDMiIHkxPSIuOTU2IiB5Mj0iLTIuMDYiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJ6IiB4MT0iLjM3NyIgeDI9Ii42NDkiIHkxPSIyLjQ1NSIgeTI9Ii0xLjMxNCIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYiIgaWQ9IkEiIHgxPSIuMTk5IiB4Mj0iLjU2MiIgeTE9IjQuOTIyIiB5Mj0iLS4xMDUiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJCIiB4MT0iLjQzNyIgeDI9Ii43MDkiIHkxPSIxLjYyNSIgeTI9Ii0yLjE0NSIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYiIgaWQ9IkMiIHgxPSIuMjYxIiB4Mj0iLjYyNCIgeTE9IjQuMDU1IiB5Mj0iLS45NzIiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJEIiB4MT0iLjUiIHgyPSIuNSIgeTE9IjMuMDQ1IiB5Mj0iLTEuOTI3Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNiIiBpZD0iRSIgeDE9Ii41IiB4Mj0iLjUiIHkxPSI0LjkwMSIgeTI9Ii0uMDcyIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNiIiBpZD0iRiIgeDE9Ii41IiB4Mj0iLjUiIHkxPSIyLjQzNSIgeTI9Ii0xLjI5NiIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYiIgaWQ9IkciIHgxPSIuNSIgeDI9Ii41IiB5MT0iLjkzNCIgeTI9Ii0yLjA1Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNiIiBpZD0iSCIgeDE9Ii41IiB4Mj0iLjUiIHkxPSIzLjc4NSIgeTI9Ii0xLjE4NyIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYiIgaWQ9IkkiIHgxPSIuNSIgeDI9Ii41IiB5MT0iMS44MDkiIHkyPSItMS45MjEiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJKIiB4MT0iLjUiIHgyPSIuNSIgeTE9IjMuMDQ2IiB5Mj0iLTEuOTI4Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNiIiBpZD0iSyIgeDE9Ii41IiB4Mj0iLjUiIHkxPSIyLjc5NCIgeTI9Ii0yLjE3NyIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYyIgeDE9IjUuMDEiIHgyPSItMi4yNzciIHkxPSItMS4zODMiIHkyPSIyLjAzOSIgZ3JhZGllbnRVbml0cz0ib2JqZWN0Qm91bmRpbmdCb3giPg0KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmRiZDRkIi8+DQogICAgICA8c3RvcCBvZmZzZXQ9Ii41IiBzdG9wLWNvbG9yPSIjZjYzIi8+DQogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMyNzM0NzAiLz4NCiAgICA8L2xpbmVhckdyYWRpZW50Pg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYyIgaWQ9IkwiIHgxPSIyLjIzOSIgeDI9Ii0yLjEzNCIgeTE9Ii0uMDgyIiB5Mj0iMS45NzEiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2MiIGlkPSJNIiB4MT0iNi4wOTgiIHgyPSItMS4xOTEiIHkxPSItMS44OTMiIHkyPSIxLjUyOCIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYyIgaWQ9Ik4iIHgxPSIzLjM4NCIgeDI9Ii0yLjA4MSIgeTE9Ii0xLjA4OCIgeTI9IjEuNDc3Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iTyIgeDE9IjIuNzgiIHgyPSItMi42ODYiIHkxPSItLjgwNSIgeTI9IjEuNzYxIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iUCIgeDE9IjcuMDc0IiB4Mj0iLS4yMTIiIHkxPSItMi4zNTMiIHkyPSIxLjA2OSIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYyIgaWQ9IlEiIHgxPSI1LjA3NSIgeDI9Ii0yLjIxMSIgeTE9Ii0xLjQxNCIgeTI9IjIuMDA4Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iUiIgeDE9IjUuNzM2IiB4Mj0iLTEuNTUiIHkxPSItMi4xOTQiIHkyPSIxLjIyOCIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYyIgaWQ9IlMiIHgxPSIyLjA4MSIgeDI9Ii0xLjc4MSIgeTE9Ii0uMDQ3IiB5Mj0iMS45Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iVCIgeDE9Ii43MjkiIHgyPSItMi4zNjEiIHkxPSIuMTM1IiB5Mj0iMS42OTIiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2MiIGlkPSJVIiB4MT0iMi43MTciIHgyPSItMi40MzMiIHkxPSItLjg2OCIgeTI9IjEuNzI4Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iViIgeDE9IjEuNTE3IiB4Mj0iLTIuMzQ3IiB5MT0iLS4yNjIiIHkyPSIxLjY4NCIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYyIgaWQ9IlciIHgxPSIzLjU0NCIgeDI9Ii0xLjYwNiIgeTE9Ii0xLjI4NCIgeTI9IjEuMzEyIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iWCIgeDE9IjIuNjMxIiB4Mj0iLTEuMjMzIiB5MT0iLS4zMjQiIHkyPSIxLjYyMyIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYyIgaWQ9IlkiIHgxPSIyLjAwMyIgeDI9Ii0xLjg2IiB5MT0iLS4wMDciIHkyPSIxLjk0Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iWiIgeDE9IjQuMTI1IiB4Mj0iLTEuMDI1IiB5MT0iLTEuMDc3IiB5Mj0iMS41MTgiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2MiIGlkPSJhYSIgeDE9IjMuMDIyIiB4Mj0iLTIuMTI3IiB5MT0iLTEuMDIxIiB5Mj0iMS41NzQiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2MiIGlkPSJhYiIgeDE9IjQuNjgxIiB4Mj0iLS40NjkiIHkxPSItMS44NTciIHkyPSIuNzM4Ii8+DQogIDwvZGVmcz4NCiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMy44IDEpIj4NCiAgPHBhdGggZmlsbD0iIzNjOSIgZD0ibTM2LjA0MSAyNi41My0xMS40NDggNi42MTF2MTMuMjJsMTEuNDQ4IDYuNjEyIDExLjQ0Ni02LjYwOFYzMy4xNDFaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjYSkiIGQ9Ik03MS40NjQgMjAuOTF2Ny45MzJsLTYuODctMy45NjVaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjZCkiIGQ9Ik02NC4yNDkgNTIuOTdsNi44NjkgMy45NjV2LTcuOTNaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjZSkiIGQ9Im02OC4xIDQ2LjM1OSAtNi44NjkgMy45Njd2LTcuOTMyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI2YpIiBkPSJNNzIuMzkyIDM1LjM3djcuOTMybC02Ljg2OSAtMy45NjVaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjZykiIGQ9Ik01Ni42NTEgNTYuODQ3djcuOTMybC02Ljg2OSAtMy45NjVaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjaCkiIGQ9Im01Ny43OTQgNTEuNjQzIC05LjE2IC01LjI4NiA5LjE2IC01LjI5WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI2kpIiBkPSJtNTcuNzk1IDUyLjk3IC05LjE2IDUuMjlWNDcuNjg0WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI2opIiBkPSJtNTcuNzkyIDM5Ljc0OSAtOS4xNTggNS4yODZ2LTEwLjU3MloiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNrKSIgZD0ibTU4LjUgNzAuMzE4IC02Ljg2OCAzLjk2N3YtNy45MzJaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjbCkiIGQ9Im00Ny40ODcgNDYuMzYxIC0xMS40NDYgLTYuNjEyIDExLjQ0NiAtNi42MTFaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjbSkiIGQ9Im00Ni4zNDQgNjEuMDc3IC05LjE1OCA1LjI4NnYtMTAuNTcyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI24pIiBkPSJtNDUuMTk5IDc0LjAzNSAtNi44NjggMy45NjV2LTcuOTMyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI28pIiBkPSJtNzAuMDIxIDYxLjc3NSAtNi44NjkgMy45Njd2LTcuOTMyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3ApIiBkPSJtNjguMSAzMy4xNDIgLTYuODY5IDMuOTY3di03LjkzMloiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNxKSIgZD0iTTU3Ljc5NCAyNy44NTJ2MTAuNTc2bC05LjE2IC01LjI5WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3IpIiBkPSJNNDUuMjAyIDYyLjg5MXY3LjkzMmwtNi44NjkgLTMuOTY3WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3MpIiBkPSJtNDYuMzQzIDU5Ljc1NiAtOS4xNTcgLTUuMjg2IDkuMTU3IC01LjI5WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3QpIiBkPSJtMzYuMDQxIDM5Ljc1IDExLjQ0NiA2LjYxMiAtMTEuNDQ2IDYuNjA4WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI2IpIiBkPSJtNjkuMzM0IDE3LjAzMSAtNi44NjkgMy45NjV2LTcuOTNaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjdSkiIGQ9Im01OC4wODIgNS40NiAtNi44NzEgMy45Njd2LTcuOTMyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3YpIiBkPSJtNTcuNzk2IDI2LjUyOSAtOS4xNjIgNS4yODZWMjEuMjQxWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3cpIiBkPSJtNDUuMiAxNC41NDUgLTYuODY5IC0zLjk2NSA2Ljg2OSAtMy45NjdaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjeCkiIGQ9Ik00Ni4zNDQgMTkuNzQ0VjMwLjMxOWwtOS4xNTggLTUuMjg2WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3kpIiBkPSJNMzYuMDQxIDI2LjUzdjEzLjIyTDI0LjU5MyAzMy4xNDFaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjeikiIGQ9Im0zNC44OTcgMjMuNzA5IC05LjE1OCAtNS4yODYgOS4xNTggLTUuMjlaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjQSkiIGQ9Im0zMy43NSA3LjkzMiAtNi44NyAtMy45NjUgNi44NyAtMy45NjdaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjQikiIGQ9Im0yMy40NDkgMzEuODE2IC05LjE1OCAtNS4yOSA5LjE1OCAtNS4yODVaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjQykiIGQ9Ik0xOS43NiA2LjAzOXY3LjkzMmwtNi44NjkgLTMuOTY1WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI0QpIiBkPSJtNTYuNjQ3IDIyLjY1MSAtNi44NzEgLTMuOTY3IDYuODcxIC0zLjk2N1oiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNFKSIgZD0ibTQ1LjIgMy45NjcgLTYuODY5IDMuOTY1di03LjkzMloiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNGKSIgZD0ibTQ2LjM0NCAxOC40MTcgLTkuMTU4IDUuMjg2di0xMC41NjhaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjRykiIGQ9Im00Ny40ODcgMzMuMTQxIC0xMS40NDYgNi42MTF2LTEzLjIyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI0gpIiBkPSJtMzMuNzUzIDEyLjgxNCAtNi44NzEgMy45Njd2LTcuOTMyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI0kpIiBkPSJtMzQuODk2IDI1LjAzMyAtOS4xNTggNS4yODZ2LTEwLjU3NVoiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNKKSIgZD0ibTIyLjMgMTguNjg0IC02Ljg3IDMuOTY1di03LjkzWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI0spIiBkPSJtNy41NTYgMjQuNjM3IC02Ljg3IC0zLjk2NSA2Ljg3IC0zLjk2N1oiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNjKSIgZD0ibTMzLjc1MSA3OC4wMDEgLTYuODcxIC0zLjk2NSA2Ljg3MSAtMy45NjdaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjTCkiIGQ9Ik0zNi4wNDEgMzkuNzV2MTMuMjJsLTExLjQ0OCAtNi42MTJaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjTSkiIGQ9Ik0yMi4zIDY2Ljc2M3Y3LjkzMmwtNi44NyAtMy45NjZaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjTikiIGQ9Im0yMy40NDkgNDYuMzYyIC05LjE1OCA1LjI4NnYtMTAuNTc2WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI08pIiBkPSJtMjMuNDQ5IDMzLjE0MiAtOS4xNTggNS4yOXYtMTAuNThaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjUCkiIGQ9Ik05LjYxNiA1OS40MDF2Ny45M2wtNi44NzEgLTMuOTY1WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI1EpIiBkPSJNMTAuODUxIDI4Ljg5OXY3LjkzMmwtNi44NzEgLTMuOTY1WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI1IpIiBkPSJtNi44NzEgNDAuMDkzIC02Ljg3MSAzLjk2NXYtNy45M1oiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNTKSIgZD0ibTM0Ljg5NCA2Ni4zNjcgLTkuMTYgLTUuMjg2IDkuMTYgLTUuMjlaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjVCkiIGQ9Im0zNi4wNDEgMzkuNzUgLTExLjQ0OCA2LjYwOHYtMTMuMjJaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjVSkiIGQ9Im0zMy43NSA2Ny40MjUgLTYuODcxIDMuOTY3di03LjkzMloiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNWKSIgZD0ibTM0Ljg5MiA1NC40NjcgLTkuMTU3IDUuMjl2LTEwLjU4MloiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNXKSIgZD0ibTIyLjI5OSA2MC44MTQgLTYuODY5IDMuOTY1di03LjkzWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI1gpIiBkPSJNMjMuNDQ5IDQ3LjY4M3YxMC41NzNsLTkuMTU4IC01LjI4NloiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNZKSIgZD0iTTIzLjQ0OSAzNC40NTl2MTAuNTczbC05LjE1OCAtNS4yODNaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjWikiIGQ9Im0xMC44NSA1MC4zMjYgLTYuODcxIC0zLjk2NyA2Ljg3MSAtMy45NjVaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjYWEpIiBkPSJtNy4xNDUgMjYuNTMxIC02Ljg2OSAzLjk2NXYtNy45MzJaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjYWIpIiBkPSJtNy41NTYgNTMuNDUyIC02Ljg3MSAzLjk2NXYtNy45MzVaIi8+DQogIDwvZz4NCjwvc3ZnPg0K">
+
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" data-background-image="../../slides_template/assets/anim.svg" data-background-opacity="0.15" data-background-size="cover" class="quarto-title-block center">
+  <h1 class="title">Generative AI Fundamentals</h1>
+  <p class="subtitle">Architecture Fundamentals — Session 1</p>
+
+<div class="quarto-title-authors">
+</div>
+
+  <p class="date">2026-02-27</p>
+</section>
+<section>
+<section id="what-is-generative-ai" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
+<h1>What is Generative AI?</h1>
+<p>Before we build with it — let’s define it.</p>
+</section>
+<section id="generative-ai-in-one-sentence" class="slide level2">
+<h2>Generative AI in One Sentence</h2>
+<div style="font-size: 1.5em; text-align: center; margin: 1em 0; line-height: 1.6;">
+<p><strong>AI that generates new content —</strong> text, images, code, audio — by learning patterns from existing data.</p>
+</div>
+<div class="fragment">
+<div style="font-size: 1.1em; text-align: center; color: #00C9A7; margin-top: 1em;">
+<p><em>It doesn’t retrieve. It doesn’t look things up. It <strong>generates</strong>.</em></p>
+</div>
+</div>
+<div class="fragment">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>The Key Distinction</strong></p>
+</div>
+<div class="callout-content">
+<p>A search engine finds content that already exists. A generative model <strong>creates</strong> content that may have never existed before.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="what-can-it-generate" class="slide level2">
+<h2>What Can It Generate?</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><strong>Text</strong></p>
+<ul>
+<li>Answers, summaries, essays</li>
+<li>Code in any language</li>
+<li>Translations, rewrites</li>
+</ul>
+<p><strong>Images</strong></p>
+<ul>
+<li>Photos, illustrations, diagrams</li>
+<li>UI mockups, product designs</li>
+</ul>
+</div><div class="column" style="width:50%;">
+<p><strong>Audio &amp; Video</strong></p>
+<ul>
+<li>Voice synthesis, music</li>
+<li>Video generation</li>
+</ul>
+<p><strong>Structured data</strong></p>
+<ul>
+<li>JSON, SQL, tables</li>
+<li>Function calls, tool outputs</li>
+</ul>
+</div></div>
+<div class="fragment">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>This Course</strong></p>
+</div>
+<div class="callout-content">
+<p>We focus on <strong>text generation</strong> — the foundation of every AI agent, chatbot, and assistant you’ll build.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="agenda" class="slide level2">
+<h2>Agenda</h2>
+<ul>
+<li><strong>A. From Words to Intelligence</strong> — the evolution that made GenAI possible</li>
+<li><strong>B. The ChatGPT Revolution</strong> — SFT turned completers into assistants</li>
+<li><strong>C. In-Context Learning</strong> — no retraining, just better prompts</li>
+<li><strong>D. Thinking Models</strong> — from CoT to o1 and beyond</li>
+<li><strong>E. Under the Hood</strong> — tokens, probability, sampling controls, and what goes wrong</li>
+<li><strong>F. Key Intuitions</strong> — what you know, what’s next</li>
+</ul>
+</section></section>
+<section>
+<section id="a.-from-words-to-intelligence" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
+<h1>A. From Words to Intelligence</h1>
+<p>A <strong>conceptual tour</strong> of the most important ideas.</p>
+</section>
+<section id="it-started-with-word-completion" class="slide level2">
+<h2>It Started with Word Completion</h2>
+<div style="font-size: 1.3em; text-align: center; margin: 1em 0;">
+<p>The original goal was simple: <strong>predict the next word.</strong></p>
+</div>
+<div class="fragment">
+<p><strong>Statistical Language Models (N-Grams)</strong></p>
+<blockquote>
+<p>*“The capital of Saudi Arabia is ___“*</p>
+</blockquote>
+<ul>
+<li><strong>Riyadh</strong> (99.8%) ✅ - Jeddah (0.1%) - Paris (0.00001%)</li>
+</ul>
+<p>The model looked at the words before it and counted: what word most often follows “capital of Saudi Arabia is” in our corpus?</p>
+</div>
+</section>
+<section id="the-model-as-a-function" class="slide level2">
+<h2>The Model as a Function</h2>
+<div style="font-size: 1.1em; text-align: center; margin: 0.5em 0;">
+<p>Think of it this way, based on the data we have (corpus), <strong>the model is just a function:</strong></p>
+</div>
+<p><span class="math display">\[f(\text{sentence}) = \frac{\text{count}(\text{sentence} + \text{next_word})}{\text{count}(\text{sentence})}\]</span></p>
+<p>Input: a sentence. Output: the most likely next word based purely on <strong>counting</strong>.</p>
+<div class="fragment">
+<div style="text-align: center; color: #00C9A7; font-size: 1.1em;">
+<p><em>The question became: can we build a <strong>better function</strong> — one that understands words, not just counts them?</em></p>
+</div>
+</div>
+</section>
+<section id="evolution-step-1-word-completion" class="slide level2">
+<h2>Evolution: Step 1 — Word Completion</h2>
+<div class="cell" data-reveal="true" data-fig-width="10" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<pre class="mermaid mermaid-js">graph LR
+    A["🔤 Statistical LMs&lt;br/&gt;(N-Grams)&lt;br/&gt;Predict by frequency"]
+
+    style A fill:#9B8EC0,stroke:#1C355E,color:#fff
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<div style="text-align: center; margin-top: 1em; font-size: 1.1em;">
+<p><em>The machine learned to finish sentences — nothing more.</em></p>
+</div>
+</section>
+<section id="words-got-meaning-neural-lms" class="slide level2">
+<h2>Words Got Meaning — Neural LMs</h2>
+<p>Remember our function <span class="math inline">\(f(\text{sentence}) \rightarrow \text{next_word}\)</span>?</p>
+<p>A <strong>neural network</strong> learned to represent words as <strong>vectors</strong> — coordinates in a space where meaning is geometry, not counting.</p>
+<div class="fragment">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Same Function, Better Implementation</strong></p>
+</div>
+<div class="callout-content">
+<p><strong>Statistical LMs:</strong> <span class="math inline">\(f\)</span> = count frequencies → pick the most common next word</p>
+<p><strong>Neural LMs:</strong> <span class="math inline">\(f\)</span> = understand meaning → pick the word that <strong>makes sense</strong> next</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="why-vectors" class="slide level2">
+<h2>Why Vectors?</h2>
+<p>When words are coordinates, <strong>similarity becomes distance.</strong></p>
+<div class="fragment">
+<ul>
+<li>“king” and “queen” land <strong>near each other</strong></li>
+<li>The Arabic and English words for “house” are <strong>neighbors</strong></li>
+<li><strong>Cross-lingual translation emerged naturally</strong>, the model operates on meaning, not spelling</li>
+</ul>
+</div>
+<div class="fragment">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Coming up in the RAG module</strong></p>
+</div>
+<div class="callout-content">
+<p>We’ll dive deep into how these vectors work — and how we use them to build retrieval systems.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="evolution-step-2-meaning-enters" class="slide level2">
+<h2>Evolution: Step 2 — Meaning Enters</h2>
+<div class="cell" data-reveal="true" data-fig-width="10" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<pre class="mermaid mermaid-js">graph LR
+    A["🔤 Statistical LMs&lt;br/&gt;(N-Grams)&lt;br/&gt;Predict by frequency"] --&gt; B["🧠 Neural LMs&lt;br/&gt;Words as vectors&lt;br/&gt;Predict by meaning"]
+
+    style A fill:#9B8EC0,stroke:#1C355E,color:#fff
+    style B fill:#00C9A7,stroke:#1C355E,color:#fff
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<div style="text-align: center; margin-top: 1em; font-size: 1.1em;">
+<p><em>Same task. Richer representation. The machine finally understood relationships between words.</em></p>
+</div>
+</section>
+<section id="the-architecture-shift-transformers-2017" class="slide level2">
+<h2>The Architecture Shift: Transformers (2017)</h2>
+<p>Before 2017, models read text sequentially — word by word, left to right. <strong>(LSTMs)</strong></p>
+<p>The <strong>Transformer</strong> (<em>“Attention is All You Need”</em>, Google 2017) changed everything:</p>
+<ul>
+<li><strong>Parallel processing:</strong> Read the entire document at once</li>
+<li><strong>Self-Attention:</strong> Every word looks at every other word to find relevance</li>
+<li><strong>Eliminated the bottleneck:</strong> Now we could finally train on internet-scale data</li>
+</ul>
+<div class="fragment">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Why It Mattered</strong></p>
+</div>
+<div class="callout-content">
+<p>This is the “engine” inside every modern model — GPT, Claude, Gemini, Llama. Without it, scale was impossible.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="the-scale-breakthrough-gpt-llms-20182020" class="slide level2">
+<h2>The Scale Breakthrough — GPT &amp; LLMs (2018–2020)</h2>
+<p>Once we had the Transformer, we just needed to <strong>scale it up.</strong></p>
+<ul>
+<li>GPT-1 (2018) proved it worked.</li>
+<li>GPT-2 (2019) proved it could write believable essays.</li>
+<li>GPT-3 (2020) proved that <strong>Scale is a quality of its own.</strong></li>
+</ul>
+<div class="fragment">
+<div class="columns">
+<div class="column" style="width:55%;">
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Model</th>
+<th>Year</th>
+<th>Parameters</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>GPT-1</td>
+<td>2018</td>
+<td>117M</td>
+</tr>
+<tr class="even">
+<td>GPT-2</td>
+<td>2019</td>
+<td>1.5B</td>
+</tr>
+<tr class="odd">
+<td>GPT-3</td>
+<td>2020</td>
+<td><strong>175B</strong></td>
+</tr>
+</tbody>
+</table>
+</div><div class="column" style="width:45%;">
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>The Revelation</strong></p>
+</div>
+<div class="callout-content">
+<p>At 175B parameters, GPT-3 could translate, summarize, write code, and answer questions — <strong>without being explicitly trained for any of them.</strong></p>
+</div>
+</div>
+</div>
+</div></div>
+</div>
+</section>
+<section id="evolution-step-3-scale-changed-everything" class="slide level2">
+<h2>Evolution: Step 3 — Scale Changed Everything</h2>
+<div class="cell" data-reveal="true" data-fig-width="10" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<pre class="mermaid mermaid-js">graph LR
+    A["🔤 Statistical LMs&lt;br/&gt;(N-Grams)"] --&gt; B["🧠 Neural LMs&lt;br/&gt;Words as Vectors"]
+    B --&gt; T["⚡ Transformers&lt;br/&gt;(2017)&lt;br/&gt;Parallel Attention"]
+    T --&gt; C["🚀 LLMs / GPT&lt;br/&gt;(2018–2020)&lt;br/&gt;Scale + Emergence"]
+
+    style A fill:#9B8EC0,stroke:#1C355E,color:#fff
+    style B fill:#00C9A7,stroke:#1C355E,color:#fff
+    style T fill:#FFCC33,stroke:#1C355E,color:#333
+    style C fill:#FF7A5C,stroke:#1C355E,color:#fff
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<div style="text-align: center; margin-top: 1em; font-size: 1.1em;">
+<p><em>The task never changed. The scale did — and scale changed everything.</em></p>
+</div>
+</section>
+<section id="completion-as-a-superpower" class="slide level2">
+<h2>Completion as a Superpower</h2>
+<p>One mechanism. Many applications.</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Prompt prefix</th>
+<th>What the model does</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>"Once upon a time"</code></td>
+<td>Continues as a story</td>
+</tr>
+<tr class="even">
+<td><code>"Translate to Arabic: Hello → "</code></td>
+<td>Completes the translation</td>
+</tr>
+<tr class="odd">
+<td><code>"# Python function that reverses a string\ndef reverse("</code></td>
+<td>Writes the code body</td>
+</tr>
+</tbody>
+</table>
+<div class="fragment">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>The Key Insight</strong></p>
+</div>
+<div class="callout-content">
+<p>Translation, summarization, and coding are <strong>all completion problems in disguise.</strong> The model doesn’t switch modes — it just completes the pattern.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="evolution-the-full-picture-so-far" class="slide level2">
+<h2>Evolution: The Full Picture So Far</h2>
+<div class="cell" data-reveal="true" data-fig-width="10" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<pre class="mermaid mermaid-js">graph LR
+    A["🔤 Statistical LMs&lt;br/&gt;(N-Grams)"] --&gt; B["🧠 Neural LMs&lt;br/&gt;Words as Vectors"]
+    B --&gt; T["⚡ Transformers&lt;br/&gt;2017"]
+    T --&gt; C["🚀 LLMs&lt;br/&gt;2020"]
+    C --&gt; D["💬 ChatGPT&lt;br/&gt;(2022)&lt;br/&gt;Instruction-following&lt;br/&gt;(coming up next)"]
+
+    style A fill:#9B8EC0,stroke:#1C355E,color:#fff
+    style B fill:#00C9A7,stroke:#1C355E,color:#fff
+    style T fill:#FFCC33,stroke:#1C355E,color:#333
+    style C fill:#FF7A5C,stroke:#1C355E,color:#fff
+    style D fill:#1C355E,stroke:#00C9A7,color:#fff,stroke-dasharray: 5 5
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<div style="text-align: center; margin-top: 0.8em; font-size: 1em; color: #9B8EC0;">
+<p><em>(Dashed = foreshadowed — we’ll complete this story in Section C)</em></p>
+</div>
+</section></section>
+<section>
+<section id="c.-the-chatgpt-revolution" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
+<h1>C. The ChatGPT Revolution</h1>
+<p>How SFT turned completers into assistants</p>
+</section>
+<section id="the-problem-with-raw-completers" class="slide level2">
+<h2>The Problem with Raw Completers</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><strong>Base GPT-2: “Write me a poem”</strong></p>
+<pre><code>Write me a poem about the weather
+in a different language. Write me a
+poem about the weather in a...</code></pre>
+<p>It continues the sentence. It doesn’t understand you issued a command.</p>
+</div><div class="column" style="width:50%;">
+<p><strong>ChatGPT: “Write me a poem”</strong></p>
+<pre><code>Here's a poem for you:
+
+The morning light breaks soft and low,
+Across the hills where rivers flow...</code></pre>
+<p>It treats your text as an instruction and responds accordingly.</p>
+</div></div>
+<div class="fragment">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>What changed?</strong></p>
+</div>
+<div class="callout-content">
+<p>Not the underlying completion mechanism — the <strong>training data and process</strong>.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="supervised-fine-tuning-sft" class="slide level2">
+<h2>Supervised Fine-Tuning (SFT)</h2>
+<p>Human annotators wrote thousands of correct instruction-following responses. The model was then trained to mimic them.</p>
+<pre><code>[Prompt]   → "Summarize this article in 3 bullet points."
+[Response] → "• Point 1\n• Point 2\n• Point 3"
+
+[Prompt]   → "Translate 'Good morning' to French."
+[Response] → "Bonjour"</code></pre>
+<div class="fragment">
+<p>The model learned a new pattern: <strong>prompts are commands, not text to continue.</strong></p>
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Still completion under the hood</strong></p>
+</div>
+<div class="callout-content">
+<p>SFT didn’t change the architecture. It changed what the model learned to complete — now it completes <em>helpful assistant responses</em>.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="rlhf-in-30-seconds" class="slide level2">
+<h2>RLHF in 30 Seconds</h2>
+<p>After SFT, a second step aligned the model with human preferences:</p>
+<ol type="1">
+<li><strong>Generate</strong> multiple responses to the same prompt</li>
+<li><strong>Human rankers</strong> pick which response is better</li>
+<li>Train a <strong>reward model</strong> on those preferences</li>
+<li>Use the reward model to <strong>further tune</strong> the base model</li>
+</ol>
+<div class="fragment">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>One-sentence intuition</strong></p>
+</div>
+<div class="callout-content">
+<p>RLHF is how we teach the model to prefer <em>helpful and honest</em> completions over merely <em>plausible</em> ones.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="the-model-spectrum" class="slide level2">
+<h2>The Model Spectrum</h2>
+<div class="cell" data-reveal="true" data-fig-width="10" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<pre class="mermaid mermaid-js">graph LR
+    A["Base Model&lt;br/&gt;(raw completion)"] --&gt; B["Instruction-Tuned&lt;br/&gt;(follows commands)"]
+    B --&gt; C["Chat-Optimized&lt;br/&gt;(multi-turn dialogue)"]
+
+    style A fill:#9B8EC0,stroke:#1C355E,color:#fff
+    style B fill:#00C9A7,stroke:#1C355E,color:#fff
+    style C fill:#FF7A5C,stroke:#1C355E,color:#fff
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<p>Each step is an <strong>evolutionary refinement</strong> — same foundation, more alignment.</p>
+</section>
+<section id="evolution-the-full-picture-updated" class="slide level2">
+<h2>Evolution: The Full Picture (Updated)</h2>
+<div class="cell" data-reveal="true" data-fig-width="10" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<pre class="mermaid mermaid-js">graph LR
+    A["🔤 Statistical LMs&lt;br/&gt;(N-Grams)"] --&gt; B["🧠 Neural LMs&lt;br/&gt;Words as Vectors"]
+    B --&gt; T["⚡ Transformers&lt;br/&gt;2017"]
+    T --&gt; C["🚀 LLMs&lt;br/&gt;2020"]
+    C --&gt; D["💬 ChatGPT&lt;br/&gt;(2022)&lt;br/&gt;SFT + RLHF&lt;br/&gt;Instruction-following"]
+
+    style A fill:#9B8EC0,stroke:#1C355E,color:#fff
+    style B fill:#00C9A7,stroke:#1C355E,color:#fff
+    style T fill:#FFCC33,stroke:#1C355E,color:#333
+    style C fill:#FF7A5C,stroke:#1C355E,color:#fff
+    style D fill:#1C355E,stroke:#00C9A7,color:#fff
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<div style="text-align: center; margin-top: 0.8em; font-size: 1em;">
+<p><em>The dashed node is now complete. We have a full completer → assistant pipeline.</em></p>
+</div>
+</section></section>
+<section>
+<section id="d.-in-context-learning" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)">
+<h1>D. In-Context Learning</h1>
+<p>No retraining required — just better prompts</p>
+</section>
+<section id="the-insight-that-changed-everything" class="slide level2">
+<h2>The Insight That Changed Everything</h2>
+<div style="font-size: 1.2em; text-align: center; margin: 0.5em 0;">
+<p>You don’t need to retrain the model. <strong>Just show it examples in the prompt.</strong></p>
+</div>
+<div class="fragment">
+<p>GPT-3 (2020) demonstrated that a large enough model could adapt to a new task from a handful of examples — with no gradient updates, no fine-tuning, no cost.</p>
+<p>This was called <strong>In-Context Learning (ICL)</strong>, and it unlocked prompt engineering as a discipline.</p>
+</div>
+</section>
+<section id="zero-shot-vs-few-shot" class="slide level2">
+<h2>Zero-Shot vs Few-Shot</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><strong>Zero-Shot</strong></p>
+<pre><code>Classify the sentiment:
+"The service was terrible."
+
+Sentiment:</code></pre>
+<p>Model output: <code>Negative</code></p>
+<p>Works for simple, well-defined tasks.</p>
+</div><div class="column" style="width:50%;">
+<p><strong>Few-Shot</strong></p>
+<pre><code>"Great product!" → Positive
+"Terrible service." → Negative
+"It was okay." → Neutral
+
+"Absolutely loved it!" →</code></pre>
+<p>Model output: <code>Positive</code></p>
+<p>Works for nuanced or custom formats.</p>
+</div></div>
+<div class="fragment">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Rule of thumb</strong></p>
+</div>
+<div class="callout-content">
+<p>When zero-shot gives inconsistent results, add 2–3 examples. That’s usually enough.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="system-prompts-as-configuration" class="slide level2">
+<h2>System Prompts as Configuration</h2>
+<p>The system prompt is the <strong>personality dial</strong> — it shapes every response without the user seeing it.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href=""></a>messages <span class="op">=</span> [</span>
+<span id="cb6-2"><a href=""></a>    {</span>
+<span id="cb6-3"><a href=""></a>        <span class="st">"role"</span>: <span class="st">"system"</span>,</span>
+<span id="cb6-4"><a href=""></a>        <span class="st">"content"</span>: (</span>
+<span id="cb6-5"><a href=""></a>            <span class="st">"You are a concise financial analyst. "</span></span>
+<span id="cb6-6"><a href=""></a>            <span class="st">"Always cite numbers. Never speculate. "</span></span>
+<span id="cb6-7"><a href=""></a>            <span class="st">"Respond in bullet points."</span></span>
+<span id="cb6-8"><a href=""></a>        )</span>
+<span id="cb6-9"><a href=""></a>    },</span>
+<span id="cb6-10"><a href=""></a>    {<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="st">"What drove Apple's revenue in Q3?"</span>}</span>
+<span id="cb6-11"><a href=""></a>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="fragment">
+<p>Change the system prompt → change the model’s persona, tone, and constraints. No retraining needed.</p>
+</div>
+</section>
+<section id="prompt-engineering-as-a-skill" class="slide level2">
+<h2>Prompt Engineering as a Skill</h2>
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Four levers you control</strong></p>
+</div>
+<div class="callout-content">
+<ol type="1">
+<li><strong>Role assignment</strong> — “You are an expert in…”</li>
+<li><strong>Structured format</strong> — JSON, markdown, bullet points</li>
+<li><strong>Output constraints</strong> — “Respond in under 100 words”</li>
+<li><strong>Examples</strong> — 2–3 in-context demonstrations</li>
+</ol>
+</div>
+</div>
+</div>
+</section></section>
+<section>
+<section id="e.-thinking-models" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #FF7A5C)">
+<h1>E. Thinking Models</h1>
+<p>From chain of thought to o1 and beyond</p>
+</section>
+<section id="lets-think-step-by-step" class="slide level2">
+<h2>“Let’s Think Step by Step”</h2>
+<p>In 2022, researchers discovered a single phrase nearly doubled accuracy on math benchmarks:</p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><strong>Direct answer</strong></p>
+<pre><code>Q: Roger has 5 tennis balls.
+He buys 2 more cans of 3.
+How many does he have?
+
+A: 11</code></pre>
+<p>Wrong. (The model guessed.)</p>
+</div><div class="column" style="width:50%;">
+<p><strong>With Chain of Thought</strong></p>
+<pre><code>Q: Roger has 5 tennis balls.
+He buys 2 more cans of 3.
+How many does he have?
+Let's think step by step.
+
+A: He starts with 5.
+2 cans × 3 balls = 6 more.
+5 + 6 = 11.</code></pre>
+<p>Correct — and verifiable.</p>
+</div></div>
+</section>
+<section id="why-it-works" class="slide level2">
+<h2>Why It Works</h2>
+<div style="font-size: 1.1em;">
+<p>Forcing the model to generate <strong>intermediate steps</strong> means:</p>
+</div>
+<div class="fragment">
+<ul>
+<li>More tokens generated before the final answer</li>
+<li>More “computation” applied to the problem</li>
+<li>Each step constrains what the next step can plausibly be</li>
+</ul>
+</div>
+<div class="fragment">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Intuition</strong></p>
+</div>
+<div class="callout-content">
+<p>The model doesn’t think <em>before</em> it writes — it thinks <em>by</em> writing. More tokens = more thinking.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="the-thinking-model-era" class="slide level2">
+<h2>The Thinking Model Era</h2>
+<div class="cell" data-reveal="true" data-fig-width="10" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<pre class="mermaid mermaid-js">graph LR
+    A["Chain of Thought&lt;br/&gt;(2022, prompt trick)"] --&gt; B["o1&lt;br/&gt;(2024, trained CoT)"]
+    B --&gt; C["DeepSeek-R1&lt;br/&gt;(2025, open weights)"]
+    C --&gt; D["Claude Extended&lt;br/&gt;Thinking (2025)"]
+
+    style A fill:#9B8EC0,stroke:#1C355E,color:#fff
+    style B fill:#00C9A7,stroke:#1C355E,color:#fff
+    style C fill:#FF7A5C,stroke:#1C355E,color:#fff
+    style D fill:#1C355E,stroke:#1C355E,color:#fff
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<p>The shift: from <em>prompting</em> a model to think step-by-step, to <em>training</em> a model that reasons internally before responding.</p>
+</section>
+<section id="the-trade-off" class="slide level2">
+<h2>The Trade-off</h2>
+<table class="caption-top">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Standard Model</strong></th>
+<th><strong>Thinking Model</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Response time</strong></td>
+<td>~1 second</td>
+<td>~15–30 seconds</td>
+</tr>
+<tr class="even">
+<td><strong>Cost</strong></td>
+<td>Low</td>
+<td>3–10× higher</td>
+</tr>
+<tr class="odd">
+<td><strong>Best for</strong></td>
+<td>Chat, summarization, extraction</td>
+<td>Math, coding, complex reasoning</td>
+</tr>
+<tr class="even">
+<td><strong>Failure mode</strong></td>
+<td>Hallucination</td>
+<td>Overthinking simple tasks</td>
+</tr>
+</tbody>
+</table>
+<div class="fragment">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>When to use thinking models</strong></p>
+</div>
+<div class="callout-content">
+<p>Use them when <strong>correctness matters more than speed</strong> — audit tasks, code generation, structured data extraction. Don’t use them for real-time chat.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="evolution-the-complete-story" class="slide level2">
+<h2>Evolution: The Complete Story</h2>
+<div class="cell" data-reveal="true" data-fig-width="10" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<pre class="mermaid mermaid-js">graph LR
+    A["🔤 Statistical LMs&lt;br/&gt;(N-Grams)"] --&gt; B["🧠 Neural LMs&lt;br/&gt;Words as Vectors"]
+    B --&gt; T["⚡ Transformers&lt;br/&gt;(2017)"]
+    T --&gt; C["🚀 LLMs / GPT&lt;br/&gt;(2020)"]
+    C --&gt; D["💬 ChatGPT&lt;br/&gt;(2022)"]
+    D --&gt; E["🤔 Thinking Models&lt;br/&gt;(2024–2025)"]
+
+    style A fill:#9B8EC0,stroke:#1C355E,color:#fff
+    style B fill:#00C9A7,stroke:#1C355E,color:#fff
+    style T fill:#FFCC33,stroke:#1C355E,color:#333
+    style C fill:#FF7A5C,stroke:#1C355E,color:#fff
+    style D fill:#1C355E,stroke:#00C9A7,color:#fff
+    style E fill:#9B4DCA,stroke:#1C355E,color:#fff
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<div style="text-align: center; margin-top: 0.8em; font-size: 1em;">
+<p><em>From counting words to reasoning step-by-step — one continuous thread.</em></p>
+</div>
+</section></section>
+<section>
+<section id="e.-under-the-hood" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)">
+<h1>E. Under the Hood</h1>
+<p>The mechanics behind what you’ve been using all session</p>
+</section>
+<section id="the-atomic-unit-tokens" class="slide level2">
+<h2>The Atomic Unit: Tokens</h2>
+<p>The machine doesn’t actually see “words.” It sees <strong>Tokens</strong>.</p>
+<ul>
+<li><strong>What are they?</strong> Fragments of words — sometimes parts of a word, sometimes a whole word.</li>
+<li><strong>Why?</strong> It’s more efficient than having a dictionary of every possible word.</li>
+<li><strong>The Result:</strong> The model can read and write words it has never seen before by combining fragments.</li>
+</ul>
+<div class="fragment">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Rule of Thumb</strong></p>
+</div>
+<div class="callout-content">
+<p><strong>1,000 tokens ≈ 750 words.</strong> When you’re billed for “input and output,” you’re paying for these atomic fragments.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="generating-a-full-sentence" class="slide level2">
+<h2>Generating a Full Sentence</h2>
+<p>One token at a time. Step by step.</p>
+<p><strong>Prompt:</strong> <em>“The sky is”</em></p>
+<div style="font-family: monospace; font-size: 1em; line-height: 2.2;">
+<div class="fragment fade-in">
+<p><strong>Step 1 →</strong> <code>"The sky is"</code> ➜ <strong>blue</strong></p>
+</div>
+<div class="fragment fade-in">
+<p><strong>Step 2 →</strong> <code>"The sky is blue"</code> ➜ <strong>and</strong></p>
+</div>
+<div class="fragment fade-in">
+<p><strong>Step 3 →</strong> <code>"The sky is blue and"</code> ➜ <strong>clear</strong></p>
+</div>
+<div class="fragment fade-in">
+<p><strong>Step 4 →</strong> <code>"The sky is blue and clear"</code> ➜ <strong><code>&lt;EOS&gt;</code></strong> 🛑</p>
+</div>
+</div>
+<div class="fragment fade-in">
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>The Stop Token</strong></p>
+</div>
+<div class="callout-content">
+<p><code>&lt;EOS&gt;</code> (End of Sequence) is a <strong>special token</strong> in the vocabulary. When the model picks it, generation halts. Without it, the model would keep predicting forever. Every sentence you’ve ever received from an LLM ended because of this token.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="the-greedy-problem-always-picking-the-top-word" class="slide level2">
+<h2>The Greedy Problem: Always Picking the Top Word</h2>
+<p>What if the model <strong>always</strong> chose the highest-probability word?</p>
+<div class="fragment">
+<div class="columns">
+<div class="column" style="width:55%;">
+<p><strong>Prompt:</strong> <em>“Tell me a joke.”</em></p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 66%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Run</th>
+<th>Response</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1st</td>
+<td>“Why did the chicken cross the road? To get to the other side.”</td>
+</tr>
+<tr class="even">
+<td>2nd</td>
+<td>“Why did the chicken cross the road? To get to the other side.”</td>
+</tr>
+<tr class="odd">
+<td>3rd</td>
+<td>“Why did the chicken cross the road? To get to the other side.”</td>
+</tr>
+</tbody>
+</table>
+</div><div class="column" style="width:45%;">
+<div class="fragment fade-in">
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>The Problem</strong></p>
+</div>
+<div class="callout-content">
+<p>This is called <strong>greedy decoding</strong>. The model becomes a broken record — deterministic, robotic, and utterly predictable. Every identical prompt returns the exact same output forever.</p>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+</div>
+<div class="fragment">
+<div style="text-align: center; color: #00C9A7; font-size: 1.1em;">
+<p><em>We need randomness — but <strong>controlled</strong> randomness.</em></p>
+</div>
+</div>
+</section>
+<section id="the-probability-distribution" class="slide level2">
+<h2>The Probability Distribution</h2>
+<p>The model doesn’t “know” facts; it calculates <strong>probabilities</strong>.</p>
+<div class="columns">
+<div class="column" style="width:60%;">
+<p><strong>“According to Article 214 of the…”</strong></p>
+<ul>
+<li><strong>The</strong> (45%)</li>
+<li><strong>Foreign</strong> (30%)</li>
+<li><strong>Capital</strong> (15%)</li>
+<li><strong>Unicorn</strong> (0.01%)</li>
+</ul>
+</div><div class="column" style="width:40%;">
+<div class="fragment fade-in">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>The Decision</strong></p>
+</div>
+<div class="callout-content">
+<p>It doesn’t <em>always</em> pick the top token. We use <strong>Sampling Parameters</strong> to control how it chooses from this list.</p>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="sampling-a-bag-of-balls" class="slide level2">
+<h2>Sampling: A Bag of Balls 🎱</h2>
+<p>Think of every word as a <strong>colored ball</strong> placed in a bag.</p>
+<div class="fragment">
+<p>The number of copies of each ball is proportional to its probability:</p>
+<div class="columns">
+<div class="column" style="width:60%;">
+<p><strong>“According to Article 214 of the…”</strong></p>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Token</th>
+<th>Probability</th>
+<th>Balls in the Bag</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>The</strong></td>
+<td>45%</td>
+<td>🔵🔵🔵🔵🔵🔵🔵🔵🔵 (45 balls)</td>
+</tr>
+<tr class="even">
+<td><strong>Foreign</strong></td>
+<td>30%</td>
+<td>🟢🟢🟢🟢🟢🟢 (30 balls)</td>
+</tr>
+<tr class="odd">
+<td><strong>Capital</strong></td>
+<td>15%</td>
+<td>🟡🟡🟡 (15 balls)</td>
+</tr>
+<tr class="even">
+<td><strong>Unicorn</strong></td>
+<td>0.01%</td>
+<td>🔴 (barely 1 ball)</td>
+</tr>
+</tbody>
+</table>
+</div><div class="column" style="width:40%;">
+<div class="fragment fade-in">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>The Draw</strong></p>
+</div>
+<div class="callout-content">
+<p>We <strong>pull out one ball at random</strong>.</p>
+<ul>
+<li>You’ll <em>usually</em> get “<strong>The</strong>” — but not always.</li>
+<li>“<strong>Foreign</strong>” has a real chance.</li>
+<li>“<strong>Unicorn</strong>”? Almost never.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+</div>
+<div class="fragment">
+<div style="text-align: center; color: #00C9A7; font-size: 1.1em;">
+<p><em>Sampling parameters change <strong>how many balls</strong> each word gets — that’s all Temperature, Top-K, and Top-P are doing.</em></p>
+</div>
+</div>
+</section>
+<section id="temperature-the-creativity-dial" class="slide level2" data-auto-animate="true">
+<h2 data-id="quarto-animate-title">Temperature: The “Creativity” Dial</h2>
+<div style="font-size: 1.2em; text-align: center;">
+<p><strong>Temperature</strong> adjusts the <em>shape</em> of that probability curve.</p>
+</div>
+
+<img data-src="../assets/generated/plot_temperature_viz.png" class="r-stretch"><div class="fragment">
+<div class="columns smaller">
+<div class="column" style="width:50%;">
+<p><strong>Low Temp (&lt; 0.5)</strong> - <strong>Sharpened</strong> probabilities</p>
+</div><div class="column" style="width:50%;">
+<p><strong>High Temp (&gt; 0.8)</strong> - <strong>Flattened</strong> probabilities</p>
+</div></div>
+</div>
+</section>
+<section id="top-k-the-shortlist" class="slide level2" data-auto-animate="true">
+<h2 data-id="quarto-animate-title">Top-K: The “Shortlist”</h2>
+<div style="font-size: 1.2em; text-align: center;">
+<p><strong>Top-K</strong> simply chops off the list after <span class="math inline">\(K\)</span> items.</p>
+</div>
+<div class="fragment">
+<p><strong>“According to Article 214…”</strong></p>
+<div class="fragment fade-in-then-semi-out">
+<ul>
+<li><strong>The</strong> (45%)</li>
+<li><strong>Foreign</strong> (30%)</li>
+</ul>
+</div>
+<div class="fragment highlight-red">
+<ul>
+<li><em>Capital (15%)</em> – <strong>Cut off (if K=2)</strong></li>
+<li><em>Unicorn (0.01%)</em> – <strong>Cut off</strong></li>
+</ul>
+</div>
+</div>
+<div class="fragment">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Impact</strong></p>
+</div>
+<div class="callout-content">
+<p>Here, setting <span class="math inline">\(K=2\)</span> forces it to stick to the very most likely words, preventing weird deviations like “Unicorn”.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="top-p-nucleus-the-smart-cutoff" class="slide level2" data-auto-animate="true">
+<h2 data-id="quarto-animate-title">Top-P (Nucleus): The “Smart” Cutoff</h2>
+<div style="font-size: 1.2em; text-align: center;">
+<p><strong>Top-P</strong> sums up probabilities until it hits <span class="math inline">\(P\)</span> (e.g., 0.9).</p>
+</div>
+<div class="fragment">
+<p><strong>Scenario A: The Law (Ambiguous)</strong></p>
+<ul>
+<li><strong>The</strong> (45%) + <strong>Foreign</strong> (30%) + <strong>Capital</strong> (15%) = 90%</li>
+<li><strong>Result:</strong> All three are kept.</li>
+</ul>
+</div>
+<div class="fragment">
+<p><strong>Scenario B: The Capital (Certain)</strong></p>
+<p>“The capital of Saudi Arabia is…”</p>
+<ul>
+<li><strong>Riyadh</strong> (99.8%)</li>
+<li><strong>Result:</strong> Hit 90% immediately. Stops there.</li>
+</ul>
+<div class="fragment fade-up">
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Why Top-P wins</strong></p>
+</div>
+<div class="callout-content">
+<p>It adapts to the context. It’s strict when the answer is clear (Riyadh), and flexible when it’s open-ended or we have synonyms.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="cheat-sheet-configuration" class="slide level2">
+<h2>Cheat Sheet: Configuration</h2>
+<table class="caption-top">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Parameter</th>
+<th>Effect</th>
+<th>Recommended Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Temperature</strong></td>
+<td>Randomness</td>
+<td>0.0 (Fact/Code) – 0.7 (Chat) – 1.0 (Creative)</td>
+</tr>
+<tr class="even">
+<td><strong>Top-P</strong></td>
+<td>Dynamic vocabulary</td>
+<td>0.9 (Standard), 1.0 (Disable)</td>
+</tr>
+<tr class="odd">
+<td><strong>Top-K</strong></td>
+<td>Hard vocabulary limit</td>
+<td>40-100 (Standard)</td>
+</tr>
+</tbody>
+</table>
+<div class="fragment fade-in">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Best Practice</strong></p>
+</div>
+<div class="callout-content">
+<p>Usually, you tune <strong>Temperature</strong> and <strong>Top-P</strong>. Leave Top-K alone or at default.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="hallucinations-when-guessing-fails" class="slide level2">
+<h2>Hallucinations: When Guessing Fails</h2>
+<div style="font-size: 1.2em; text-align: center; margin: 1em 0;">
+<p>Hallucinations are <strong>structural</strong>. They aren’t a bug; they are the result of the model doing its job without enough context.</p>
+</div>
+<div class="fragment">
+<ol type="1">
+<li><strong>Probability over Truth</strong> — It picks statistically likely words, not verified facts.</li>
+<li><strong>Plausibility over Accuracy</strong> — It is trained to <em>sound</em> correct, which makes its lies dangerous.</li>
+<li><strong>Training Gaps</strong> — If it hasn’t seen the “Saudi Investment Law,” it will confidently invent one that sounds legal.</li>
+</ol>
+</div>
+<div class="fragment">
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Production Risk</strong></p>
+</div>
+<div class="callout-content">
+<p>A hallucinating chatbot creates <strong>real legal and financial liability</strong>. “Confident, fluent lies” are harder to spot than obvious errors.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="mitigation-strategies" class="slide level2">
+<h2>Mitigation Strategies</h2>
+<table class="caption-top">
+<colgroup>
+<col style="width: 27%">
+<col style="width: 36%">
+<col style="width: 36%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Strategy</th>
+<th>How It Works</th>
+<th>When to Use</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>RAG</strong></td>
+<td>Ground responses in retrieved documents</td>
+<td>Most enterprise apps (Module 03)</td>
+</tr>
+<tr class="even">
+<td><strong>Output Validation</strong></td>
+<td>Verify against structured data/rules</td>
+<td>Factual claims, numbers</td>
+</tr>
+<tr class="odd">
+<td><strong>Temp = 0</strong></td>
+<td>Force the most likely (factual) path</td>
+<td>extraction, classification</td>
+</tr>
+<tr class="even">
+<td><strong>Human-in-the-Loop</strong></td>
+<td>Human review before action</td>
+<td>Critical decisions</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>The Core Lesson</strong></p>
+</div>
+<div class="callout-content">
+<p>The same mechanism that writes a creative novel also writes a confident lie. <strong>Control the mechanism, or provide the data.</strong></p>
+</div>
+</div>
+</div>
+</section></section>
+<section>
+<section id="f.-key-intuitions" class="title-slide slide level1 sdaia-dark center" data-background-color="#1C355E">
+<h1>F. Key Intuitions</h1>
+<p>What you know and what’s next</p>
+</section>
+<section id="key-takeaways" class="slide level2 sdaia-dark smaller" data-background-color="#1C355E">
+<h2>Key Takeaways</h2>
+<ol type="1">
+<li><strong>GenAI generates, not retrieves</strong> — it creates content by predicting what comes next, at scale.</li>
+<li><strong>Completion is the primitive</strong> — translation, coding, and conversation all reduce to next-word prediction.</li>
+<li><strong>Scale created emergence</strong> — GPT-3 wasn’t programmed to translate; it learned translation as a side effect of predicting text at 175B parameters.</li>
+<li><strong>Hallucinations are structural</strong> — the model generates plausible text, not true text. Always plan a mitigation strategy.</li>
+<li><strong>SFT aligned completers</strong> — ChatGPT didn’t invent a new architecture; it trained the model to treat prompts as commands.</li>
+<li><strong>In-context learning</strong> — you can adapt a model to new tasks in real time, just by showing examples in the prompt.</li>
+<li><strong>Thinking models trade speed for accuracy</strong> — chain of thought and o1-style reasoning give you better answers at higher cost and latency.</li>
+</ol>
+</section>
+<section id="what-we-intentionally-skipped" class="slide level2">
+<h2>What We Intentionally Skipped</h2>
+<p>This session focused on intuition. We deliberately left out:</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Skipped</th>
+<th>Why</th>
+<th>When you’ll need it</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Transformer architecture</strong></td>
+<td>You don’t need it to build</td>
+<td>Academic curiosity only</td>
+</tr>
+<tr class="even">
+<td><strong>Attention math</strong></td>
+<td>Same reason</td>
+<td>Deep ML research</td>
+</tr>
+<tr class="odd">
+<td><strong>KV-cache mechanics</strong></td>
+<td>Not relevant yet</td>
+<td>Session 2 — it affects your API bill</td>
+</tr>
+</tbody>
+</table>
+<div class="fragment">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>The principle</strong></p>
+</div>
+<div class="callout-content">
+<p>Understand the <em>behavior</em> of the model before its <em>internals</em>. Once you’re building with the API, the internals become relevant — and we’ll cover them exactly when they matter.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Up Next</strong></p>
+</div>
+<div class="callout-content">
+<p><strong>Lab 1</strong>: Hands-on tokenization and cost analysis — see how tokens, context windows, and costs connect in practice.</p>
+</div>
+</div>
+</div>
+
+</div>
+</section></section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<p><img src="../../slides_template/assets/sdaia.svg" class="slide-logo"></p>
+<div class="footer footer-default">
+
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="01_genai_fundamentals_files/libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="01_genai_fundamentals_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="01_genai_fundamentals_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="01_genai_fundamentals_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="01_genai_fundamentals_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="01_genai_fundamentals_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="01_genai_fundamentals_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="01_genai_fundamentals_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="01_genai_fundamentals_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="01_genai_fundamentals_files/libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"},{"title":"Index","icon":"<svg width='1.8rem' viewBox='0 0 24 24'><path d='M5 7h14M5 12h14M5 17h7' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>","src":"../../index.html"}],"openButton":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: true,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1050,
+
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.1,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+          const outerScaffold = trigger.parentElement.cloneNode(true);
+          const codeEl = outerScaffold.querySelector('code');
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>

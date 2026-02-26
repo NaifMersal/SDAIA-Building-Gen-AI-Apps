@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="04_efficient_tool_calling_files/libs/clipboard/clipboard.min.js"></script>
+<script src="04_efficient_tool_calling_files/libs/quarto-html/tabby.min.js"></script>
+<script src="04_efficient_tool_calling_files/libs/quarto-html/popper.min.js"></script>
+<script src="04_efficient_tool_calling_files/libs/quarto-html/tippy.umd.min.js"></script>
+<link href="04_efficient_tool_calling_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="04_efficient_tool_calling_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="04_efficient_tool_calling_files/libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.8.26">
+
+  <meta name="dcterms.date" content="2026-02-27">
+  <title>Efficient Tool Calling</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="04_efficient_tool_calling_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="04_efficient_tool_calling_files/libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="04_efficient_tool_calling_files/libs/revealjs/dist/theme/quarto-11fb225df25554060309039e467d350a.css">
+  <link href="04_efficient_tool_calling_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="04_efficient_tool_calling_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="04_efficient_tool_calling_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="04_efficient_tool_calling_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+  <script src="04_efficient_tool_calling_files/libs/quarto-diagram/mermaid.min.js"></script>
+  <script src="04_efficient_tool_calling_files/libs/quarto-diagram/mermaid-init.js"></script>
+  <link href="04_efficient_tool_calling_files/libs/quarto-diagram/mermaid.css" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MCA4MCI+DQogIDxkZWZzPg0KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYSIgeDE9Ii0xLjkxMSIgeDI9IjIuOTg1IiB5MT0iLS44NDEiIHkyPSIxLjQxNCIgZ3JhZGllbnRVbml0cz0ib2JqZWN0Qm91bmRpbmdCb3giPg0KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjOTlkNjMzIi8+DQogICAgICA8c3RvcCBvZmZzZXQ9Ii41IiBzdG9wLWNvbG9yPSIjM2M5Ii8+DQogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMyNzM0NzAiLz4NCiAgICA8L2xpbmVhckdyYWRpZW50Pg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYSIgaWQ9ImQiIHgxPSItMy41NjkiIHgyPSIxLjMyOCIgeTE9Ii0xLjYwNSIgeTI9Ii42NTEiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2EiIGlkPSJlIiB4MT0iLTMuMDQ3IiB4Mj0iMS44NDkiIHkxPSItLjkwNCIgeTI9IjEuMzUyIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0iZiIgeDE9Ii0yLjg5IiB4Mj0iMi4wMDciIHkxPSItMS4yOTIiIHkyPSIuOTY0Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0iZyIgeDE9Ii0yLjQiIHgyPSIyLjQ5NyIgeTE9Ii0xLjA2NiIgeTI9IjEuMTg5Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0iaCIgeDE9Ii0uOTkyIiB4Mj0iMi42NzkiIHkxPSItLjQxOCIgeTI9IjEuMjczIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0iaSIgeDE9Ii0xLjUxMiIgeDI9IjIuMTU5IiB5MT0iLS4xOTciIHkyPSIxLjQ5NSIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYSIgaWQ9ImoiIHgxPSItLjkxNCIgeDI9IjIuNzU4IiB5MT0iLjA3OSIgeTI9IjEuNzcxIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0iayIgeDE9Ii0zLjQwNSIgeDI9IjEuNDkzIiB5MT0iLTEuMDY4IiB5Mj0iMS4xODciLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2EiIGlkPSJsIiB4MT0iLjM0NyIgeDI9IjMuMjg1IiB5MT0iLjE5OSIgeTI9IjEuNTUyIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0ibSIgeDE9Ii0uOTA1IiB4Mj0iMi43NjciIHkxPSIuMDgzIiB5Mj0iMS43NzUiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2EiIGlkPSJuIiB4MT0iLTIuMTE5IiB4Mj0iMi43NzgiIHkxPSItLjQ3NiIgeTI9IjEuNzc5Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0ibyIgeDE9Ii01LjY0NCIgeDI9Ii40ODYiIHkxPSItMi45OTgiIHkyPSIuNzQxIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0icCIgeDE9Ii0zLjQ5NSIgeDI9IjIuNjM2IiB5MT0iLTEuNjg3IiB5Mj0iMi4wNTMiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2EiIGlkPSJxIiB4MT0iLTEuNDIyIiB4Mj0iMy4xNzUiIHkxPSItLjkyMyIgeTI9IjEuODgyIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0iciIgeDE9Ii0zLjMwNiIgeDI9IjIuODI1IiB5MT0iLTIuMDcyIiB5Mj0iMS42NjgiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2EiIGlkPSJzIiB4MT0iLTEuNjgzIiB4Mj0iMi45MTQiIHkxPSItMS4wODEiIHkyPSIxLjcyMyIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYSIgaWQ9InQiIHgxPSItMS4xNTgiIHgyPSIyLjUyMSIgeTE9Ii0uMjYxIiB5Mj0iMS45ODMiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImIiIHgxPSIuMjYxIiB4Mj0iLjYyNCIgeTE9IjMuNTYiIHkyPSItMS40NjkiIGdyYWRpZW50VW5pdHM9Im9iamVjdEJvdW5kaW5nQm94Ij4NCiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzZjZiIvPg0KICAgICAgPHN0b3Agb2Zmc2V0PSIuNSIgc3RvcC1jb2xvcj0iIzYyNThhNiIvPg0KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMjczNDcwIi8+DQogICAgPC9saW5lYXJHcmFkaWVudD4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJ1IiB4MT0iLjE2MyIgeDI9Ii41MjYiIHkxPSI0LjkyNCIgeTI9Ii0uMTAzIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNiIiBpZD0idiIgeDE9Ii4zODYiIHgyPSIuNjU4IiB5MT0iMS44MjUiIHkyPSItMS45NDUiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJ3IiB4MT0iLjI1MiIgeDI9Ii42MTUiIHkxPSI0LjE4MiIgeTI9Ii0uODQ1Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNiIiBpZD0ieCIgeDE9Ii40MTciIHgyPSIuNjg5IiB5MT0iMS45IiB5Mj0iLTEuODciLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJ5IiB4MT0iLjQ4NSIgeDI9Ii43MDMiIHkxPSIuOTU2IiB5Mj0iLTIuMDYiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJ6IiB4MT0iLjM3NyIgeDI9Ii42NDkiIHkxPSIyLjQ1NSIgeTI9Ii0xLjMxNCIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYiIgaWQ9IkEiIHgxPSIuMTk5IiB4Mj0iLjU2MiIgeTE9IjQuOTIyIiB5Mj0iLS4xMDUiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJCIiB4MT0iLjQzNyIgeDI9Ii43MDkiIHkxPSIxLjYyNSIgeTI9Ii0yLjE0NSIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYiIgaWQ9IkMiIHgxPSIuMjYxIiB4Mj0iLjYyNCIgeTE9IjQuMDU1IiB5Mj0iLS45NzIiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJEIiB4MT0iLjUiIHgyPSIuNSIgeTE9IjMuMDQ1IiB5Mj0iLTEuOTI3Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNiIiBpZD0iRSIgeDE9Ii41IiB4Mj0iLjUiIHkxPSI0LjkwMSIgeTI9Ii0uMDcyIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNiIiBpZD0iRiIgeDE9Ii41IiB4Mj0iLjUiIHkxPSIyLjQzNSIgeTI9Ii0xLjI5NiIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYiIgaWQ9IkciIHgxPSIuNSIgeDI9Ii41IiB5MT0iLjkzNCIgeTI9Ii0yLjA1Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNiIiBpZD0iSCIgeDE9Ii41IiB4Mj0iLjUiIHkxPSIzLjc4NSIgeTI9Ii0xLjE4NyIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYiIgaWQ9IkkiIHgxPSIuNSIgeDI9Ii41IiB5MT0iMS44MDkiIHkyPSItMS45MjEiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJKIiB4MT0iLjUiIHgyPSIuNSIgeTE9IjMuMDQ2IiB5Mj0iLTEuOTI4Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNiIiBpZD0iSyIgeDE9Ii41IiB4Mj0iLjUiIHkxPSIyLjc5NCIgeTI9Ii0yLjE3NyIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYyIgeDE9IjUuMDEiIHgyPSItMi4yNzciIHkxPSItMS4zODMiIHkyPSIyLjAzOSIgZ3JhZGllbnRVbml0cz0ib2JqZWN0Qm91bmRpbmdCb3giPg0KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmRiZDRkIi8+DQogICAgICA8c3RvcCBvZmZzZXQ9Ii41IiBzdG9wLWNvbG9yPSIjZjYzIi8+DQogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMyNzM0NzAiLz4NCiAgICA8L2xpbmVhckdyYWRpZW50Pg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYyIgaWQ9IkwiIHgxPSIyLjIzOSIgeDI9Ii0yLjEzNCIgeTE9Ii0uMDgyIiB5Mj0iMS45NzEiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2MiIGlkPSJNIiB4MT0iNi4wOTgiIHgyPSItMS4xOTEiIHkxPSItMS44OTMiIHkyPSIxLjUyOCIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYyIgaWQ9Ik4iIHgxPSIzLjM4NCIgeDI9Ii0yLjA4MSIgeTE9Ii0xLjA4OCIgeTI9IjEuNDc3Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iTyIgeDE9IjIuNzgiIHgyPSItMi42ODYiIHkxPSItLjgwNSIgeTI9IjEuNzYxIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iUCIgeDE9IjcuMDc0IiB4Mj0iLS4yMTIiIHkxPSItMi4zNTMiIHkyPSIxLjA2OSIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYyIgaWQ9IlEiIHgxPSI1LjA3NSIgeDI9Ii0yLjIxMSIgeTE9Ii0xLjQxNCIgeTI9IjIuMDA4Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iUiIgeDE9IjUuNzM2IiB4Mj0iLTEuNTUiIHkxPSItMi4xOTQiIHkyPSIxLjIyOCIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYyIgaWQ9IlMiIHgxPSIyLjA4MSIgeDI9Ii0xLjc4MSIgeTE9Ii0uMDQ3IiB5Mj0iMS45Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iVCIgeDE9Ii43MjkiIHgyPSItMi4zNjEiIHkxPSIuMTM1IiB5Mj0iMS42OTIiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2MiIGlkPSJVIiB4MT0iMi43MTciIHgyPSItMi40MzMiIHkxPSItLjg2OCIgeTI9IjEuNzI4Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iViIgeDE9IjEuNTE3IiB4Mj0iLTIuMzQ3IiB5MT0iLS4yNjIiIHkyPSIxLjY4NCIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYyIgaWQ9IlciIHgxPSIzLjU0NCIgeDI9Ii0xLjYwNiIgeTE9Ii0xLjI4NCIgeTI9IjEuMzEyIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iWCIgeDE9IjIuNjMxIiB4Mj0iLTEuMjMzIiB5MT0iLS4zMjQiIHkyPSIxLjYyMyIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYyIgaWQ9IlkiIHgxPSIyLjAwMyIgeDI9Ii0xLjg2IiB5MT0iLS4wMDciIHkyPSIxLjk0Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iWiIgeDE9IjQuMTI1IiB4Mj0iLTEuMDI1IiB5MT0iLTEuMDc3IiB5Mj0iMS41MTgiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2MiIGlkPSJhYSIgeDE9IjMuMDIyIiB4Mj0iLTIuMTI3IiB5MT0iLTEuMDIxIiB5Mj0iMS41NzQiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2MiIGlkPSJhYiIgeDE9IjQuNjgxIiB4Mj0iLS40NjkiIHkxPSItMS44NTciIHkyPSIuNzM4Ii8+DQogIDwvZGVmcz4NCiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMy44IDEpIj4NCiAgPHBhdGggZmlsbD0iIzNjOSIgZD0ibTM2LjA0MSAyNi41My0xMS40NDggNi42MTF2MTMuMjJsMTEuNDQ4IDYuNjEyIDExLjQ0Ni02LjYwOFYzMy4xNDFaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjYSkiIGQ9Ik03MS40NjQgMjAuOTF2Ny45MzJsLTYuODctMy45NjVaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjZCkiIGQ9Ik02NC4yNDkgNTIuOTdsNi44NjkgMy45NjV2LTcuOTNaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjZSkiIGQ9Im02OC4xIDQ2LjM1OSAtNi44NjkgMy45Njd2LTcuOTMyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI2YpIiBkPSJNNzIuMzkyIDM1LjM3djcuOTMybC02Ljg2OSAtMy45NjVaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjZykiIGQ9Ik01Ni42NTEgNTYuODQ3djcuOTMybC02Ljg2OSAtMy45NjVaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjaCkiIGQ9Im01Ny43OTQgNTEuNjQzIC05LjE2IC01LjI4NiA5LjE2IC01LjI5WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI2kpIiBkPSJtNTcuNzk1IDUyLjk3IC05LjE2IDUuMjlWNDcuNjg0WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI2opIiBkPSJtNTcuNzkyIDM5Ljc0OSAtOS4xNTggNS4yODZ2LTEwLjU3MloiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNrKSIgZD0ibTU4LjUgNzAuMzE4IC02Ljg2OCAzLjk2N3YtNy45MzJaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjbCkiIGQ9Im00Ny40ODcgNDYuMzYxIC0xMS40NDYgLTYuNjEyIDExLjQ0NiAtNi42MTFaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjbSkiIGQ9Im00Ni4zNDQgNjEuMDc3IC05LjE1OCA1LjI4NnYtMTAuNTcyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI24pIiBkPSJtNDUuMTk5IDc0LjAzNSAtNi44NjggMy45NjV2LTcuOTMyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI28pIiBkPSJtNzAuMDIxIDYxLjc3NSAtNi44NjkgMy45Njd2LTcuOTMyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3ApIiBkPSJtNjguMSAzMy4xNDIgLTYuODY5IDMuOTY3di03LjkzMloiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNxKSIgZD0iTTU3Ljc5NCAyNy44NTJ2MTAuNTc2bC05LjE2IC01LjI5WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3IpIiBkPSJNNDUuMjAyIDYyLjg5MXY3LjkzMmwtNi44NjkgLTMuOTY3WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3MpIiBkPSJtNDYuMzQzIDU5Ljc1NiAtOS4xNTcgLTUuMjg2IDkuMTU3IC01LjI5WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3QpIiBkPSJtMzYuMDQxIDM5Ljc1IDExLjQ0NiA2LjYxMiAtMTEuNDQ2IDYuNjA4WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI2IpIiBkPSJtNjkuMzM0IDE3LjAzMSAtNi44NjkgMy45NjV2LTcuOTNaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjdSkiIGQ9Im01OC4wODIgNS40NiAtNi44NzEgMy45Njd2LTcuOTMyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3YpIiBkPSJtNTcuNzk2IDI2LjUyOSAtOS4xNjIgNS4yODZWMjEuMjQxWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3cpIiBkPSJtNDUuMiAxNC41NDUgLTYuODY5IC0zLjk2NSA2Ljg2OSAtMy45NjdaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjeCkiIGQ9Ik00Ni4zNDQgMTkuNzQ0VjMwLjMxOWwtOS4xNTggLTUuMjg2WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3kpIiBkPSJNMzYuMDQxIDI2LjUzdjEzLjIyTDI0LjU5MyAzMy4xNDFaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjeikiIGQ9Im0zNC44OTcgMjMuNzA5IC05LjE1OCAtNS4yODYgOS4xNTggLTUuMjlaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjQSkiIGQ9Im0zMy43NSA3LjkzMiAtNi44NyAtMy45NjUgNi44NyAtMy45NjdaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjQikiIGQ9Im0yMy40NDkgMzEuODE2IC05LjE1OCAtNS4yOSA5LjE1OCAtNS4yODVaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjQykiIGQ9Ik0xOS43NiA2LjAzOXY3LjkzMmwtNi44NjkgLTMuOTY1WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI0QpIiBkPSJtNTYuNjQ3IDIyLjY1MSAtNi44NzEgLTMuOTY3IDYuODcxIC0zLjk2N1oiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNFKSIgZD0ibTQ1LjIgMy45NjcgLTYuODY5IDMuOTY1di03LjkzMloiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNGKSIgZD0ibTQ2LjM0NCAxOC40MTcgLTkuMTU4IDUuMjg2di0xMC41NjhaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjRykiIGQ9Im00Ny40ODcgMzMuMTQxIC0xMS40NDYgNi42MTF2LTEzLjIyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI0gpIiBkPSJtMzMuNzUzIDEyLjgxNCAtNi44NzEgMy45Njd2LTcuOTMyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI0kpIiBkPSJtMzQuODk2IDI1LjAzMyAtOS4xNTggNS4yODZ2LTEwLjU3NVoiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNKKSIgZD0ibTIyLjMgMTguNjg0IC02Ljg3IDMuOTY1di03LjkzWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI0spIiBkPSJtNy41NTYgMjQuNjM3IC02Ljg3IC0zLjk2NSA2Ljg3IC0zLjk2N1oiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNjKSIgZD0ibTMzLjc1MSA3OC4wMDEgLTYuODcxIC0zLjk2NSA2Ljg3MSAtMy45NjdaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjTCkiIGQ9Ik0zNi4wNDEgMzkuNzV2MTMuMjJsLTExLjQ0OCAtNi42MTJaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjTSkiIGQ9Ik0yMi4zIDY2Ljc2M3Y3LjkzMmwtNi44NyAtMy45NjZaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjTikiIGQ9Im0yMy40NDkgNDYuMzYyIC05LjE1OCA1LjI4NnYtMTAuNTc2WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI08pIiBkPSJtMjMuNDQ5IDMzLjE0MiAtOS4xNTggNS4yOXYtMTAuNThaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjUCkiIGQ9Ik05LjYxNiA1OS40MDF2Ny45M2wtNi44NzEgLTMuOTY1WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI1EpIiBkPSJNMTAuODUxIDI4Ljg5OXY3LjkzMmwtNi44NzEgLTMuOTY1WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI1IpIiBkPSJtNi44NzEgNDAuMDkzIC02Ljg3MSAzLjk2NXYtNy45M1oiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNTKSIgZD0ibTM0Ljg5NCA2Ni4zNjcgLTkuMTYgLTUuMjg2IDkuMTYgLTUuMjlaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjVCkiIGQ9Im0zNi4wNDEgMzkuNzUgLTExLjQ0OCA2LjYwOHYtMTMuMjJaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjVSkiIGQ9Im0zMy43NSA2Ny40MjUgLTYuODcxIDMuOTY3di03LjkzMloiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNWKSIgZD0ibTM0Ljg5MiA1NC40NjcgLTkuMTU3IDUuMjl2LTEwLjU4MloiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNXKSIgZD0ibTIyLjI5OSA2MC44MTQgLTYuODY5IDMuOTY1di03LjkzWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI1gpIiBkPSJNMjMuNDQ5IDQ3LjY4M3YxMC41NzNsLTkuMTU4IC01LjI4NloiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNZKSIgZD0iTTIzLjQ0OSAzNC40NTl2MTAuNTczbC05LjE1OCAtNS4yODNaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjWikiIGQ9Im0xMC44NSA1MC4zMjYgLTYuODcxIC0zLjk2NyA2Ljg3MSAtMy45NjVaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjYWEpIiBkPSJtNy4xNDUgMjYuNTMxIC02Ljg2OSAzLjk2NXYtNy45MzJaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjYWIpIiBkPSJtNy41NTYgNTMuNDUyIC02Ljg3MSAzLjk2NXYtNy45MzVaIi8+DQogIDwvZz4NCjwvc3ZnPg0K">
+
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" data-background-image="../../slides_template/assets/anim.svg" data-background-opacity="0.15" data-background-size="cover" class="quarto-title-block center">
+  <h1 class="title">Efficient Tool Calling</h1>
+  <p class="subtitle">AI Agents &amp; Orchestration — Session 4</p>
+
+<div class="quarto-title-authors">
+</div>
+
+  <p class="date">2026-02-27</p>
+</section>
+<section>
+<section id="a.-the-routing-problem" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
+<h1>A. The Routing Problem</h1>
+<p>When 50 tools is worse than 5</p>
+</section>
+<section id="agenda" class="slide level2">
+<h2>Agenda</h2>
+<ul>
+<li><strong>A. The Routing Problem</strong> — Why tool selection matters (~10 min)</li>
+<li><strong>B. Classifier-Based Routing</strong> — LLM categorizes queries (~15 min)</li>
+<li><strong>C. Semantic Routing</strong> — Embeddings for tool matching (~20 min)</li>
+<li><strong>D. Programmatic Tool Calling</strong> — Batch tools without round-trips (~15 min)</li>
+<li><strong>E. Wrap-up</strong> — Key takeaways &amp; lab preview (~5 min)</li>
+</ul>
+</section>
+<section id="the-tool-proliferation-problem" class="slide level2">
+<h2>The Tool Proliferation Problem</h2>
+<p>Your agent starts with 3 tools. Then it grows:</p>
+<ul>
+<li><code>search_web</code>, <code>search_news</code>, <code>search_academic</code></li>
+<li><code>get_stock_price</code>, <code>get_financial_report</code>, <code>calculate_roi</code></li>
+<li><code>read_pdf</code>, <code>summarize_document</code>, <code>extract_tables</code></li>
+<li><code>send_email</code>, <code>create_calendar_event</code>, <code>query_database</code></li>
+</ul>
+<div class="fragment">
+<p><strong>Result:</strong> 20+ tools crammed into every context window.</p>
+</div>
+</section>
+<section id="why-more-tools-better-agent" class="slide level2">
+<h2>Why More Tools ≠ Better Agent</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><strong>Context Window Pollution</strong></p>
+<ul>
+<li>Every tool schema consumes tokens</li>
+<li>20 tools = ~2000 tokens per request</li>
+<li>Less space for reasoning and memory</li>
+<li>Higher latency, higher cost</li>
+</ul>
+</div><div class="column" style="width:50%;">
+<p><strong>Decision Confusion</strong></p>
+<ul>
+<li>Model sees too many options</li>
+<li>May pick wrong tool</li>
+<li>May call multiple similar tools</li>
+<li>Inconsistent behavior</li>
+</ul>
+</div></div>
+<div class="fragment">
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>The Insight</strong></p>
+</div>
+<div class="callout-content">
+<p>The agent doesn’t need ALL tools for EVERY query. It only needs the RELEVANT ones.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="the-solution-dynamic-tool-routing" class="slide level2">
+<h2>The Solution: Dynamic Tool Routing</h2>
+<div class="cell" data-reveal="true" data-fig-width="10" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<pre class="mermaid mermaid-js">graph LR
+    Q["User Query"] --&gt; R["Router"]
+    R --&gt;|"Financial"| TF["Finance Tools&lt;br/&gt;(3 tools)"]
+    R --&gt;|"Academic"| TA["Academic Tools&lt;br/&gt;(4 tools)"]
+    R --&gt;|"General"| TG["General Tools&lt;br/&gt;(5 tools)"]
+    TF --&gt; A["Agent"]
+    TA --&gt; A
+    TG --&gt; A
+
+    style R fill:#1C355E,stroke:#00C9A7,color:white
+    style Q fill:#00C9A7,stroke:#1C355E,color:#1C355E
+    style A fill:#FF7A5C,stroke:#1C355E,color:#1C355E
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<p>The router selects a subset of tools before the agent runs.</p>
+</section></section>
+<section>
+<section id="b.-classifier-based-routing" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)">
+<h1>B. Classifier-Based Routing</h1>
+<p>Using a small LLM to categorize queries</p>
+</section>
+<section id="how-classifier-routing-works" class="slide level2">
+<h2>How Classifier Routing Works</h2>
+<div class="cell" data-reveal="true" data-fig-width="9" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<pre class="mermaid mermaid-js">sequenceDiagram
+    participant U as User
+    participant C as Classifier LLM
+    participant T as Tool Registry
+    participant A as Agent
+
+    U-&gt;&gt;C: "What's Apple's stock price?"
+    C-&gt;&gt;C: Classify domain
+    C--&gt;&gt;C: Domain = "Financial"
+    C-&gt;&gt;T: Get tools for "Financial"
+    T--&gt;&gt;C: [get_stock_price, calculate_roi]
+    C-&gt;&gt;A: Agent + 2 tools
+    A-&gt;&gt;U: "$178.72"
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+<section id="the-classifier-prompt" class="slide level2">
+<h2>The Classifier Prompt</h2>
+<p>A small, fast model (GPT-4o-mini, Claude Haiku) classifies the query:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href=""></a>CLASSIFIER_PROMPT <span class="op">=</span> <span class="st">"""Classify this query into ONE domain.</span></span>
+<span id="cb1-2"><a href=""></a></span>
+<span id="cb1-3"><a href=""></a><span class="st">Domains: financial, academic, general, technical</span></span>
+<span id="cb1-4"><a href=""></a></span>
+<span id="cb1-5"><a href=""></a><span class="st">Query: </span><span class="sc">{query}</span></span>
+<span id="cb1-6"><a href=""></a></span>
+<span id="cb1-7"><a href=""></a><span class="st">Respond with ONLY the domain name, nothing else.</span></span>
+<span id="cb1-8"><a href=""></a><span class="st">"""</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="fragment">
+<p><strong>Trade-off:</strong> Fast and cheap (~$0.0001 per query), but requires predefined categories.</p>
+</div>
+</section>
+<section id="classifier-router-implementation" class="slide level2 smaller">
+<h2>Classifier Router Implementation</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" data-code-line-numbers="|1-4|6-8|10-12|"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href=""></a><span class="kw">class</span> ClassifierRouter:</span>
+<span id="cb2-2"><a href=""></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, domain_tool_map: <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">list</span>[<span class="bu">str</span>]]):</span>
+<span id="cb2-3"><a href=""></a>        <span class="va">self</span>.domain_tool_map <span class="op">=</span> domain_tool_map</span>
+<span id="cb2-4"><a href=""></a>        </span>
+<span id="cb2-5"><a href=""></a>    <span class="kw">def</span> classify(<span class="va">self</span>, query: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="bu">str</span>:</span>
+<span id="cb2-6"><a href=""></a>        response <span class="op">=</span> completion(</span>
+<span id="cb2-7"><a href=""></a>            model<span class="op">=</span><span class="st">"gpt-4o-mini"</span>,</span>
+<span id="cb2-8"><a href=""></a>            messages<span class="op">=</span>[{<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: CLASSIFIER_PROMPT.<span class="bu">format</span>(query<span class="op">=</span>query)}]</span>
+<span id="cb2-9"><a href=""></a>        )</span>
+<span id="cb2-10"><a href=""></a>        <span class="cf">return</span> response.choices[<span class="dv">0</span>].message.content.strip().lower()</span>
+<span id="cb2-11"><a href=""></a>    </span>
+<span id="cb2-12"><a href=""></a>    <span class="kw">def</span> select_tools(<span class="va">self</span>, query: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="bu">list</span>[Tool]:</span>
+<span id="cb2-13"><a href=""></a>        domain <span class="op">=</span> <span class="va">self</span>.classify(query)</span>
+<span id="cb2-14"><a href=""></a>        tool_names <span class="op">=</span> <span class="va">self</span>.domain_tool_map.get(domain, [])</span>
+<span id="cb2-15"><a href=""></a>        <span class="cf">return</span> [registry.get_tool(name) <span class="cf">for</span> name <span class="kw">in</span> tool_names]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="when-classifier-routing-works-well" class="slide level2">
+<h2>When Classifier Routing Works Well</h2>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Good For</th>
+<th style="text-align: left;">Not Good For</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Clear domain boundaries</td>
+<td style="text-align: left;">Overlapping domains</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Fixed tool categories</td>
+<td style="text-align: left;">Ad-hoc tool additions</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Low-latency requirements</td>
+<td style="text-align: left;">Nuanced query understanding</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Budget constraints</td>
+<td style="text-align: left;">Cross-domain queries</td>
+</tr>
+</tbody>
+</table>
+<div class="fragment">
+<blockquote>
+<p><strong>Rule of thumb:</strong> If you can list your domains on one hand, classifier routing is a good starting point.</p>
+</blockquote>
+</div>
+</section></section>
+<section>
+<section id="c.-semantic-routing" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #FF7A5C)">
+<h1>C. Semantic Routing</h1>
+<p>Embeddings for intelligent tool matching</p>
+</section>
+<section id="from-categories-to-similarity" class="slide level2">
+<h2>From Categories to Similarity</h2>
+<p><strong>Problem with classifiers:</strong> You must define categories upfront.</p>
+<p><strong>Semantic routing:</strong> Match the query to tools based on meaning, not labels.</p>
+<div class="cell" data-reveal="true" data-fig-width="10" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<pre class="mermaid mermaid-js">graph LR
+    Q["Query Embedding"] --&gt; S1["Tool 1&lt;br/&gt;similarity: 0.92"]
+    Q --&gt; S2["Tool 2&lt;br/&gt;similarity: 0.87"]
+    Q --&gt; S3["Tool 3&lt;br/&gt;similarity: 0.45"]
+    Q --&gt; S4["Tool 4&lt;br/&gt;similarity: 0.23"]
+    
+    S1 --&gt; T["Top-K Selected"]
+    S2 --&gt; T
+
+    style Q fill:#1C355E,stroke:#00C9A7,color:white
+    style S1 fill:#00C9A7,stroke:#1C355E,color:#1C355E
+    style S2 fill:#00C9A7,stroke:#1C355E,color:#1C355E
+    style T fill:#FF7A5C,stroke:#1C355E,color:#1C355E
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+<section id="how-semantic-routing-works" class="slide level2">
+<h2>How Semantic Routing Works</h2>
+<ol type="1">
+<li><strong>Index phase:</strong> Embed all tool descriptions once at startup</li>
+<li><strong>Query phase:</strong> Embed the user’s query</li>
+<li><strong>Match phase:</strong> Compute cosine similarity, select top-K tools</li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href=""></a><span class="co"># Index phase (once)</span></span>
+<span id="cb3-2"><a href=""></a>tool_embeddings <span class="op">=</span> {</span>
+<span id="cb3-3"><a href=""></a>    <span class="st">"search"</span>: embed(<span class="st">"search: Find information on the web"</span>),</span>
+<span id="cb3-4"><a href=""></a>    <span class="st">"calculate"</span>: embed(<span class="st">"calculate: Evaluate mathematical expressions"</span>),</span>
+<span id="cb3-5"><a href=""></a>    <span class="st">"get_stock"</span>: embed(<span class="st">"get_stock_price: Get current stock price"</span>),</span>
+<span id="cb3-6"><a href=""></a>}</span>
+<span id="cb3-7"><a href=""></a></span>
+<span id="cb3-8"><a href=""></a><span class="co"># Query phase (per request)</span></span>
+<span id="cb3-9"><a href=""></a>query_embedding <span class="op">=</span> embed(<span class="st">"What is Apple's stock worth?"</span>)</span>
+<span id="cb3-10"><a href=""></a>similarities <span class="op">=</span> cosine_similarity(query_embedding, tool_embeddings)</span>
+<span id="cb3-11"><a href=""></a>top_tools <span class="op">=</span> select_top_k(similarities, k<span class="op">=</span><span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="the-semantictoolselector-class" class="slide level2 smaller">
+<h2>The SemanticToolSelector Class</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href=""></a><span class="kw">class</span> SemanticToolSelector:</span>
+<span id="cb4-2"><a href=""></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, embedding_model: <span class="bu">str</span>):</span>
+<span id="cb4-3"><a href=""></a>        <span class="va">self</span>._tool_embeddings: <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">list</span>[<span class="bu">float</span>]] <span class="op">=</span> {}</span>
+<span id="cb4-4"><a href=""></a></span>
+<span id="cb4-5"><a href=""></a>    <span class="kw">def</span> build_index(<span class="va">self</span>):</span>
+<span id="cb4-6"><a href=""></a>        <span class="co"># Embed each tool's "name: description" text once at startup</span></span>
+<span id="cb4-7"><a href=""></a>        ...</span>
+<span id="cb4-8"><a href=""></a></span>
+<span id="cb4-9"><a href=""></a>    <span class="kw">def</span> select_tools(<span class="va">self</span>, query: <span class="bu">str</span>, top_k: <span class="bu">int</span> <span class="op">=</span> <span class="dv">5</span>) <span class="op">-&gt;</span> <span class="bu">list</span>[Tool]:</span>
+<span id="cb4-10"><a href=""></a>        <span class="co"># 1. Embed the query</span></span>
+<span id="cb4-11"><a href=""></a>        <span class="co"># 2. Score each tool by cosine_similarity(query_vec, tool_vec)</span></span>
+<span id="cb4-12"><a href=""></a>        <span class="co"># 3. Return top-K by score</span></span>
+<span id="cb4-13"><a href=""></a>        ...</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="cosine-similarity-explained" class="slide level2">
+<h2>Cosine Similarity Explained</h2>
+<p>Measures the angle between two vectors:</p>
+<p><span class="math display">\[\text{similarity} = \frac{A \cdot B}{\|A\| \|B\|}\]</span></p>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Similarity</th>
+<th style="text-align: left;">Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;">Identical meaning</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">0.8+</td>
+<td style="text-align: left;">Highly related</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">0.5-0.8</td>
+<td style="text-align: left;">Somewhat related</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">&lt; 0.5</td>
+<td style="text-align: left;">Unrelated</td>
+</tr>
+</tbody>
+</table>
+<div class="fragment">
+<p><strong>Threshold choice:</strong> For tool selection, typically use top-K with K=3-5 rather than a fixed threshold.</p>
+</div>
+</section>
+<section id="the-routedagent-pattern" class="slide level2">
+<h2>The RoutedAgent Pattern</h2>
+<p>Combine routing with the agent loop for efficient execution:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href=""></a><span class="kw">class</span> RoutedAgent:</span>
+<span id="cb5-2"><a href=""></a>    <span class="kw">def</span> run(<span class="va">self</span>, query: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="bu">str</span>:</span>
+<span id="cb5-3"><a href=""></a>        selected_tools <span class="op">=</span> <span class="va">self</span>.router.select_tools(query)   <span class="co"># Route first</span></span>
+<span id="cb5-4"><a href=""></a>        <span class="cf">return</span> <span class="va">self</span>.base_agent.run(query, tools<span class="op">=</span>selected_tools)  <span class="co"># Then act</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="routed-vs-standard-agent" class="slide level2 smaller">
+<h2>Routed vs Standard Agent</h2>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<svg width="960" height="480" viewbox="0.00 0.00 444.00 210.40" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none; display: block; margin: auto auto auto auto">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 206.4)">
+<title>G</title>
+<g id="clust1" class="cluster">
+<title>cluster_standard</title>
+<polygon fill="transparent" stroke="#666666" stroke-dasharray="5,2" points="8,-105.2 8,-194.4 314,-194.4 314,-105.2 8,-105.2"></polygon>
+<text text-anchor="middle" x="161" y="-177.8" font-family="Times,serif" font-size="14.00" fill="#9b8ec0">Standard Agent</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_routed</title>
+<polygon fill="transparent" stroke="#666666" stroke-dasharray="5,2" points="36,-8 36,-97.2 428,-97.2 428,-8 36,-8"></polygon>
+<text text-anchor="middle" x="232" y="-80.6" font-family="Times,serif" font-size="14.00" fill="#00c9a7">Routed Agent</text>
+</g>
+<!-- Q1 -->
+<g id="node1" class="node">
+<title>Q1</title>
+<path fill="#2a475e" stroke="black" d="M58,-155.4C58,-155.4 28,-155.4 28,-155.4 22,-155.4 16,-149.4 16,-143.4 16,-143.4 16,-131.4 16,-131.4 16,-125.4 22,-119.4 28,-119.4 28,-119.4 58,-119.4 58,-119.4 64,-119.4 70,-125.4 70,-131.4 70,-131.4 70,-143.4 70,-143.4 70,-149.4 64,-155.4 58,-155.4"></path>
+<text text-anchor="middle" x="43" y="-134.1" font-family="Inter, sans-serif" font-size="11.00" fill="white">Query</text>
+</g>
+<!-- A1 -->
+<g id="node2" class="node">
+<title>A1</title>
+<path fill="#9b8ec0" stroke="#1c355e" d="M204.4,-161.8C204.4,-161.8 117.6,-161.8 117.6,-161.8 111.6,-161.8 105.6,-155.8 105.6,-149.8 105.6,-149.8 105.6,-125 105.6,-125 105.6,-119 111.6,-113 117.6,-113 117.6,-113 204.4,-113 204.4,-113 210.4,-113 216.4,-119 216.4,-125 216.4,-125 216.4,-149.8 216.4,-149.8 216.4,-155.8 210.4,-161.8 204.4,-161.8"></path>
+<text text-anchor="middle" x="161" y="-140.7" font-family="Inter, sans-serif" font-size="11.00">Agent</text>
+<text text-anchor="middle" x="161" y="-127.5" font-family="Inter, sans-serif" font-size="11.00">(20 tools in context)</text>
+</g>
+<!-- Q1&#45;&gt;A1 -->
+<g id="edge1" class="edge">
+<title>Q1-&gt;A1</title>
+<path fill="none" stroke="#666666" d="M70.2,-137.4C78.52,-137.4 86.84,-137.4 95.16,-137.4"></path>
+<polygon fill="#666666" stroke="#666666" points="95.31,-140.9 105.31,-137.4 95.31,-133.9 95.31,-140.9"></polygon>
+</g>
+<!-- R1 -->
+<g id="node3" class="node">
+<title>R1</title>
+<path fill="#2a475e" stroke="black" d="M294,-155.4C294,-155.4 264,-155.4 264,-155.4 258,-155.4 252,-149.4 252,-143.4 252,-143.4 252,-131.4 252,-131.4 252,-125.4 258,-119.4 264,-119.4 264,-119.4 294,-119.4 294,-119.4 300,-119.4 306,-125.4 306,-131.4 306,-131.4 306,-143.4 306,-143.4 306,-149.4 300,-155.4 294,-155.4"></path>
+<text text-anchor="middle" x="279" y="-134.1" font-family="Inter, sans-serif" font-size="11.00" fill="white">Result</text>
+</g>
+<!-- A1&#45;&gt;R1 -->
+<g id="edge2" class="edge">
+<title>A1-&gt;R1</title>
+<path fill="none" stroke="#666666" d="M216.77,-137.4C225.07,-137.4 233.36,-137.4 241.66,-137.4"></path>
+<polygon fill="#666666" stroke="#666666" points="241.78,-140.9 251.78,-137.4 241.78,-133.9 241.78,-140.9"></polygon>
+</g>
+<!-- RT -->
+<g id="node5" class="node">
+<title>RT</title>
+<path fill="#1c355e" stroke="#00c9a7" d="M176,-58.2C176,-58.2 146,-58.2 146,-58.2 140,-58.2 134,-52.2 134,-46.2 134,-46.2 134,-34.2 134,-34.2 134,-28.2 140,-22.2 146,-22.2 146,-22.2 176,-22.2 176,-22.2 182,-22.2 188,-28.2 188,-34.2 188,-34.2 188,-46.2 188,-46.2 188,-52.2 182,-58.2 176,-58.2"></path>
+<text text-anchor="middle" x="161" y="-36.9" font-family="Inter, sans-serif" font-size="11.00" fill="white">Router</text>
+</g>
+<!-- A1&#45;&gt;RT -->
+<!-- Q2 -->
+<g id="node4" class="node">
+<title>Q2</title>
+<path fill="#2a475e" stroke="black" d="M86,-58.2C86,-58.2 56,-58.2 56,-58.2 50,-58.2 44,-52.2 44,-46.2 44,-46.2 44,-34.2 44,-34.2 44,-28.2 50,-22.2 56,-22.2 56,-22.2 86,-22.2 86,-22.2 92,-22.2 98,-28.2 98,-34.2 98,-34.2 98,-46.2 98,-46.2 98,-52.2 92,-58.2 86,-58.2"></path>
+<text text-anchor="middle" x="71" y="-36.9" font-family="Inter, sans-serif" font-size="11.00" fill="white">Query</text>
+</g>
+<!-- Q2&#45;&gt;RT -->
+<g id="edge3" class="edge">
+<title>Q2-&gt;RT</title>
+<path fill="none" stroke="#666666" d="M98.07,-40.2C106.67,-40.2 115.27,-40.2 123.87,-40.2"></path>
+<polygon fill="#666666" stroke="#666666" points="123.96,-43.7 133.96,-40.2 123.96,-36.7 123.96,-43.7"></polygon>
+</g>
+<!-- A2 -->
+<g id="node6" class="node">
+<title>A2</title>
+<path fill="#00c9a7" stroke="#1c355e" d="M317.9,-64.6C317.9,-64.6 236.1,-64.6 236.1,-64.6 230.1,-64.6 224.1,-58.6 224.1,-52.6 224.1,-52.6 224.1,-27.8 224.1,-27.8 224.1,-21.8 230.1,-15.8 236.1,-15.8 236.1,-15.8 317.9,-15.8 317.9,-15.8 323.9,-15.8 329.9,-21.8 329.9,-27.8 329.9,-27.8 329.9,-52.6 329.9,-52.6 329.9,-58.6 323.9,-64.6 317.9,-64.6"></path>
+<text text-anchor="middle" x="277" y="-43.5" font-family="Inter, sans-serif" font-size="11.00">Agent</text>
+<text text-anchor="middle" x="277" y="-30.3" font-family="Inter, sans-serif" font-size="11.00">(3 tools in context)</text>
+</g>
+<!-- RT&#45;&gt;A2 -->
+<g id="edge4" class="edge">
+<title>RT-&gt;A2</title>
+<path fill="none" stroke="#666666" d="M188.19,-40.2C196.83,-40.2 205.48,-40.2 214.12,-40.2"></path>
+<polygon fill="#666666" stroke="#666666" points="214.27,-43.7 224.27,-40.2 214.27,-36.7 214.27,-43.7"></polygon>
+</g>
+<!-- R2 -->
+<g id="node7" class="node">
+<title>R2</title>
+<path fill="#2a475e" stroke="black" d="M408,-58.2C408,-58.2 378,-58.2 378,-58.2 372,-58.2 366,-52.2 366,-46.2 366,-46.2 366,-34.2 366,-34.2 366,-28.2 372,-22.2 378,-22.2 378,-22.2 408,-22.2 408,-22.2 414,-22.2 420,-28.2 420,-34.2 420,-34.2 420,-46.2 420,-46.2 420,-52.2 414,-58.2 408,-58.2"></path>
+<text text-anchor="middle" x="393" y="-36.9" font-family="Inter, sans-serif" font-size="11.00" fill="white">Result</text>
+</g>
+<!-- A2&#45;&gt;R2 -->
+<g id="edge5" class="edge">
+<title>A2-&gt;R2</title>
+<path fill="none" stroke="#666666" d="M330.02,-40.2C338.62,-40.2 347.23,-40.2 355.83,-40.2"></path>
+<polygon fill="#666666" stroke="#666666" points="355.94,-43.7 365.94,-40.2 355.94,-36.7 355.94,-43.7"></polygon>
+</g>
+</g>
+</svg>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+<section id="context-window-savings" class="slide level2">
+<h2>Context Window Savings</h2>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Scenario</th>
+<th style="text-align: left;">Tools in Context</th>
+<th style="text-align: left;">Tool Schema Tokens</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Standard Agent</td>
+<td style="text-align: left;">20 tools</td>
+<td style="text-align: left;">~2000 tokens</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Routed Agent (top-5)</td>
+<td style="text-align: left;">5 tools</td>
+<td style="text-align: left;">~500 tokens</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Savings</strong></td>
+<td style="text-align: left;">-15 tools</td>
+<td style="text-align: left;"><strong>~1500 tokens</strong></td>
+</tr>
+</tbody>
+</table>
+<div class="fragment">
+<p><strong>Impact:</strong></p>
+<ul>
+<li>75% reduction in tool schema overhead</li>
+<li>More room for memory and reasoning</li>
+<li>Lower latency and cost per query</li>
+</ul>
+</div>
+</section>
+<section id="classifier-vs-semantic-routing" class="slide level2">
+<h2>Classifier vs Semantic Routing</h2>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Aspect</th>
+<th style="text-align: left;">Classifier</th>
+<th style="text-align: left;">Semantic</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Setup</strong></td>
+<td style="text-align: left;">Define domains + mapping</td>
+<td style="text-align: left;">Just index tools</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Flexibility</strong></td>
+<td style="text-align: left;">Rigid categories</td>
+<td style="text-align: left;">Adapts to any query</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Speed</strong></td>
+<td style="text-align: left;">1 LLM call (~200ms)</td>
+<td style="text-align: left;">1 embedding call (~50ms)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Cost</strong></td>
+<td style="text-align: left;">~$0.0001 per query</td>
+<td style="text-align: left;">~$0.00001 per query</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Best for</strong></td>
+<td style="text-align: left;">Clear domains</td>
+<td style="text-align: left;">Dynamic tool sets</td>
+</tr>
+</tbody>
+</table>
+<div class="fragment">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Recommendation</strong></p>
+</div>
+<div class="callout-content">
+<p>Start with classifier routing for simplicity. Upgrade to semantic routing when your tool set grows beyond 15-20 tools or spans multiple domains.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="when-to-use-routed-agents" class="slide level2">
+<h2>When to Use Routed Agents</h2>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Use Case</th>
+<th style="text-align: left;">Recommended Approach</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">5-10 tools</td>
+<td style="text-align: left;">Standard agent (no routing needed)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">10-20 tools, clear domains</td>
+<td style="text-align: left;">Classifier routing</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">20+ tools, mixed domains</td>
+<td style="text-align: left;">Semantic routing</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Dynamic tool registration</td>
+<td style="text-align: left;">Semantic routing</td>
+</tr>
+</tbody>
+</table>
+<div class="fragment">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Don’t Over-Engineer</strong></p>
+</div>
+<div class="callout-content">
+<p>If your agent has 5 tools and works fine, adding routing is premature optimization. Only add routing when tool count becomes a bottleneck.</p>
+</div>
+</div>
+</div>
+</div>
+</section></section>
+<section>
+<section id="d.-programmatic-tool-calling" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #9B8EC0, #1C355E)">
+<h1>D. Programmatic Tool Calling</h1>
+<p>Eliminate round-trips for multi-tool workflows</p>
+</section>
+<section id="the-round-trip-problem" class="slide level2">
+<h2>The Round-Trip Problem</h2>
+<p>Traditional tool calling: <strong>N tools = N model round-trips</strong></p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell" data-reveal="true" data-fig-width="10" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<pre class="mermaid mermaid-js">sequenceDiagram
+    participant M as Model
+    participant T as Tools
+    
+    M-&gt;&gt;T: Call tool_1
+    T--&gt;&gt;M: Result (in context)
+    M-&gt;&gt;T: Call tool_2
+    Note over M,T: ...
+    M-&gt;&gt;T: Call tool_n
+    T--&gt;&gt;M: Result (in context)
+    M-&gt;&gt;M: Final answer
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Note</strong></p>
+</div>
+<div class="callout-content">
+<p>Each round-trip: latency + token overhead + cost</p>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="how-programmatic-tool-calling-works" class="slide level2 smaller">
+<h2>How Programmatic Tool Calling Works</h2>
+<p>Claude writes <strong>code</strong> that calls your tools — no model in the loop:</p>
+<div class="columns">
+<div class="column" style="width:60%;">
+<div class="cell" data-reveal="true" data-fig-width="10" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<pre class="mermaid mermaid-js">sequenceDiagram
+    participant M as Model
+    participant C as Code Execution
+    participant T as Tools
+    
+    M-&gt;&gt;C: Write code to call tools
+    C-&gt;&gt;T: tool_1()
+    T--&gt;&gt;C: Result
+    Note over C,T: ...
+    C-&gt;&gt;T: tool_n()
+    T--&gt;&gt;C: Result
+    C-&gt;&gt;C: Process/filter results
+    C--&gt;&gt;M: Final output only
+    M-&gt;&gt;M: Response
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:40%;">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Tip</strong></p>
+</div>
+<div class="callout-content">
+<p><strong>Key insight:</strong> Tool results stay in code execution — only final output reaches context</p>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="the-allowed_callers-pattern" class="slide level2">
+<h2>The <code>allowed_callers</code> Pattern</h2>
+<p>Mark tools as callable from code execution:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href=""></a>tools <span class="op">=</span> [</span>
+<span id="cb6-2"><a href=""></a>    {<span class="st">"type"</span>: <span class="st">"code_execution_20260120"</span>, <span class="st">"name"</span>: <span class="st">"code_execution"</span>},</span>
+<span id="cb6-3"><a href=""></a>    {</span>
+<span id="cb6-4"><a href=""></a>        <span class="st">"name"</span>: <span class="st">"query_database"</span>,</span>
+<span id="cb6-5"><a href=""></a>        <span class="st">"description"</span>: <span class="st">"Execute a SQL query. Returns JSON."</span>,</span>
+<span id="cb6-6"><a href=""></a>        <span class="st">"input_schema"</span>: {<span class="st">"type"</span>: <span class="st">"object"</span>, <span class="st">"properties"</span>: {<span class="st">"sql"</span>: {<span class="st">"type"</span>: <span class="st">"string"</span>}}},</span>
+<span id="cb6-7"><a href=""></a>        <span class="st">"allowed_callers"</span>: [<span class="st">"code_execution_20260120"</span>],  <span class="co"># &lt;-- Key field</span></span>
+<span id="cb6-8"><a href=""></a>    },</span>
+<span id="cb6-9"><a href=""></a>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: left;"><code>allowed_callers</code></th>
+<th style="text-align: left;">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>["direct"]</code></td>
+<td style="text-align: left;">Only model can call (default)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>["code_execution_20260120"]</code></td>
+<td style="text-align: left;">Only from code execution</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Both</td>
+<td style="text-align: left;">Callable either way</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="example-batch-processing" class="slide level2 smaller">
+<h2>Example: Batch Processing</h2>
+<p>Query sales for 5 regions, return only the top performer:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href=""></a><span class="co"># Claude writes this code internally</span></span>
+<span id="cb7-2"><a href=""></a>regions <span class="op">=</span> [<span class="st">"West"</span>, <span class="st">"East"</span>, <span class="st">"Central"</span>, <span class="st">"North"</span>, <span class="st">"South"</span>]</span>
+<span id="cb7-3"><a href=""></a>results <span class="op">=</span> {}</span>
+<span id="cb7-4"><a href=""></a></span>
+<span id="cb7-5"><a href=""></a><span class="cf">for</span> region <span class="kw">in</span> regions:</span>
+<span id="cb7-6"><a href=""></a>    data <span class="op">=</span> <span class="cf">await</span> query_database(<span class="ss">f"SELECT SUM(revenue) FROM sales WHERE region='</span><span class="sc">{</span>region<span class="sc">}</span><span class="ss">'"</span>)</span>
+<span id="cb7-7"><a href=""></a>    results[region] <span class="op">=</span> data[<span class="dv">0</span>][<span class="st">"sum"</span>]</span>
+<span id="cb7-8"><a href=""></a></span>
+<span id="cb7-9"><a href=""></a>top_region <span class="op">=</span> <span class="bu">max</span>(results.items(), key<span class="op">=</span><span class="kw">lambda</span> x: x[<span class="dv">1</span>])</span>
+<span id="cb7-10"><a href=""></a><span class="bu">print</span>(<span class="ss">f"Top region: </span><span class="sc">{</span>top_region[<span class="dv">0</span>]<span class="sc">}</span><span class="ss"> with $</span><span class="sc">{</span>top_region[<span class="dv">1</span>]<span class="sc">:,}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>What reaches context:</strong> <code>"Top region: West with $2,340,000"</code> — not all 5 query results</p>
+</section>
+<section id="token-latency-gains" class="slide level2">
+<h2>Token &amp; Latency Gains</h2>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Metric</th>
+<th style="text-align: left;">Traditional (5 tools)</th>
+<th style="text-align: left;">Programmatic</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Model turns</td>
+<td style="text-align: left;">5 round-trips</td>
+<td style="text-align: left;">1 turn</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Tool results in context</td>
+<td style="text-align: left;">All 5</td>
+<td style="text-align: left;">None (filtered)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Latency</td>
+<td style="text-align: left;">~15 seconds</td>
+<td style="text-align: left;">~5 seconds</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Tokens consumed</td>
+<td style="text-align: left;">~10,000</td>
+<td style="text-align: left;">~2,000</td>
+</tr>
+</tbody>
+</table>
+<div class="fragment">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>The Multiplier Effect</strong></p>
+</div>
+<div class="callout-content">
+<p>Calling 10 tools directly uses ~10x the tokens of calling them programmatically and returning a summary.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="advanced-patterns" class="slide level2">
+<h2>Advanced Patterns</h2>
+<p><strong>Early termination</strong> — stop as soon as success criteria met:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href=""></a><span class="cf">for</span> endpoint <span class="kw">in</span> [<span class="st">"us-east"</span>, <span class="st">"eu-west"</span>, <span class="st">"apac"</span>]:</span>
+<span id="cb8-2"><a href=""></a>    status <span class="op">=</span> <span class="cf">await</span> check_health(endpoint)</span>
+<span id="cb8-3"><a href=""></a>    <span class="cf">if</span> status <span class="op">==</span> <span class="st">"healthy"</span>:</span>
+<span id="cb8-4"><a href=""></a>        <span class="bu">print</span>(<span class="ss">f"Found healthy: </span><span class="sc">{</span>endpoint<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb8-5"><a href=""></a>        <span class="cf">break</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Conditional tool selection</strong> — choose tool based on data:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href=""></a>file_info <span class="op">=</span> <span class="cf">await</span> get_file_info(path)</span>
+<span id="cb9-2"><a href=""></a><span class="cf">if</span> file_info[<span class="st">"size"</span>] <span class="op">&lt;</span> <span class="dv">10000</span>:</span>
+<span id="cb9-3"><a href=""></a>    content <span class="op">=</span> <span class="cf">await</span> read_full_file(path)</span>
+<span id="cb9-4"><a href=""></a><span class="cf">else</span>:</span>
+<span id="cb9-5"><a href=""></a>    content <span class="op">=</span> <span class="cf">await</span> read_file_summary(path)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="when-to-use-programmatic-calling" class="slide level2">
+<h2>When to Use Programmatic Calling</h2>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Good For</th>
+<th style="text-align: left;">Less Ideal</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">3+ dependent tool calls</td>
+<td style="text-align: left;">Single tool call</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Large result filtering</td>
+<td style="text-align: left;">Simple responses</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Loops over many items</td>
+<td style="text-align: left;">Need user feedback each step</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Batch data processing</td>
+<td style="text-align: left;">Very fast single operations</td>
+</tr>
+</tbody>
+</table>
+<div class="fragment">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Vendor Note</strong></p>
+</div>
+<div class="callout-content">
+<p>This pattern is currently Claude-specific (requires their code execution container). The concept generalizes — you can implement client-side with your own sandbox.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="alternative-self-managed-execution" class="slide level2">
+<h2>Alternative: Self-Managed Execution</h2>
+<p>Not using Claude? You can implement the pattern yourself:</p>
+<ol type="1">
+<li>Give Claude a code execution tool (e.g., Python sandbox)</li>
+<li>Describe available functions in that environment</li>
+<li>Claude writes code → you execute → return result</li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href=""></a><span class="co"># Your code execution tool</span></span>
+<span id="cb10-2"><a href=""></a>{</span>
+<span id="cb10-3"><a href=""></a>    <span class="st">"name"</span>: <span class="st">"execute_python"</span>,</span>
+<span id="cb10-4"><a href=""></a>    <span class="st">"description"</span>: <span class="st">"Run Python code. Available functions: search(), query_db(), send_email()"</span>,</span>
+<span id="cb10-5"><a href=""></a>    ...</span>
+<span id="cb10-6"><a href=""></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Trade-off:</strong> More control, but you manage security and infrastructure.</p>
+</section></section>
+<section>
+<section id="e.-wrap-up" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
+<h1>E. Wrap-up</h1>
+
+</section>
+<section id="key-takeaways" class="slide level2">
+<h2>Key Takeaways</h2>
+<ol type="1">
+<li><strong>Tool proliferation</strong> hurts performance — route to reduce context bloat</li>
+<li><strong>Classifier routing</strong> uses a small LLM to categorize queries (fast, rigid)</li>
+<li><strong>Semantic routing</strong> uses embeddings to match queries to tools (flexible, scalable)</li>
+<li><strong>Programmatic calling</strong> eliminates round-trips — Claude writes code that calls tools</li>
+<li><strong>Combine patterns:</strong> route to select tools, programmatic calling to execute efficiently</li>
+</ol>
+</section>
+<section id="lab-preview-efficient-tool-calling" class="slide level2">
+<h2>Lab Preview: Efficient Tool Calling</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><strong>Part 1: Classifier Router</strong></p>
+<ul>
+<li>Implement <code>ClassifierRouter</code></li>
+<li>Map domains to tool sets</li>
+</ul>
+<p><strong>Part 2: Semantic Router</strong></p>
+<ul>
+<li>Build <code>SemanticToolSelector</code></li>
+<li>Index tool descriptions</li>
+</ul>
+</div><div class="column" style="width:50%;">
+<p><strong>Part 3: Routed Agents</strong></p>
+<ul>
+<li>Create <code>RoutedAgent</code> wrapper</li>
+<li>Compare context usage</li>
+</ul>
+<p><strong>Part 4: Programmatic Calling</strong></p>
+<ul>
+<li>Explore <code>allowed_callers</code> pattern</li>
+<li>Measure token savings</li>
+</ul>
+</div></div>
+<div class="fragment">
+<p><strong>Time:</strong> 75 minutes</p>
+</div>
+</section>
+<section id="questions" class="slide level2" data-background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)">
+<h2>Questions?</h2>
+<div class="r-fit-text">
+<p>Session 4 Complete</p>
+</div>
+
+</section></section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<p><img src="../../slides_template/assets/sdaia.svg" class="slide-logo"></p>
+<div class="footer footer-default">
+
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="04_efficient_tool_calling_files/libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="04_efficient_tool_calling_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="04_efficient_tool_calling_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="04_efficient_tool_calling_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="04_efficient_tool_calling_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="04_efficient_tool_calling_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="04_efficient_tool_calling_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="04_efficient_tool_calling_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="04_efficient_tool_calling_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="04_efficient_tool_calling_files/libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"},{"title":"Index","icon":"<svg width='1.8rem' viewBox='0 0 24 24'><path d='M5 7h14M5 12h14M5 17h7' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>","src":"../../index.html"}],"openButton":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: true,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1050,
+
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.1,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+          const outerScaffold = trigger.parentElement.cloneNode(true);
+          const codeEl = outerScaffold.querySelector('code');
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>

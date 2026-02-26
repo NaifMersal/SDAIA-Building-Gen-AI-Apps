@@ -1,9 +1,14 @@
-import os
-from dotenv import load_dotenv
+from pydantic import Field, ConfigDict
+from pydantic_settings import BaseSettings
 
-load_dotenv()
 
-class Config:
-    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-    MODEL_NAME = os.getenv("MODEL_NAME", "gpt-4o")
-    # Add other configuration as needed
+class Settings(BaseSettings):
+    model_name: str = Field(default="gpt-4o", description="The LLM model to use")
+    max_steps: int = Field(default=10, description="Max steps for agent execution")
+    log_level: str = Field(default="INFO", description="Logging level")
+    log_format: str = Field(default="console", description="Logging format (json or console)")
+
+    model_config = ConfigDict(env_file=".env", extra="ignore")
+
+
+settings = Settings()
