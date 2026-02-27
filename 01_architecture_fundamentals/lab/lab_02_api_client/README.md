@@ -1,29 +1,26 @@
 # Lab 2: API Client Integration
 
-In this lab, you will build the foundational API integration layer for your Gen-AI applications using **LiteLLM** and **OpenRouter**. 
+In this lab, you will explore the foundational API integration layer for your Gen-AI applications using **LiteLLM** and **OpenRouter**. 
 
-By the end of this lab, you will have a production-ready API client that can securely authenticate, handle rate limits, and implement local caching to save time and API costs during development.
+**By the end of this lab, you will have a solid understanding of how to use LiteLLM to securely authenticate, handle rate limits automatically, and cache responses to save time and API costs during development.
 
 ---
 
 ## Lab Structure
 
-This lab is divided into five steps. You will work primarily in the `starter/` directory. If you get stuck, reference the `solutions/` directory.
+This lab is contained within a single Jupyter notebook that walks through 4 key steps:
 
 ### Step 1: Environment Setup
-Learn how to securely manage API keys using environment variables. You will inspect how tokens are loaded from a `.env` file instead of being hardcoded into scripts.
+Securely load API keys from a `.env` file using `python-dotenv`.
 
 ### Step 2: Your First API Call
-Write a basic script to query an open-source model via OpenRouter using the `litellm` library.
+Query an open-source model via OpenRouter using `litellm.completion()`.
 
-### Step 3: Handling Errors (Rate Limits)
-Implement exponential backoff to gracefully handle `RateLimitError` when you exceed your free tier limits.
+### Step 3: Retry Logic
+Use LiteLLM's built-in `num_retries` parameter to handle rate limits and transient network errors automatically.
 
-### Step 4: Building a Reusable Client
-Wrap your API logic into a reusable `LiteLLMClient` class that you can import into future projects.
-
-### Step 5: Caching Responses
-Extend your client to cache API responses locally. This is a critical skill for development: it allows you to iterate on your application logic without repeatedly waiting for, or paying for, the same expensive API calls.
+### Step 4: Response Caching
+Enable LiteLLM's built-in in-memory cache with `litellm.enable_cache(type="local")` to avoid redundant API calls during development.
 
 ---
 
@@ -42,12 +39,10 @@ Extend your client to cache API responses locally. This is a critical skill for 
 
 ---
 
-## Running the Code
+## Running the Lab
 
-Navigate to the `starter/` directory and run the scripts as you complete them:
+Open the notebook in the root of this directory:
 
-```bash
-python hello_litellm.py
-python litellm_client.py
-python cached_client.py
+```
+lab_02_api_client.ipynb
 ```

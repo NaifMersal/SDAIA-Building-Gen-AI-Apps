@@ -1,4 +1,0 @@
-litellm>=1.40.0
-python-dotenv>=1.0.0
-deepeval>=1.0.0
-pytest>=8.0.0
