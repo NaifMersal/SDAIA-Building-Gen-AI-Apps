@@ -39,7 +39,7 @@ uv pip install -e .
 
 # 2. Configure secrets
 cp .env.example .env
-# Edit .env and add your OPENAI_API_KEY (or another provider key)
+# Edit .env and add your OPENROUTER_API_KEY (or another provider key)
 
 # 3. Verify the foundation
 uv run python tests/verify_components.py

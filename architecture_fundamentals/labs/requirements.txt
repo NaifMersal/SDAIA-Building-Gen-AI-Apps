@@ -1,0 +1,14 @@
+# Module 01 Dependencies
+litellm>=1.50.0
+python-dotenv>=1.0.0
+tiktoken
+plotly
+ipykernel
+
+# Lab 04 (QLoRA fine-tuning) — GPU-only
+transformers>=4.45.0
+accelerate>=1.0.0
+peft>=0.13.0
+trl>=0.11.0
+bitsandbytes>=0.44.0
+datasets>=3.0.0

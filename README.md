@@ -10,6 +10,22 @@ Browse all sessions and open any slide deck directly in your browser:
 
 The index page lists every module's slides and links to the lab notebooks on GitHub.
 
+### Slides offline
+
+This branch contains the labs only. The rendered slide decks live on the
+`gh-pages` branch. To grab them for offline use:
+
+```bash
+# Fresh, slides-only clone
+git clone -b gh-pages --single-branch https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps.git slides
+
+# …or, from an existing clone of this repo
+git fetch origin gh-pages
+git worktree add ../slides gh-pages
+```
+
+Then open `slides/index.html` in your browser.
+
 ## Getting Started
 
 ### 1. Fork this Repository
@@ -22,7 +38,7 @@ cd YOUR_REPO_NAME
 ```
 
 ### 3. Set Up Your Environment
-Each module's `lab/` folder contains a notebook with setup instructions. Generally:
+Each module's `labs/` folder contains a notebook with setup instructions. Generally:
 ```bash
 pip install -r requirements.txt   # or follow the notebook's install cell
 ```
@@ -31,14 +47,16 @@ pip install -r requirements.txt   # or follow the notebook's install cell
 
 ```
 .
-├── docs/                          # Rendered slides (GitHub Pages)
-│   ├── index.html                 # Course landing page
-│   └── NN_module_name/slides/     # HTML slide decks per module
 ├── NN_module_name/
-│   ├── lab/                       # Lab notebooks (fill in the TODOs)
+│   ├── labs/                      # Lab notebooks (fill in the TODOs)
 │   └── homework/                  # Homework assignments
+├── shared/                        # Shared helpers imported by labs
 └── project_starter/               # Capstone project scaffold
 ```
+
+> Rendered slides are not on this branch — browse them at the [Course
+> Index & Slides](#course-index--slides) link above, or clone the
+> `gh-pages` branch (see *Slides offline*).
 
 ## Working on Labs
 
