@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2026-03-14">
+<meta name="description" content="Context engineering, sessions, long-context compaction, memory pipelines, and procedural self-improvement.">
 
-<title>Gen-AI Engineering Lab</title>
+<title>Context Engineering: Sessions &amp; Memory</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -23,6 +23,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -50,10 +85,15 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Gen-AI Engineering Lab</h1>
-<p class="subtitle lead">Build Production Applications</p>
+<h1 class="title">Context Engineering: Sessions &amp; Memory</h1>
+<p class="subtitle lead">Context Engineering — Session 1</p>
 </div>
 
+<div>
+  <div class="description">
+    Context engineering, sessions, long-context compaction, memory pipelines, and procedural self-improvement.
+  </div>
+</div>
 
 
 <div class="quarto-title-meta">
@@ -62,7 +102,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">March 14, 2026</p>
+      <p class="date">today</p>
     </div>
   </div>
   
@@ -508,6 +548,2485 @@ ul.task-list li input[type="checkbox"] {
 <p>This module is currently under development and will be released shortly. Stay tuned!</p>
 </div>
 </div>
+</section>
+<section id="a.-why-hermes" class="level1 sdaia-dark" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
+<h1 class="sdaia-dark" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">A. Why Hermes?</h1>
+<p>One production agent, read as the answer key to everything this module taught</p>
+<section id="what-weve-built-so-far" class="level2">
+<h2 class="anchored" data-anchor-id="what-weve-built-so-far">What We’ve Built So Far</h2>
+<p><a href="../../context_engineering/slides/sessions_and_memory.html">Sessions &amp; Memory</a> and <a href="../../context_engineering/slides/skills.html">Skills</a> gave you the <em>shape</em> of the context problem:</p>
+<ul>
+<li>Sessions, compaction, memory pipelines</li>
+<li>Skills as procedural memory</li>
+</ul>
+<p>. . .</p>
+<p>Now we look at one production agent — <strong><a href="https://hermes-agent.nousresearch.com"><code>NousResearch/hermes-agent</code></a></strong> — and ask:</p>
+<blockquote class="blockquote">
+<p><em>How does a shipping system design the user-facing surface for these concepts?</em></p>
+</blockquote>
+</section>
+<section id="hermes-in-one-slide" class="level2">
+<h2 class="anchored" data-anchor-id="hermes-in-one-slide">Hermes in One Slide</h2>
+<ul>
+<li><strong>NousResearch</strong> open-source, model-agnostic Python agent runtime</li>
+<li>MIT licensed</li>
+<li>We will not install it — we study its <strong>documented user surface</strong></li>
+</ul>
+<p>. . .</p>
+<p>Five documented surfaces map onto what you just learned — first how the codebase/user <em>feed</em> the agent, then what it <em>retains</em>:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Concept (this module)</th>
+<th style="text-align: left;">Hermes surface</th>
+<th style="text-align: left;">§</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Static project priming</td>
+<td style="text-align: left;"><strong>Context Files</strong></td>
+<td style="text-align: left;">B</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">On-demand context injection</td>
+<td style="text-align: left;"><strong>Context References</strong></td>
+<td style="text-align: left;">C</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Capability gating</td>
+<td style="text-align: left;"><strong>Tools</strong></td>
+<td style="text-align: left;">D</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Long-term memory</td>
+<td style="text-align: left;"><strong>Memory</strong></td>
+<td style="text-align: left;">E</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Procedural memory</td>
+<td style="text-align: left;"><strong>Skills</strong></td>
+<td style="text-align: left;">F</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="the-shape-of-this-deck" class="level2">
+<h2 class="anchored" data-anchor-id="the-shape-of-this-deck">The Shape of This Deck</h2>
+<p><strong>Act 1 — tour each surface alone (§B–§F).</strong> One slide-group per surface: what it is, and the <em>design lever</em> it trades on.</p>
+<p>. . .</p>
+<p><strong>Act 2 — watch them run together (§G).</strong> A single turn, six moments where memory, skills, and self-improvement hook in — the wiring <strong>not present in the developer docs</strong>.</p>
+<p>. . .</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>The Spine
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Every surface resolves <strong>one tradeoff</strong>. We name it each time, and collect all six in the closing takeaways (§H).</p>
+</div>
+</div>
+</section>
+<section id="a-word-on-sources" class="level2">
+<h2 class="anchored" data-anchor-id="a-word-on-sources">A Word on Sources</h2>
+<p>Most of this deck cites the Hermes <strong>documentation</strong> — <strong>quotes carry their source URL</strong> in the slide footer.</p>
+<p>. . .</p>
+<p>A handful of slides drop one level deeper, into the <strong>source</strong> (<code>agent/memory_manager.py</code>, <code>agent/conversation_loop.py</code>, the <code>tools/</code> modules), wherever the developer docs are <em>silent</em> on exactly the mechanism worth seeing. <strong>The Learning Loop (§G) leans on this most.</strong></p>
+<p>. . .</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>Treat as a Snapshot
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>To prevent content divergence over time, this slide deck is pinned to stable release <strong>v0.15.2 (v2026.5.29.2)</strong> (tag <a href="https://github.com/NousResearch/hermes-agent/releases/tag/v2026.5.29.2"><code>v2026.5.29.2</code></a>). All source code and documentation paths are referenced against this snapshot.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="b.-context-files-implicit-project-priming" class="level1 sdaia-dark" data-background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)">
+<h1 class="sdaia-dark" data-background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)">B. Context Files — Implicit Project Priming</h1>
+<p><code>.hermes.md</code>, <code>AGENTS.md</code>, <code>CLAUDE.md</code>, <code>.cursorrules</code></p>
+<section id="what-hermes-auto-discovers" class="level2">
+<h2 class="anchored" data-anchor-id="what-hermes-auto-discovers">What Hermes Auto-Discovers</h2>
+<p>When a session starts, Hermes scans the working directory for <strong>one</strong> project instruction file. Priority order:</p>
+<ol type="1">
+<li><code>.hermes.md</code></li>
+<li><code>AGENTS.md</code></li>
+<li><code>CLAUDE.md</code></li>
+<li><code>.cursorrules</code></li>
+</ol>
+<p>. . .</p>
+<p>First match wins — one file per session.</p>
+<p>. . .</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Why Three Fallback Names?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Hermes reads files written for <em>other</em> agents. The teaching point: <strong>convention beats configuration</strong> — a shipping agent earns trust by respecting formats users already maintain.</p>
+</div>
+</div>
+<div class="footer">
+<p>Source: <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/website/docs/user-guide/features/context-files.md#L22-L23"><code>context-files.md</code></a> — priority order (first match wins)</p>
+</div>
+</section>
+<section id="progressive-discovery" class="level2">
+<h2 class="anchored" data-anchor-id="progressive-discovery">Progressive Discovery</h2>
+<p>The directory scan does not stop at session start.</p>
+<p>. . .</p>
+<blockquote class="blockquote">
+<p><em>“As the agent navigates into subdirectories during the session (via <code>read_file</code>, <code>terminal</code>, <code>search_files</code>, etc.), it progressively discovers context files in those directories and injects them into the conversation at the moment they become relevant.”</em></p>
+<p>— <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/website/docs/user-guide/features/context-files.md#L32"><code>context-files.md</code></a></p>
+</blockquote>
+<p>. . .</p>
+<p>Each subdirectory is checked <strong>once per session</strong>, then cached.</p>
+</section>
+<section id="context-file-size-budget" class="level2">
+<h2 class="anchored" data-anchor-id="context-file-size-budget">Context File Size Budget</h2>
+<p>The discovered project instruction file (e.g., <code>.hermes.md</code>, <code>AGENTS.md</code>, <code>CLAUDE.md</code>) is subject to the following size budget:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Limit</th>
+<th style="text-align: left;">Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">≤ 20K characters</td>
+<td style="text-align: left;">Loaded verbatim</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">&gt; 20K characters</td>
+<td style="text-align: left;"><strong>70% head, 20% tail</strong> retained; middle dropped</td>
+</tr>
+</tbody>
+</table>
+<p>. . .</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Compare to <a href="../../context_engineering/slides/sessions_and_memory.html">Sessions &amp; Memory</a>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This is <em>static</em> compaction — not the LLM-driven summarizer from Lab 01. The instruction file is treated as a fixed asset; truncate, do not summarize.</p>
+</div>
+</div>
+<div class="footer">
+<p>Source: <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/website/docs/user-guide/features/context-files.md#L112"><code>context-files.md</code></a> — 20,000-char head/tail truncation</p>
+</div>
+</section>
+<section id="soul.md-the-identity-file" class="level2">
+<h2 class="anchored" data-anchor-id="soul.md-the-identity-file">SOUL.md — The Identity File</h2>
+<p>Separate from project context, Hermes loads <code>~/.hermes/SOUL.md</code> — a <strong>global</strong> personality file.</p>
+<p>. . .</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">File</th>
+<th style="text-align: left;">Scope</th>
+<th style="text-align: left;">Lifetime</th>
+<th style="text-align: left;">Primary Role</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>.hermes.md</code> (and fallbacks)</td>
+<td style="text-align: left;">Per project</td>
+<td style="text-align: left;">Per session</td>
+<td style="text-align: left;"><strong>What</strong> to do (rules, tools, coding styles)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>SOUL.md</code></td>
+<td style="text-align: left;">Global to user</td>
+<td style="text-align: left;">Across all sessions</td>
+<td style="text-align: left;"><strong>Who</strong> the agent is (persona, tone, identity)</td>
+</tr>
+</tbody>
+</table>
+<p>. . .</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Coexistence, Not Replacement
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>They <strong>do not replace</strong> each other; they <strong>coexist and load together</strong>. - <strong><code>.hermes.md</code></strong> captures the codebase’s project instructions. - <strong><code>SOUL.md</code></strong> defines the agent’s core character/persona.</p>
+<p>Mixing them is a common foot-gun (e.g., hardcoding project-specific build commands in <code>SOUL.md</code>).</p>
+</div>
+</div>
+<div class="footer">
+<p>Source: <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/website/docs/user-guide/features/context-files.md#L84-L93"><code>context-files.md</code></a> — global <code>SOUL.md</code> loaded from <code>HERMES_HOME</code></p>
+</div>
+</section>
+</section>
+<section id="c.-context-references-explicit-injection" class="level1 sdaia-dark" data-background-gradient="linear-gradient(135deg, #1C355E, #FF7A5C)">
+<h1 class="sdaia-dark" data-background-gradient="linear-gradient(135deg, #1C355E, #FF7A5C)">C. Context References — Explicit Injection</h1>
+<p>A grammar for “pull this in now”</p>
+<section id="the-syntax" class="level2">
+<h2 class="anchored" data-anchor-id="the-syntax">The <code>@</code> Syntax</h2>
+<p>Hermes exposes a small grammar for inline context injection:</p>
+<pre class="text"><code>@file:src/main.py
+@file:src/main.py:10-25
+@folder:src/api
+@diff
+@staged
+@git:5
+@url:https://example.com</code></pre>
+<p>. . .</p>
+<p>Expanded content arrives under an <code>--- Attached Context ---</code> block before the user message hits the model.</p>
+<div class="footer">
+<p>Source: <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/website/docs/user-guide/features/context-references.md#L14-L22"><code>context-references.md</code></a> — <code>@</code>-reference grammar</p>
+</div>
+</section>
+<section id="budget-caps-on-context-references" class="level2">
+<h2 class="anchored" data-anchor-id="budget-caps-on-context-references">Budget Caps on Context References</h2>
+<p>The total expanded size of all <code>@</code> references in a single message is bounded relative to the <strong>target model’s context length</strong>:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Threshold</th>
+<th style="text-align: left;">What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">&gt; 25% — <strong>soft limit</strong></td>
+<td style="text-align: left;">Content <strong>still injected</strong>, but a warning is appended (the size may hurt model attention / break prefix-caching)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">&gt; 50% — <strong>hard limit</strong></td>
+<td style="text-align: left;">Expansion <strong>refused</strong>; the message is sent as-is <em>without</em> the attachment, preventing context overflow</td>
+</tr>
+</tbody>
+</table>
+<p>. . .</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>The Design Lever
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>A <em>grammar</em> for context injection — and a <em>budget the grammar can’t blow past</em>. Compare to ad-hoc copy-paste workflows, where there is no budget at all.</p>
+</div>
+</div>
+<div class="footer">
+<p>Source: <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/website/docs/user-guide/features/context-references.md#L71-L72"><code>context-references.md</code></a> — 25% soft / 50% hard limits</p>
+</div>
+</section>
+<section id="what-hermes-refuses" class="level2">
+<h2 class="anchored" data-anchor-id="what-hermes-refuses">What Hermes Refuses</h2>
+<p>Folders cap at <strong>200 files</strong>. Git history caps at <strong>10 commits</strong>. Binary files are rejected outright. (<a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/website/docs/user-guide/features/context-references.md#L70-L74">caps table</a>)</p>
+<p>. . .</p>
+<p>Fully blocked directories — any file inside (<a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/website/docs/user-guide/features/context-references.md#L78-L88">verbatim from docs</a>):</p>
+<pre class="text"><code>~/.ssh/
+~/.aws/
+~/.gnupg/
+~/.kube/
+$HERMES_HOME/skills/.hub/</code></pre>
+<p>Plus the <code>$HERMES_HOME/.env</code> file and specific SSH key paths (<code>id_rsa</code>, <code>id_ed25519</code>, …).</p>
+<p>. . .</p>
+<p>Invalid references degrade gracefully: Hermes emits an inline warning and continues the turn rather than aborting it.</p>
+<div class="footer">
+<p>Source: <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/website/docs/user-guide/features/context-references.md#L132"><code>context-references.md</code></a> — invalid references produce inline warnings, not failures</p>
+</div>
+</section>
+</section>
+<section id="d.-tools-capability-toggles-with-persistent-execution" class="level1 sdaia-dark" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
+<h1 class="sdaia-dark" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">D. Tools — Capability Toggles with Persistent Execution</h1>
+<p>Toolsets and the long-lived container — the substrate the agent acts through</p>
+<section id="toolsets-a-sampling" class="level2">
+<h2 class="anchored" data-anchor-id="toolsets-a-sampling">Toolsets — a Sampling</h2>
+<pre class="text"><code>web   search   terminal   file   browser
+vision   memory   cronjob   delegation</code></pre>
+<p>A representative slice — the documented common set is larger (<code>skills</code>, <code>image_gen</code>, <code>tts</code>, <code>session_search</code>, <code>clarify</code>, <code>homeassistant</code>, <code>messaging</code>, …).</p>
+<p>. . .</p>
+<p>Toggled per session:</p>
+<pre class="text"><code>hermes chat --toolsets "web,terminal"</code></pre>
+<p>. . .</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Why Toggle, Not Filter?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The capability list is part of the system prompt. Fewer toolsets = shorter prompt = cheaper tokens <em>and</em> fewer ways for the model to go off-task.</p>
+</div>
+</div>
+<div class="footer">
+<p>Source: <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/website/docs/user-guide/features/tools.md#L39-L54"><code>tools.md</code></a> — toolsets + <code>--toolsets</code> toggle</p>
+</div>
+</section>
+<section id="terminal-backends" class="level2">
+<h2 class="anchored" data-anchor-id="terminal-backends">Terminal Backends</h2>
+<p>Hermes does not assume the terminal is your laptop. Six documented backends:</p>
+<pre class="text"><code>docker | local | ssh | singularity | modal | daytona</code></pre>
+<p>. . .</p>
+<p>Configured in <code>~/.hermes/config.yaml</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">terminal</span><span class="kw">:</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">backend</span><span class="kw">:</span><span class="at"> docker</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">docker_image</span><span class="kw">:</span><span class="at"> python:3.11-slim</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">container_persistent</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">timeout</span><span class="kw">:</span><span class="at"> </span><span class="dv">180</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="footer">
+<p>Source: <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/website/docs/user-guide/features/tools.md#L56-L89"><code>tools.md</code></a> — six backends + Docker config keys</p>
+</div>
+</section>
+<section id="the-production-trick-container-persistence" class="level2">
+<h2 class="anchored" data-anchor-id="the-production-trick-container-persistence">The Production Trick: Container Persistence</h2>
+<p>Instead of spawning a fresh container for every single command, Hermes keeps the execution environment alive.</p>
+<p>. . .</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Dimension</th>
+<th style="text-align: left;">Ephemeral / Naive</th>
+<th style="text-align: left;">Persistent (Hermes)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Lifecycle</strong></td>
+<td style="text-align: left;">Fresh container per command</td>
+<td style="text-align: left;">Single long-lived container</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>State (<code>cd</code>, env)</strong></td>
+<td style="text-align: left;">Lost instantly</td>
+<td style="text-align: left;">Carries over between tool calls</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Dependencies</strong></td>
+<td style="text-align: left;">Every <code>pip install</code> re-runs</td>
+<td style="text-align: left;">Installed packages are retained</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Scope</strong></td>
+<td style="text-align: left;">Sandboxed per turn</td>
+<td style="text-align: left;">Shared across <code>/new</code>, <code>/reset</code>, &amp; <code>delegate_task</code></td>
+</tr>
+</tbody>
+</table>
+<p>. . .</p>
+</section>
+<section id="why-environment-convergence-matters" class="level2 notes">
+<h2 class="anchored" data-anchor-id="why-environment-convergence-matters">Why Environment Convergence Matters</h2>
+<p>A long-lived container allows the agent’s environment to <strong>converge</strong> (dependencies align, files stay put, configurations stick).</p>
+<p><strong>The Engineering Lever:</strong> Uptime cost of keeping the container running vs.&nbsp;the install latency of repeating setup.</p>
+</section>
+<div class="footer">
+<p>Source: <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/website/docs/user-guide/features/tools.md#L87"><code>tools.md</code></a> — container persistence across tool calls</p>
+</div>
+<section id="background-processes-and-pty" class="level2">
+<h2 class="anchored" data-anchor-id="background-processes-and-pty">Background Processes and PTY</h2>
+<p>Two extra mechanics:</p>
+<ul>
+<li><code>terminal(background=true)</code> returns immediately; the <code>process</code> tool inspects and kills jobs.</li>
+<li><code>pty=true</code> runs interactive CLIs that need a real terminal (e.g.&nbsp;<code>vim</code>, <code>psql</code>, <code>htop</code>).</li>
+</ul>
+<p>. . .</p>
+<p>Both are needed for any agent that runs <em>long</em> shell tasks.</p>
+<p>. . .</p>
+<blockquote class="blockquote">
+<p>Context Files, References, and Tools are all <em>set up</em> at session start. Next: the two surfaces the agent <strong>carries across turns</strong> — Memory and Skills.</p>
+</blockquote>
+<div class="footer">
+<p>Source: <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/website/docs/user-guide/features/tools.md#L153-L170"><code>tools.md</code></a> — background processes + PTY mode</p>
+</div>
+</section>
+</section>
+<section id="e.-memory-the-frozen-snapshot-model" class="level1 sdaia-dark" data-background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)">
+<h1 class="sdaia-dark" data-background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)">E. Memory — The Frozen-Snapshot Model</h1>
+<p>The most surprising design choice</p>
+<section id="two-files-one-snapshot" class="level2">
+<h2 class="anchored" data-anchor-id="two-files-one-snapshot">Two Files, One Snapshot</h2>
+<p>Hermes’s built-in memory lives in <code>~/.hermes/memories/</code>:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">File</th>
+<th style="text-align: left;">Holds</th>
+<th style="text-align: left;">Size cap</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>MEMORY.md</code></td>
+<td style="text-align: left;">Agent notes</td>
+<td style="text-align: left;">~800 tokens (~2,200 chars)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>USER.md</code></td>
+<td style="text-align: left;">User profile</td>
+<td style="text-align: left;">~500 tokens (~1,375 chars)</td>
+</tr>
+</tbody>
+</table>
+<p>. . .</p>
+<p>Both are <strong>injected into the system prompt at session start</strong>.</p>
+<div class="footer">
+<p>Source: <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/website/docs/user-guide/features/memory.md#L15-L20"><code>memory.md</code></a> — char limits + session-start injection</p>
+</div>
+</section>
+<section id="the-surprising-part" class="level2">
+<h2 class="anchored" data-anchor-id="the-surprising-part">The Surprising Part</h2>
+<blockquote class="blockquote">
+<p><em>“The system prompt injection is captured once at session start and never changes mid-session.”</em></p>
+<p>— <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/website/docs/user-guide/features/memory.md#L47"><code>memory.md</code></a></p>
+</blockquote>
+<p>. . .</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>Does This Contradict Lab 02?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Lab 02 built an <em>online</em> memory pipeline: read, write, retrieve during a turn. This <em>looks</em> like the <strong>opposite</strong> trade — freeze at session start, no mid-session updates. Hold that thought: it’s only <strong>half</strong> the story (resolved in three slides).</p>
+</div>
+</div>
+</section>
+<section id="why-freeze-prefix-caching." class="level2">
+<h2 class="anchored" data-anchor-id="why-freeze-prefix-caching.">Why Freeze? Prefix Caching.</h2>
+<p>Recall <a href="../../context_engineering/slides/sessions_and_memory.html#prefix-stability">§1.C — Prefix Stability</a>: the model’s KV cache hits only when the prefix is byte-identical to a prior turn.</p>
+<p>. . .</p>
+<p>If memory changes mid-session, the prefix changes — and <strong>every turn pays the full re-encoding cost</strong>.</p>
+<p>. . .</p>
+<p>Freezing memory turns the entire prompt prefix into a <strong>stable cache key</strong>. Updates land on disk and apply <em>next</em> session.</p>
+<p>. . .</p>
+<blockquote class="blockquote">
+<p><em>“Mid-session writes update disk state but do not mutate the already-built system prompt until a new session or forced rebuild occurs.”</em></p>
+<p>— <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/website/docs/developer-guide/prompt-assembly.md#L214"><code>prompt-assembly.md</code></a></p>
+</blockquote>
+<p>. . .</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>The Design Lever
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><em>Latency now</em> vs.&nbsp;<em>freshness now</em>. For the <strong>always-on profile</strong>, Hermes picks latency — and pays for that freshness elsewhere, by design rather than by accident.</p>
+</div>
+</div>
+<div class="footer">
+<p>Source: <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/website/docs/developer-guide/context-compression-and-caching.md#L312-L322"><code>context-compression-and-caching.md</code></a> — stable-prefix cache design (“cache hits require prefix matching”)</p>
+</div>
+</section>
+<section id="mid-session-edits-still-happen" class="level2">
+<h2 class="anchored" data-anchor-id="mid-session-edits-still-happen">Mid-Session Edits Still Happen</h2>
+<p>The agent can edit memory during a turn — via the <code>memory_tool</code>:</p>
+<pre class="text"><code>memory_tool(action="add",     target="memory", content="user prefers Python over Go")
+memory_tool(action="replace", target="memory", old_text="prefers Python", content="prefers Rust")
+memory_tool(action="remove",  target="memory", old_text="prefers Python")</code></pre>
+<p>. . .</p>
+<p><code>replace</code> and <code>remove</code> use <strong>substring matching</strong>.</p>
+<p>. . .</p>
+<p>Same freeze rule as above — the edit persists to disk now, but only reaches the model next session.</p>
+<div class="footer">
+<p>Source: <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/tools/memory_tool.py#L20-L21"><code>tools/memory_tool.py</code></a> — “replace/remove use short unique substring matching”</p>
+</div>
+</section>
+<section id="beyond-memory.md-the-state-db" class="level2">
+<h2 class="anchored" data-anchor-id="beyond-memory.md-the-state-db">Beyond MEMORY.md — The State DB</h2>
+<p>The 800-token MEMORY.md is intentionally small. Long-term knowledge lives elsewhere:</p>
+<ul>
+<li><strong>SQLite</strong> at <code>~/.hermes/state.db</code></li>
+<li><strong>FTS5 full-text search</strong> across all past conversations</li>
+<li>Retrieved on demand by the agent</li>
+</ul>
+<p>. . .</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Why FTS5 and Not Vectors?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Built-in SQLite FTS5 keeps the core agent self-contained: zero extra dependencies, keyword-fast queries, and zero embedding costs. If you need vectors, semantic search, or knowledge graphs, you layer them on via <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/website/docs/user-guide/features/memory-providers.md">external memory providers</a> (like Honcho or Mem0).</p>
+</div>
+</div>
+<div class="footer">
+<p>Source: <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/website/docs/user-guide/features/memory.md#L179"><code>memory.md</code></a> — SQLite <code>state.db</code> + FTS5 full-text search</p>
+</div>
+</section>
+<section id="frozen-and-fresh-the-resolution" class="level2">
+<h2 class="anchored" data-anchor-id="frozen-and-fresh-the-resolution">Frozen <em>and</em> Fresh — The Resolution</h2>
+<p>That “contradiction” with Lab 02 dissolves once you see there are <strong>two memory layers</strong>:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Layer</th>
+<th style="text-align: left;">Holds</th>
+<th style="text-align: left;">When it loads</th>
+<th style="text-align: left;">Why</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Frozen profile</strong></td>
+<td style="text-align: left;"><code>MEMORY.md</code> + <code>USER.md</code></td>
+<td style="text-align: left;">Once, at session start (system prompt)</td>
+<td style="text-align: left;">Cache-stable prefix</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>On-demand recall</strong></td>
+<td style="text-align: left;"><code>state.db</code> (FTS5) + providers</td>
+<td style="text-align: left;">Per turn, into the <em>current</em> message</td>
+<td style="text-align: left;">Fresh, relevant facts</td>
+</tr>
+</tbody>
+</table>
+<p>. . .</p>
+<blockquote class="blockquote">
+<p>Not latency <strong>vs.</strong> freshness — latency <strong>and</strong> freshness, split across two layers. The small always-on part stays in the cache-stable prefix; the big searchable part rides in the (uncached) tail.</p>
+</blockquote>
+</section>
+<section id="how-recall-gets-in-without-leaking-out" class="level2">
+<h2 class="anchored" data-anchor-id="how-recall-gets-in-without-leaking-out">How Recall Gets In — Without Leaking Out</h2>
+<p>Per turn, recalled memory is wrapped and slipped into the current message to defend against dialogue-injection:</p>
+<pre class="text"><code>&lt;memory-context&gt;
+[System note: the following is recalled memory context, NOT new user input.]
+…retrieved facts…
+&lt;/memory-context&gt;</code></pre>
+<p>. . .</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>The Unsung Hero: <code>StreamingContextScrubber</code>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The model must <em>see</em> this block; the user must <em>not</em>. A scrubber statefully strips these tags from the streaming <em>output</em> to:</p>
+<ul>
+<li><strong>Prevent Echoing:</strong> Stop the model from parroting back XML tags or repeating prompt patterns.</li>
+<li><strong>Intercept Updates:</strong> Intercept and parse self-written memory updates before they are displayed.</li>
+</ul>
+<p>It statefully buffers and strips these tags <strong>across streaming chunk boundaries</strong> to prevent leaks.</p>
+</div>
+</div>
+<div class="footer">
+<p>Source: <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/agent/memory_manager.py#L54-L243"><code>agent/memory_manager.py</code></a> — <code>build_memory_context_block</code>, <code>StreamingContextScrubber</code></p>
+</div>
+</section>
+<section id="external-providers-are-additive" class="level2">
+<h2 class="anchored" data-anchor-id="external-providers-are-additive">External Providers Are Additive</h2>
+<p>The developer docs list eight plugin providers: Honcho, Mem0, Hindsight, OpenViking, Holographic, RetainDB, ByteRover, Supermemory.</p>
+<p>. . .</p>
+<blockquote class="blockquote">
+<p><em>“External providers run alongside built-in memory (never replacing it) and add capabilities like knowledge graphs, semantic search, automatic fact extraction, and cross-session user modeling.”</em></p>
+<p>— <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/website/docs/user-guide/features/memory.md#L216-L218"><code>memory.md</code></a></p>
+</blockquote>
+<p>. . .</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Subtle Design Choice
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Providers are <em>additive</em>, not replacements. The built-in memory is always present. The complexity tax goes up with each provider added.</p>
+</div>
+</div>
+</section>
+<section id="cli-surface" class="level2">
+<h2 class="anchored" data-anchor-id="cli-surface">CLI Surface</h2>
+<pre class="text"><code>hermes memory setup     # configure external providers
+hermes memory status    # show active providers
+hermes sessions list    # browse past sessions</code></pre>
+<p>. . .</p>
+<p>Every memory entry passes through security scanning: prompt-injection patterns, credential exfiltration, invisible Unicode.</p>
+<div class="footer">
+<p>Source: <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/website/docs/user-guide/features/memory.md#L171-L179"><code>memory.md</code></a> — security scanning + session-search CLI</p>
+</div>
+</section>
+</section>
+<section id="f.-skills-procedural-memory-with-progressive-disclosure" class="level1 sdaia-dark" data-background-gradient="linear-gradient(135deg, #1C355E, #FF7A5C)">
+<h1 class="sdaia-dark" data-background-gradient="linear-gradient(135deg, #1C355E, #FF7A5C)">F. Skills — Procedural Memory with Progressive Disclosure</h1>
+<p>The <a href="../../context_engineering/slides/skills.html">Skills</a> SKILL.md you know, plus a hub ecosystem</p>
+<section id="file-layout" class="level2">
+<h2 class="anchored" data-anchor-id="file-layout">File Layout</h2>
+<pre class="text"><code>~/.hermes/skills/
+└── &lt;category&gt;/
+    └── &lt;skill-name&gt;/
+        ├── SKILL.md
+        ├── references/
+        ├── templates/
+        ├── scripts/
+        └── assets/</code></pre>
+<p>. . .</p>
+<p>Same shape as Anthropic Agent Skills from <a href="../../context_engineering/slides/skills.html">Skills</a>. Local skills win over bundled ones — <code>~/.hermes/skills/</code> takes precedence.</p>
+<div class="footer">
+<p>Source: <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/website/docs/user-guide/features/skills.md#L9-L11"><code>skills.md</code></a> — agentskills.io compatibility + <code>~/.hermes/skills/</code> precedence</p>
+</div>
+</section>
+<section id="skill.md-frontmatter" class="level2">
+<h2 class="anchored" data-anchor-id="skill.md-frontmatter">SKILL.md Frontmatter</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="pp">---</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> summarize-staged-diff</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">description</span><span class="kw">:</span><span class="at"> Summarize the staged git diff before commit.</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="fu">version</span><span class="kw">:</span><span class="at"> </span><span class="fl">1.0.0</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="fu">platforms</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">macos</span><span class="kw">,</span><span class="at"> linux</span><span class="kw">]</span><span class="co">        # optional — restrict to specific OS platforms</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="fu">requires_toolsets</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">terminal</span><span class="kw">]</span><span class="co">    # optional — show only when terminal is available</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="pp">---</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>. . .</p>
+<p>Plus four documented sections in the body: <strong>When to Use</strong>, <strong>Procedure</strong>, <strong>Pitfalls</strong>, <strong>Verification</strong>.</p>
+<div class="footer">
+<p>Source: <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/website/docs/user-guide/features/skills.md#L60-L89"><code>skills.md</code></a> — frontmatter fields + body sections</p>
+</div>
+</section>
+<section id="three-loading-levels" class="level2">
+<h2 class="anchored" data-anchor-id="three-loading-levels">Three Loading Levels</h2>
+<p>The progressive disclosure pattern:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Level</th>
+<th style="text-align: left;">Cost</th>
+<th style="text-align: left;">When</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>List</strong></td>
+<td style="text-align: left;">~3K tokens</td>
+<td style="text-align: left;">Always available</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Full content</strong></td>
+<td style="text-align: left;">Variable</td>
+<td style="text-align: left;">When the description matches</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>References / assets</strong></td>
+<td style="text-align: left;">On demand</td>
+<td style="text-align: left;">When the body links them</td>
+</tr>
+</tbody>
+</table>
+<p>. . .</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Compare to <a href="../../context_engineering/slides/skills.html">Skills</a>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Anthropic Agent Skills load <code>name</code>+<code>description</code> up front; the body loads on match. Same pattern, same cost model.</p>
+</div>
+</div>
+<div class="footer">
+<p>Source: <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/website/docs/user-guide/features/skills.md#L46-L51"><code>skills.md</code></a> — Level 0/1/2 loading (<code>skills_list</code> ~3k tokens → <code>skill_view</code>)</p>
+</div>
+</section>
+<section id="how-a-user-invokes-a-skill" class="level2">
+<h2 class="anchored" data-anchor-id="how-a-user-invokes-a-skill">How a User Invokes a Skill</h2>
+<p>Three documented entry points:</p>
+<pre class="text"><code>/skill-name [request]                 # slash command
+hermes chat --toolsets skills         # natural language routing
+/bundle-name                          # bundle (multiple skills)</code></pre>
+<p>. . .</p>
+<p>Plus a CLI for skill management:</p>
+<pre class="text"><code>hermes skills browse | search | inspect | install
+hermes skills list | check | update | uninstall
+hermes skills audit | publish | snapshot</code></pre>
+<div class="footer">
+<p>Sources: <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/website/docs/user-guide/features/skills.md#L23-L35"><code>skills.md</code></a> (slash + bundles), <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/website/docs/reference/cli-commands.md#L920-L960"><code>cli-commands.md</code></a> (<code>hermes skills</code> subcommands)</p>
+</div>
+</section>
+<section id="trust-levels-and-hubs" class="level2">
+<h2 class="anchored" data-anchor-id="trust-levels-and-hubs">Trust Levels and Hubs</h2>
+<p>Skills can come from outside <code>~/.hermes/skills/</code>:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Trust</th>
+<th style="text-align: left;">Source</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>builtin</strong></td>
+<td style="text-align: left;">Ships with Hermes (always trusted)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>official</strong></td>
+<td style="text-align: left;"><code>optional-skills/</code> in the repo (builtin trust)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>trusted</strong></td>
+<td style="text-align: left;">Curated registries — <code>openai/skills</code>, <code>anthropics/skills</code>, <code>huggingface/skills</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>community</strong></td>
+<td style="text-align: left;">Everything else — findings block install unless <code>--force</code></td>
+</tr>
+</tbody>
+</table>
+<p>. . .</p>
+<p>Documented hub sources: <code>official</code>, <code>skills-sh</code>, <code>well-known</code>, <code>github</code>, <code>clawhub</code>, <code>lobehub</code>, <code>browse-sh</code>.</p>
+<p>. . .</p>
+<p>The trust level controls the <strong>install security policy</strong> — <code>builtin</code> is never scanned, while <code>community</code> installs are blocked on any scan finding unless <code>--force</code>.</p>
+<div class="footer">
+<p>Sources: <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/website/docs/user-guide/features/skills.md#L405-L414"><code>skills.md</code></a> (hub sources), <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/website/docs/user-guide/features/skills.md#L574-L580"><code>skills.md</code></a> (trust levels), <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/tools/skills_guard.py#L36-L45"><code>tools/skills_guard.py</code></a> (install policy)</p>
+</div>
+</section>
+<section id="agent-authored-skills-closing-the-loop" class="level2">
+<h2 class="anchored" data-anchor-id="agent-authored-skills-closing-the-loop">Agent-Authored Skills — Closing the Loop</h2>
+<p><a href="../../context_engineering/slides/skills.html">Skills</a> ended on a frontier question: <em>what if the agent writes its own skills?</em></p>
+<p>. . .</p>
+<p>Hermes ships this:</p>
+<ul>
+<li>The agent drafts a new <code>SKILL.md</code> capturing what worked, via the <code>skill_manage</code> tool</li>
+<li>Skills are <strong>versioned</strong> and pruned over time</li>
+</ul>
+<p>. . .</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>Recall <a href="../../context_engineering/slides/sessions_and_memory.html#procedural-memory">§1.F — Procedural Memory Failure Mode</a>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>LLM-authored skills are still LLM output. The <a href="../../context_engineering/slides/sessions_and_memory.html#procedural-memory">§1.F lesson</a> stands: <strong>version, gate, and prune</strong> — raw “self-improving” loops drift, they don’t learn.</p>
+</div>
+</div>
+<p>. . .</p>
+<blockquote class="blockquote">
+<p><em>When</em> and <em>how</em> this fires — inline mid-turn vs.&nbsp;a background review after the reply — is the learning loop in <strong>§G</strong>.</p>
+</blockquote>
+<div class="footer">
+<p>Source: <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/tools/skill_manager_tool.py#L816"><code>tools/skill_manager_tool.py</code></a> — agent-authored skills via <code>skill_manage</code></p>
+</div>
+</section>
+<section id="token-efficiency-write-vs.-patch" class="level2 smaller">
+<h2 class="smaller anchored" data-anchor-id="token-efficiency-write-vs.-patch">Token Efficiency: Write vs.&nbsp;Patch</h2>
+<p>Generating a complete <code>SKILL.md</code> file every time a playbook is updated is a fast track to token bankruptcy.</p>
+<p>. . .</p>
+<p>Just like the <code>memory_tool</code> uses substring matching to avoid rewriting <code>MEMORY.md</code>, Hermes handles skill updates through targeted action parameters inside the <code>skill_manage</code> tool:</p>
+<ul>
+<li><strong><code>create</code></strong>: Instantiates a brand new playbook when a novel workflow is recognized.</li>
+<li><strong><code>patch</code> (Preferred)</strong>: Targeted find-and-replace (<code>old_string</code> → <code>new_string</code>) to edit minor rules or pitfalls in an existing skill.</li>
+<li><strong><code>edit</code></strong>: Executes a complete rewrite when a playbook undergoes a major structural change.</li>
+</ul>
+<p>. . .</p>
+<blockquote class="blockquote">
+<p><strong>The Lesson:</strong> In production-grade agents, editing state is treated like a database update — choose the narrowest possible write payload (<code>patch</code> / substring match) to keep context cache keys stable and token costs low.</p>
+</blockquote>
+<div class="footer">
+<p>Source: <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/tools/skill_manager_tool.py#L816"><code>tools/skill_manager_tool.py</code></a> — <code>skill_manage</code> tool; <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/website/docs/user-guide/features/skills.md#L360-L373"><code>skills.md</code></a> — actions table</p>
+</div>
+</section>
+</section>
+<section id="g.-the-learning-loop-anatomy-of-one-turn" class="level1 sdaia-dark" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
+<h1 class="sdaia-dark" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">G. The Learning Loop — Anatomy of One Turn</h1>
+<p>Two moments read context in, one records the turn, three make the agent better — one inline, two deferred</p>
+<section id="one-turn-annotated" class="level2 smaller">
+<h2 class="smaller anchored" data-anchor-id="one-turn-annotated">One Turn, Annotated</h2>
+<p>The agent-loop docs spell out one turn as a pipeline. <strong>Six points on it</strong> are where memory, skills, and self-improvement hook in — marked ①–⑥ on the step each attaches to. The source wires them; <strong>this is not present in the developer docs.</strong></p>
+<p>. . .</p>
+<ol type="1">
+<li>Append user message</li>
+<li>Build / cache system prompt</li>
+<li><strong>Preflight compression</strong> if context <strong>&gt; 50%</strong></li>
+<li>Construct API messages — <strong>① Recall:</strong> <code>prefetch_all(query)</code>, cached once/turn, reused across tool iterations</li>
+<li>Inject ephemeral layers (budget + context-pressure warnings) — <strong>② Skill load:</strong> matched <code>SKILL.md</code> body loaded on demand</li>
+<li>Call the model (interruptible)</li>
+<li>Parse → tool loop <em>or</em> final text — <strong>③ Inline skill-write:</strong> agent calls <code>skill_manage</code> mid-loop to save a win (resets <code>_iters_since_skill</code>)</li>
+<li><strong>Persist</strong> session — <strong>④</strong> messages + token counts → SQLite · <strong>⑤ Nudge:</strong> check the <em>per-turn</em> memory counter and the <em>per-iteration</em> skill counter against their intervals (next slide)</li>
+</ol>
+<p>. . .</p>
+<p><strong>⑥ Async review</strong> — memory + skill review forked <em>after</em> the reply is delivered.</p>
+<div class="footer">
+<p>Sources: <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/website/docs/developer-guide/agent-loop.md#L60-L80"><code>agent-loop.md</code></a> — one-turn pipeline; &gt;50% preflight compression at <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/website/docs/developer-guide/agent-loop.md#L203">#L203</a>; <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/agent/tool_executor.py#L93-L94"><code>tool_executor.py</code></a> — <code>skill_manage</code> resets <code>_iters_since_skill</code>; <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/agent/conversation_loop.py#L562-L569"><code>conversation_loop.py</code></a> — <code>_should_review_memory</code> / <code>_turns_since_memory</code></p>
+</div>
+</section>
+<section id="the-six-moments" class="level2">
+<h2 class="anchored" data-anchor-id="the-six-moments">The Six Moments</h2>
+<div class="nostretch" style="width:80%; margin:0 auto;">
+<pre class="{mermaid}"><code>%%| fig-width: 7.5
+sequenceDiagram
+    participant U as User
+    participant L as Conversation Loop
+    participant M as Memory
+    participant K as Skills
+    participant D as Session DB
+
+    rect rgba(0, 201, 167, 0.15)
+    note over U,D: Within the turn — on the critical path (①–⑤)
+    U-&gt;&gt;L: message
+    L-&gt;&gt;M: ① prefetch_all(query)
+    M--&gt;&gt;L: fenced memory-context block
+    L-&gt;&gt;K: ② load matched skill
+    L-&gt;&gt;L: call model (tool loop)
+    L-&gt;&gt;K: ③ inline skill-write — save a win
+    L-&gt;&gt;D: ④ persist messages + tokens
+    L-&gt;&gt;L: ⑤ nudge? turn-counter / iter-counter ≥ interval
+    L-&gt;&gt;U: reply
+    end
+
+    rect rgba(155, 142, 192, 0.20)
+    note over L,M: After the reply — off the critical path (⑥)
+    L--)M: ⑥ async review (memory + skills)
+    end</code></pre>
+</div>
+</section>
+<section id="two-paths-to-a-skill-write-a-moment-or-a-clock" class="level2 smaller">
+<h2 class="smaller anchored" data-anchor-id="two-paths-to-a-skill-write-a-moment-or-a-clock">③/⑥ — Two Paths to a Skill Write: a Moment or a Clock</h2>
+<p>A skill gets written one of two ways — the agent recognizes a <strong>moment</strong>, or a <strong>clock</strong> runs out.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;"><strong>③ Inline — a moment</strong></th>
+<th style="text-align: left;"><strong>⑥ Background — a clock</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>What triggers it</strong></td>
+<td style="text-align: left;">a moment the agent recognizes mid-turn (<code>SKILLS_GUIDANCE</code>):<br>• 🏋️ worked hard — 5+ tool calls<br>• 🔧 fixed a tricky error<br>• 🧩 found a reusable workflow</td>
+<td style="text-align: left;">a counter reaches its interval (default 10)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>When it runs</strong></td>
+<td style="text-align: left;"><em>during</em> the turn, as a normal tool call</td>
+<td style="text-align: left;"><em>after</em> the reply is delivered, on a forked thread</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Who writes</strong></td>
+<td style="text-align: left;">the agent itself</td>
+<td style="text-align: left;">a throwaway <strong>review fork</strong> — memory + skills tools only</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Why it exists</strong></td>
+<td style="text-align: left;">capture the win the instant it happens</td>
+<td style="text-align: left;">safety net for what the agent forgot</td>
+</tr>
+</tbody>
+</table>
+<p>. . .</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Both end in the same write
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The nudge only <em>prompts</em> a write — both paths finish with the same <code>skill_manage</code> call. An inline write resets the counter, so being proactive pushes back the next background review. And the fork sets its own interval to <code>0</code>, so a review can’t trigger another review — no runaway loop.</p>
+</div>
+</div>
+<div class="footer">
+<p>Sources: inline — <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/agent/prompt_builder.py#L166-L173"><code>prompt_builder.py</code></a> (<code>SKILLS_GUIDANCE</code> — the three qualitative triggers) + <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/agent/tool_executor.py#L93-L94"><code>tool_executor.py</code></a> (write resets counter); background — <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/agent/conversation_loop.py#L4551-L4557"><code>conversation_loop.py</code></a> (nudge → review), <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/agent/agent_init.py#L1190-L1193"><code>agent_init.py</code></a> (<code>_skill_nudge_interval</code>, default 10) + <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/agent/background_review.py#L45-L122"><code>background_review.py</code></a> (forked review, <code>_SKILL_REVIEW_PROMPT</code>)</p>
+</div>
+</section>
+<section id="up-close-the-clock-same-number-different-units" class="level2 smaller">
+<h2 class="smaller anchored" data-anchor-id="up-close-the-clock-same-number-different-units">Up Close: The Clock — Same Number, Different Units</h2>
+<p>We said ⑥ fires when <em>a clock</em> runs out. There are really <strong>two</strong> clocks — ⑤ checks both at the end of each turn — and they’re not even in the same unit:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;"><strong>Memory nudge</strong></th>
+<th style="text-align: left;"><strong>Skill nudge</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Counter</strong></td>
+<td style="text-align: left;"><code>_turns_since_memory</code></td>
+<td style="text-align: left;"><code>_iters_since_skill</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Ticks +1 per</strong></td>
+<td style="text-align: left;"><strong>user turn</strong></td>
+<td style="text-align: left;"><strong>tool-loop iteration</strong> (each API call in the loop)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Interval (default)</strong></td>
+<td style="text-align: left;"><code>_memory_nudge_interval</code> (<strong>10</strong>)</td>
+<td style="text-align: left;"><code>_skill_nudge_interval</code> (<strong>10</strong>)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Checked</strong></td>
+<td style="text-align: left;">at the end of each turn</td>
+<td style="text-align: left;"><em>after</em> the tool loop finishes</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Resets to 0 when</strong></td>
+<td style="text-align: left;">the nudge fires (every N turns)</td>
+<td style="text-align: left;">a skill is <strong>actually written</strong> (③) — <em>not</em> at turn boundaries</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>So the cadence tracks</strong></td>
+<td style="text-align: left;">how much <strong>conversation</strong> passed</td>
+<td style="text-align: left;">how much <strong>work</strong> the agent did</td>
+</tr>
+</tbody>
+</table>
+<p>. . .</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Same Interval (10), Two Different Clocks
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Memory ticks on turns; skills tick on effort.</strong> A busy, tool-heavy turn races the skill counter toward a nudge while barely moving the memory counter. And the skill counter only clears when the agent <em>writes</em> a skill — so an inline save (③) pushes back the next background nudge (⑥); skip writing and it climbs <strong>across</strong> turns until ⑥ fires.</p>
+</div>
+</div>
+<div class="notes">
+<p>The reset asymmetry is the subtle part: the <strong>memory</strong> counter resets <em>inside its own check</em> (every time it fires), while the <strong>skill</strong> counter is never reset by the check — only by an actual <code>skill_manage</code> write. That is what lets proactive inline writes defer the background review.</p>
+</div>
+<div class="footer">
+<p>Sources: <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/agent/conversation_loop.py#L562-L569"><code>conversation_loop.py</code></a> — <code>_turns_since_memory</code> (+1/turn, checked &amp; reset on nudge); skill counter <code>+1</code>/iteration, checked after the loop, persists across turns; <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/agent/tool_executor.py#L93-L94"><code>tool_executor.py</code></a> — <code>skill_manage</code> resets <code>_iters_since_skill</code>; <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/agent/agent_init.py#L1190-L1193"><code>agent_init.py</code></a> — both intervals default 10</p>
+</div>
+</section>
+<section id="read-in-record-improve" class="level2 smaller">
+<h2 class="smaller anchored" data-anchor-id="read-in-record-improve">Read In, Record, Improve</h2>
+<p>The loop does three jobs per turn — and the third is what makes it a <em>loop</em>, not a line:</p>
+<ul>
+<li><strong>Read in</strong> (① ②) — answers <em>this</em> turn.</li>
+<li><strong>Record</strong> (④) — closes it.</li>
+<li><strong>Improve</strong> (③ ⑤ ⑥) — stocks the <em>next</em> one.</li>
+</ul>
+<p>. . .</p>
+<p>Two threads from earlier in the module tie off here:</p>
+<ul>
+<li>Memory is <strong>agent-curated, not auto-extracted</strong> — Hermes periodically <em>asks the agent</em> rather than mining every turn (<a href="../../context_engineering/slides/sessions_and_memory.html#memory-pipeline">§1.E</a>).</li>
+<li>The scheduled review runs <strong>off the critical path</strong>, forked after the reply ships — <a href="../../context_engineering/slides/sessions_and_memory.html#production-evaluation">§1.G</a>’s “never block on memory writes,” shipped.</li>
+</ul>
+<p>. . .</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>In one sentence
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Each turn answers the user <em>and</em> leaves the agent slightly better stocked — fresher memory, maybe a new skill — ready for next time.</p>
+</div>
+</div>
+<div class="footer">
+<p>Source: <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/agent/conversation_loop.py#L562-L569"><code>agent/conversation_loop.py</code></a> — <code>_should_review_memory</code>, <code>_turns_since_memory</code>, <code>_memory_nudge_interval</code>; async review in <a href="https://github.com/NousResearch/hermes-agent/blob/v2026.5.29.2/agent/background_review.py"><code>agent/background_review.py</code></a></p>
+</div>
+</section>
+</section>
+<section id="h.-takeaways" class="level1 sdaia-dark" data-background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)">
+<h1 class="sdaia-dark" data-background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)">H. Takeaways</h1>
+<p>How to read any production agent</p>
+<section id="four-questions-for-any-agent-runtime" class="level2">
+<h2 class="anchored" data-anchor-id="four-questions-for-any-agent-runtime">Four Questions for Any Agent Runtime</h2>
+<p>After reading the Hermes developer docs, ask the same four questions of any new agent you encounter:</p>
+<ol type="1">
+<li><strong>Where do project instructions enter?</strong> (Context Files)</li>
+<li><strong>How does the user inject ad-hoc context?</strong> (Context References)</li>
+<li><strong>Where does long-term knowledge live?</strong> (Memory)</li>
+<li><strong>How does the agent acquire new procedures?</strong> (Skills)</li>
+</ol>
+<p>. . .</p>
+<p>A fifth, for any system that runs code: <em>what is the execution boundary, and does it persist?</em> (Tools)</p>
+</section>
+<section id="one-lever-per-surface" class="level2">
+<h2 class="anchored" data-anchor-id="one-lever-per-surface">One Lever per Surface</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Surface</th>
+<th style="text-align: left;">The tradeoff</th>
+<th style="text-align: left;">Hermes’ call</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Context Files</strong></td>
+<td style="text-align: left;">Configuration vs.&nbsp;convention</td>
+<td style="text-align: left;">Read the files users already keep (<code>AGENTS.md</code>, <code>CLAUDE.md</code>)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Context References</strong></td>
+<td style="text-align: left;">Freedom vs.&nbsp;a budget</td>
+<td style="text-align: left;">A <code>@</code>-grammar with hard 25% / 50% caps</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Tools</strong></td>
+<td style="text-align: left;">Isolation vs.&nbsp;convergence</td>
+<td style="text-align: left;">Toggle capabilities; one persistent container</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Memory</strong></td>
+<td style="text-align: left;">Latency vs.&nbsp;freshness</td>
+<td style="text-align: left;">Both — frozen profile <em>and</em> per-turn recall</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Skills</strong></td>
+<td style="text-align: left;">Cost vs.&nbsp;completeness</td>
+<td style="text-align: left;">Progressive disclosure; <code>patch</code> over rewrite</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>The Loop</strong></td>
+<td style="text-align: left;">This turn vs.&nbsp;the next</td>
+<td style="text-align: left;">Improve the next turn — opportunistically inline, on a schedule off-path</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="wrap-up" class="level2">
+<h2 class="anchored" data-anchor-id="wrap-up">Wrap-up</h2>
+<p>You have now seen one shipping answer for every concept in this module.</p>
+<p>. . .</p>
+<p>The next step is your own — build the surface, ship the surface, and watch your users push on the constraints you encoded into it.</p>
+</section>
+</section>
+<section id="a.-context-engineering" class="level1 sdaia-dark" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
+<h1 class="sdaia-dark" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">A. Context Engineering</h1>
+<p>Stateful agents start here</p>
+<section id="agenda" class="level2">
+<h2 class="anchored" data-anchor-id="agenda">Agenda</h2>
+<ul>
+<li><strong>A. Context Engineering</strong> — the discipline (~5 min)</li>
+<li><strong>B. Sessions (Short-Term Memory)</strong> — events, state, persistence (~10 min)</li>
+<li><strong>C. Long Context</strong> — compaction strategies, mid-conversation model switching (~10 min)</li>
+<li><strong>D. Memory</strong> — long-term, cross-session (~10 min)</li>
+<li><strong>E. Memory Pipeline</strong> — extract, consolidate, retrieve (~10 min)</li>
+<li><strong>F. Procedural Memory</strong> — self-improving agents (~5 min)</li>
+<li><strong>G. Production &amp; Eval</strong> — async, security, metrics (~5 min)</li>
+<li><strong>H. Wrap-up</strong> — key takeaways (~3 min)</li>
+</ul>
+</section>
+<section id="from-prompt-engineering-to-context-engineering" class="level2">
+<h2 class="anchored" data-anchor-id="from-prompt-engineering-to-context-engineering">From Prompt Engineering to Context Engineering</h2>
+<blockquote class="blockquote">
+<p><em>Recall from <a href="../../architecture_fundamentals/slides/api_and_provider_landscape.html">API &amp; Provider Landscape</a>: every turn, you re-send the entire <code>messages</code> list. That re-send is the constraint Context Engineering responds to.</em></p>
+</blockquote>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><strong>Prompt Engineering</strong></p>
+<ul>
+<li>Crafts a <em>static</em> system prompt</li>
+<li>Optimizes wording, examples, format</li>
+<li>Pays off once, used everywhere</li>
+<li>Necessary, not sufficient</li>
+</ul>
+</div><div class="column" style="width:50%;">
+<p><strong>Context Engineering</strong></p>
+<ul>
+<li><em>Dynamically assembles</em> the entire payload</li>
+<li>Selects: history, memories, tools, RAG hits</li>
+<li>Per-turn decisions on what to include</li>
+</ul>
+</div>
+</div>
+<p>. . .</p>
+<blockquote class="blockquote">
+<p><strong>Context Engineering</strong> is the <em>mise en place</em> of an agent: gather and prepare every ingredient before the model starts cooking.</p>
+</blockquote>
+</section>
+<section id="the-per-turn-cycle" class="level2">
+<h2 class="anchored" data-anchor-id="the-per-turn-cycle">The Per-Turn Cycle</h2>
+<pre class="{mermaid}"><code>%%| fig-width: 9
+graph LR
+    U["User Query"] --&gt; F["Fetch&lt;br/&gt;(memories, RAG, history)"]
+    F --&gt; P["Prepare&lt;br/&gt;(assemble payload)"]
+    P --&gt; I["Invoke&lt;br/&gt;(LLM + tools)"]
+    I --&gt; R["Response"]
+    I -.-&gt;|async| Up["Upload&lt;br/&gt;(persist new state)"]
+
+    style U fill:#1C355E,stroke:#00C9A7,color:white
+    style F fill:#00C9A7,stroke:#1C355E,color:#1C355E
+    style P fill:#9B8EC0,stroke:#1C355E,color:#1C355E
+    style I fill:#FF7A5C,stroke:#1C355E,color:#1C355E
+    style R fill:#1C355E,stroke:#00C9A7,color:white
+    style Up fill:#9B8EC0,stroke:#1C355E,color:#1C355E</code></pre>
+<ul>
+<li><strong>Fetch</strong> and <strong>Prepare</strong> are blocking — the LLM call cannot start until context is ready</li>
+<li><strong>Upload</strong> runs async — never make the user wait for memory writes</li>
+</ul>
+</section>
+</section>
+<section id="b.-sessions-short-term-memory" class="level1 sdaia-dark" data-background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)">
+<h1 class="sdaia-dark" data-background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)">B. Sessions (Short-Term Memory)</h1>
+<p>The container for one conversation</p>
+<section id="what-a-session-holds" class="level2">
+<h2 class="anchored" data-anchor-id="what-a-session-holds">What a Session Holds</h2>
+<p>A <strong>session</strong> (Short-Term Memory) is one continuous conversation, scoped to one user.</p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><strong>Events</strong> (The <code>messages</code> list)</p>
+<ul>
+<li><code>user</code> input (text/image/audio)</li>
+<li><code>assistant</code> response</li>
+<li><code>tool_call</code> — agent decides to use a tool</li>
+<li><code>tool_output</code> — the tool’s result</li>
+</ul>
+</div><div class="column" style="width:50%;">
+<p><strong>State</strong> (working memory / scratchpad)</p>
+<ul>
+<li>Items in a shopping cart</li>
+<li>Form fields collected so far</li>
+<li>Intermediate calculations</li>
+<li>Anything <em>transient</em> to this conversation</li>
+</ul>
+</div>
+</div>
+<p>. . .</p>
+<blockquote class="blockquote">
+<p>Events are append-only. State is mutable.</p>
+</blockquote>
+</section>
+<section id="the-familiar-shape" class="level2">
+<h2 class="anchored" data-anchor-id="the-familiar-shape">The Familiar Shape</h2>
+<p>You already know this from <a href="../../architecture_fundamentals/slides/api_and_provider_landscape.html">API &amp; Provider Landscape</a>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> litellm <span class="im">import</span> completion</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>events <span class="op">=</span> [</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    {<span class="st">"role"</span>: <span class="st">"system"</span>,    <span class="st">"content"</span>: <span class="st">"You are a helpful assistant."</span>},</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    {<span class="st">"role"</span>: <span class="st">"user"</span>,      <span class="st">"content"</span>: <span class="st">"What's the capital of France?"</span>},</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    {<span class="st">"role"</span>: <span class="st">"assistant"</span>, <span class="st">"content"</span>: <span class="st">"Paris."</span>},</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    {<span class="st">"role"</span>: <span class="st">"user"</span>,      <span class="st">"content"</span>: <span class="st">"And its population?"</span>},</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>response <span class="op">=</span> completion(model<span class="op">=</span><span class="st">"gpt-4o"</span>, messages<span class="op">=</span>events)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>. . .</p>
+<p>This is the <strong>events</strong> half of a session. The <strong>state</strong> half (cart contents, form fields, intermediate results) lives alongside it — managed by your code, not the LLM.</p>
+</section>
+<section id="stateless-runtime-persistent-store" class="level2">
+<h2 class="anchored" data-anchor-id="stateless-runtime-persistent-store">Stateless Runtime → Persistent Store</h2>
+<p>In production, your agent process is typically stateless (containers restart, requests load-balance). The session must live somewhere durable.</p>
+<pre class="{mermaid}"><code>%%| fig-width: 9
+graph LR
+    U["User"] --&gt;|"turn N"| A["Agent (stateless)"]
+    A --&gt;|"load events + state"| S["Session Store&lt;br/&gt;(Redis / Postgres / etc.)"]
+    S --&gt;|"events list + state dict"| A
+    A --&gt;|"call LLM"| L["LLM"]
+    L --&gt;|"response"| A
+    A --&gt;|"append event · update state"| S
+    A --&gt;|"reply"| U
+
+    style U fill:#1C355E,stroke:#00C9A7,color:white
+    style A fill:#00C9A7,stroke:#1C355E,color:#1C355E
+    style S fill:#9B8EC0,stroke:#1C355E,color:#1C355E
+    style L fill:#FF7A5C,stroke:#1C355E,color:#1C355E</code></pre>
+<p>. . .</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Managed services like LangGraph checkpoints, Vertex Agent Engine Sessions, or your own table in Postgres all serve this role. The framework choice is implementation detail — the <em>concept</em> is what matters.</p>
+</div>
+</div>
+</section>
+<section id="session-a-minimal-implementation" class="level2 smaller">
+<h2 class="smaller anchored" data-anchor-id="session-a-minimal-implementation">Session: A Minimal Implementation</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Session:</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, session_id: <span class="bu">str</span>, store):</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.session_id <span class="op">=</span> session_id</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.store <span class="op">=</span> store  <span class="co"># any KV-style backend</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ── Events (append-only) ──────────────────────</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> events(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">dict</span>]:</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span>.store.get(<span class="ss">f"</span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>session_id<span class="sc">}</span><span class="ss">:events"</span>, default<span class="op">=</span>[])</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> append(<span class="va">self</span>, event: <span class="bu">dict</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>        events <span class="op">=</span> <span class="va">self</span>.events()</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>        events.append(event)</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.store.<span class="bu">set</span>(<span class="ss">f"</span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>session_id<span class="sc">}</span><span class="ss">:events"</span>, events)</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ── State (mutable scratchpad) ────────────────</span></span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> get_state(<span class="va">self</span>, key: <span class="bu">str</span>, default<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>        state <span class="op">=</span> <span class="va">self</span>.store.get(<span class="ss">f"</span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>session_id<span class="sc">}</span><span class="ss">:state"</span>, default<span class="op">=</span>{})</span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> state.get(key, default)</span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> set_state(<span class="va">self</span>, key: <span class="bu">str</span>, value) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>        state <span class="op">=</span> <span class="va">self</span>.store.get(<span class="ss">f"</span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>session_id<span class="sc">}</span><span class="ss">:state"</span>, default<span class="op">=</span>{})</span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a>        state[key] <span class="op">=</span> value</span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.store.<span class="bu">set</span>(<span class="ss">f"</span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>session_id<span class="sc">}</span><span class="ss">:state"</span>, state)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>. . .</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Deterministic Order
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Concurrent turns must be serialized — out-of-order events corrupt the conversation. Use transactional writes or per-session locks.</p>
+</div>
+</div>
+</section>
+<section id="session-security" class="level2">
+<h2 class="anchored" data-anchor-id="session-security">Session Security</h2>
+<p>A session can contain anything the user said — names, emails, account numbers, free-form personal stories.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 47%">
+<col style="width: 52%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Concern</th>
+<th style="text-align: left;">Practice</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Strict isolation</strong></td>
+<td style="text-align: left;">Every read enforces <code>session.owner == request.user</code> (ACLs)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>PII redaction</strong></td>
+<td style="text-align: left;">Redact <em>before</em> writing to the store, not just before display</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Audit log</strong></td>
+<td style="text-align: left;">Track who read what, when</td>
+</tr>
+</tbody>
+</table>
+<p>. . .</p>
+<blockquote class="blockquote">
+<p><a href="../../security_guardrails/slides/output_guardrails_content_safety.html#pii-redaction">Output Guardrails</a> covers output-time PII redaction. Sessions need PII redaction at <strong>write time</strong> too — a leaked session log re-exposes everything.</p>
+</blockquote>
+</section>
+</section>
+<section id="c.-managing-long-context" class="level1 sdaia-dark" data-background-gradient="linear-gradient(135deg, #1C355E, #FF7A5C)">
+<h1 class="sdaia-dark" data-background-gradient="linear-gradient(135deg, #1C355E, #FF7A5C)">C. Managing Long Context</h1>
+<p>Why context windows matter, and how to compact them.</p>
+<section id="context-windows-your-api-bill" class="level2">
+<h2 class="anchored" data-anchor-id="context-windows-your-api-bill">Context Windows &amp; Your API Bill</h2>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span><code>128K context ≠ 128K tokens free</code>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Every token in your context window is <strong>charged on every request</strong> — both the history you send and the reply you receive.</p>
+</div>
+</div>
+<p><strong>KV-cache intuition:</strong> The API caches the mathematical representation of previous tokens so each new word generated is cheap. But the cache lives in GPU memory — and the context window is its size limit.</p>
+<p>. . .</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Context length</th>
+<th>Tokens processed (≈ billed cost)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1K tokens</td>
+<td>1×</td>
+</tr>
+<tr class="even">
+<td>8K tokens</td>
+<td>8×</td>
+</tr>
+<tr class="odd">
+<td>128K tokens</td>
+<td>128×</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="performance-the-needle-in-the-haystack" class="level2">
+<h2 class="anchored" data-anchor-id="performance-the-needle-in-the-haystack">Performance: The Needle in the Haystack</h2>
+<p><img src="../assets/multi_needle_heatmap.png" class="img-fluid"></p>
+<ul>
+<li><strong>Lost in the Middle</strong> (<a href="https://arxiv.org/abs/2307.03172">Liu et al., 2023</a>): LLMs often ignore facts buried in the middle.</li>
+<li><strong>Recall Degradation</strong>: As context grows, retrieval ability drops.</li>
+<li><strong>Placement Matters</strong>: Put crucial info at the <strong>start</strong> or <strong>end</strong>.</li>
+</ul>
+<div class="notes">
+<ul>
+<li><strong>Needle in the Haystack (NIAH)</strong>: A classic benchmark testing if a model can retrieve a single target fact (“needle”) hidden inside a massive block of filler text (“haystack”).</li>
+<li><strong>Lost in the Middle</strong>: The heatmap visually represents recall accuracy (green is high, red/yellow is low). Models exhibit a strong primacy/recency bias. They remember facts at the very beginning (start of the prompt) or very end (right before generation) but struggle with details in the middle.</li>
+<li><strong>Recall Degradation</strong>: Recall drops not just due to position, but also due to the total volume of context. The larger the haystack, the lower the recall, even if the model’s token limit is technically larger.</li>
+<li><strong>Instructor Insight</strong>: Emphasize that context window size (e.g., 128k or 1M) is a capacity metric, not an attention/accuracy metric. Dynamic context placement is essential in production.</li>
+</ul>
+</div>
+<div class="footer">
+<p>Sources: <a href="https://arxiv.org/abs/2307.03172">Liu et al., 2023 — <em>Lost in the Middle</em></a> · <a href="https://blog.langchain.com/multi-needle-in-a-haystack/">LangChain Multi-Needle Analysis</a></p>
+</div>
+</section>
+<section id="multi-needle-reasoning-challenges" class="level2 smaller">
+<h2 class="smaller anchored" data-anchor-id="multi-needle-reasoning-challenges">Multi-Needle &amp; Reasoning Challenges</h2>
+<div class="columns">
+<div class="column" style="width:25%;">
+<p><strong>Retrieval is the Upper Bound</strong></p>
+<ol type="1">
+<li><strong>Fact Volume</strong>: Retrieval accuracy drops significantly as the number of “needles” (facts) increases.</li>
+<li><strong>Reasoning Penalty</strong>: Asking the model to <em>think</em> about multiple retrieved facts is harder than just finding them.</li>
+<li><strong>Upper Bound</strong>: If the model can’t retrieve it, it can’t reason about it.</li>
+</ol>
+</div><div class="column" style="width:75%;">
+<p><img src="../assets/retrieval_vs_reasoning.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="notes">
+<ul>
+<li><strong>Multi-Needle Challenge</strong>: Real RAG workloads rarely need only one fact. Usually, the model must retrieve multiple independent facts (e.g., “Find all three times the system crashed”). As the number of needles increases, retrieval accuracy drops drastically.</li>
+<li><strong>Reasoning Penalty</strong>: The heatmap/chart compares simple retrieval of multiple needles versus asking the model to perform reasoning/logic over those retrieved facts. Reasoning introduces a massive performance penalty.</li>
+<li><strong>Retrieval is the Upper Bound</strong>: This is the most crucial concept. If the model fails to retrieve even one of the required facts, it has zero chance of reasoning over it. Downstream reasoning fails when upstream retrieval fails.</li>
+<li><strong>Instructor Insight</strong>: Highlight that relying on massive context windows for complex reasoning is fragile. A better pattern is context compaction, parallel sub-queries, or prompting the model to explicitly list retrieved facts before synthesizing.</li>
+</ul>
+</div>
+<div class="footer">
+<p>Source: <a href="https://blog.langchain.com/multi-needle-in-a-haystack/">LangChain Multi-Needle Analysis</a></p>
+</div>
+</section>
+<section id="key-levers-of-context-optimization" class="level2">
+<h2 class="anchored" data-anchor-id="key-levers-of-context-optimization">Key Levers of Context Optimization</h2>
+<div class="incremental">
+<blockquote class="blockquote">
+<p><em>Given the cost and “Lost in the Middle” effects of long context, we need strategies to keep the payload tight.</em></p>
+</blockquote>
+<ul class="incremental">
+<li><strong>1. History Compaction</strong>: Shrink or summarize the conversation history (e.g., sliding window, recursive summarization).</li>
+<li><strong>2. Context Pruning (RAG)</strong>: Filter retrieved knowledge to only send relevant snippets, not entire documents.</li>
+</ul>
+</div>
+<div class="fragment callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Real-Time Cost Tracking
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Use <code>litellm</code>’s built-in usage tracking (e.g.&nbsp;<code>completion_cost</code>) to monitor API costs in real-time during development.</p>
+</div>
+</div>
+</section>
+<section id="history-compaction-strategies" class="level2">
+<h2 class="anchored" data-anchor-id="history-compaction-strategies">History Compaction Strategies</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 28%">
+<col style="width: 40%">
+<col style="width: 31%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Strategy</th>
+<th style="text-align: left;">What it does</th>
+<th style="text-align: left;">Trade-off</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Sliding window (last N)</strong></td>
+<td style="text-align: left;">Keep last N turns, drop the rest</td>
+<td style="text-align: left;">Simple, can lose early context</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Token truncation</strong></td>
+<td style="text-align: left;">Keep most recent messages until token cap</td>
+<td style="text-align: left;">Preserves recency, hard cutoff</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Recursive summarization</strong></td>
+<td style="text-align: left;">LLM-summarize old turns; prepend summary</td>
+<td style="text-align: left;">Preserves meaning, adds an LLM call</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Hybrid</strong></td>
+<td style="text-align: left;">Summary of old + verbatim of recent</td>
+<td style="text-align: left;">Best quality, most complex</td>
+</tr>
+</tbody>
+</table>
+<p>. . .</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>In the wild: Hermes
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><a href="https://hermes-agent.nousresearch.com/docs/developer-guide/context-compression-and-caching/">Hermes’ <code>context_compressor</code></a> summarizes the <strong>middle</strong> turns — keeping head and tail verbatim. A direct application of “Lost in the Middle”: compress where the model attends <em>least</em>.</p>
+</div>
+</div>
+</section>
+<section id="sliding-window-simple" class="level2">
+<h2 class="anchored" data-anchor-id="sliding-window-simple">Sliding Window (Simple)</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> trim_to_last_n(events: <span class="bu">list</span>[<span class="bu">dict</span>], n: <span class="bu">int</span> <span class="op">=</span> <span class="dv">10</span>) <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">dict</span>]:</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Keep system message + last n turns."""</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    system <span class="op">=</span> [e <span class="cf">for</span> e <span class="kw">in</span> events <span class="cf">if</span> e[<span class="st">"role"</span>] <span class="op">==</span> <span class="st">"system"</span>]</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    rest   <span class="op">=</span> [e <span class="cf">for</span> e <span class="kw">in</span> events <span class="cf">if</span> e[<span class="st">"role"</span>] <span class="op">!=</span> <span class="st">"system"</span>]</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> system <span class="op">+</span> rest[<span class="op">-</span>n:]</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Use during context preparation, not when storing</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>context <span class="op">=</span> trim_to_last_n(session.events(), n<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>response <span class="op">=</span> completion(model<span class="op">=</span><span class="st">"gpt-4o"</span>, messages<span class="op">=</span>context)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>. . .</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Trim the Payload, Not the Store
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Storage is cheap; tokens are expensive. Keep the full session history persisted — only compact what you <em>send</em> to the model.</p>
+</div>
+</div>
+</section>
+<section id="recursive-summarization" class="level2 smaller">
+<h2 class="smaller anchored" data-anchor-id="recursive-summarization">Recursive Summarization</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>SUMMARIZE_PROMPT <span class="op">=</span> <span class="st">"""Summarize this conversation.</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="st">Preserve facts, decisions, and open questions."""</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> compact(events: <span class="bu">list</span>[<span class="bu">dict</span>], keep_recent: <span class="bu">int</span> <span class="op">=</span> <span class="dv">6</span>) <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">dict</span>]:</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">len</span>(events) <span class="op">&lt;=</span> keep_recent:</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> events</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    old, recent <span class="op">=</span> events[:<span class="op">-</span>keep_recent], events[<span class="op">-</span>keep_recent:]</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>    summary <span class="op">=</span> completion(</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>        model<span class="op">=</span><span class="st">"gpt-4o-mini"</span>,  <span class="co"># cheap model is fine for summaries</span></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>        messages<span class="op">=</span>[</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>            {<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: SUMMARIZE_PROMPT},</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>            {<span class="st">"role"</span>: <span class="st">"user"</span>,   <span class="st">"content"</span>: <span class="bu">str</span>(old)},</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>        ],</span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>    ).choices[<span class="dv">0</span>].message.content</span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [{<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: <span class="ss">f"Earlier conversation summary:</span><span class="ch">\n</span><span class="sc">{</span>summary<span class="sc">}</span><span class="ss">"</span>}] <span class="op">+</span> recent</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>. . .</p>
+<blockquote class="blockquote">
+<p>Run this <strong>asynchronously</strong> between turns. The next turn just reads the cached compacted version.</p>
+</blockquote>
+</section>
+<section id="when-to-compact" class="level2">
+<h2 class="anchored" data-anchor-id="when-to-compact">When to Compact</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 26%">
+<col style="width: 44%">
+<col style="width: 29%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Trigger</th>
+<th style="text-align: left;">When it fires</th>
+<th style="text-align: left;">Best for</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Count-based</strong></td>
+<td style="text-align: left;">Token / turn count crosses threshold</td>
+<td style="text-align: left;">Bursty, predictable workloads</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Time-based</strong></td>
+<td style="text-align: left;">User idle for <em>N</em> minutes</td>
+<td style="text-align: left;">Long-running advisor agents</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Event-based</strong></td>
+<td style="text-align: left;">Sub-task / topic completes</td>
+<td style="text-align: left;">Task-oriented agents</td>
+</tr>
+</tbody>
+</table>
+<p>. . .</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Default to Count-Based
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Cheapest to implement, “good enough” for most agents. Add sophistication only when you have data showing it’s needed.</p>
+</div>
+</div>
+</section>
+<section id="prefix-stability" class="level2">
+<h2 class="anchored" data-anchor-id="prefix-stability">Prefix Stability: The Cache’s One Rule</h2>
+<p>The KV cache matches from the <strong>front</strong> and stops at the first difference: a hit requires the prefix to be <strong>byte-identical</strong> to a previous turn.</p>
+<p>. . .</p>
+<p>So <em>where</em> you place content matters as much as <em>how much</em> you send:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Position</th>
+<th style="text-align: left;">Holds</th>
+<th style="text-align: left;">On a change</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Stable prefix</strong></td>
+<td style="text-align: left;">system prompt, durable memory, tool list</td>
+<td style="text-align: left;">Cached — reused every turn</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Volatile tail</strong></td>
+<td style="text-align: left;">latest user turn, fresh retrieval</td>
+<td style="text-align: left;">Re-encoded every turn (cheap — it’s small)</td>
+</tr>
+</tbody>
+</table>
+<p>. . .</p>
+<p>Change one token early — swap a memory, reorder the tool list — and <strong>every token after it re-prefills at full cost</strong>. The lever: keep volatile content at the <em>end</em> and treat the prefix as frozen.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Foreshadow: a production consequence
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><a href="../../context_engineering/slides/hermes_case_study.html">Hermes Agent (§3)</a> pushes this to its conclusion — it <em>freezes</em> injected memory at session start to keep the prefix a stable cache key, accepting some staleness to keep the hit. Same rule, all the way.</p>
+</div>
+</div>
+</section>
+<section id="switching-models-mid-conversation-breaks-the-cache" class="level2">
+<h2 class="anchored" data-anchor-id="switching-models-mid-conversation-breaks-the-cache">Switching Models Mid-Conversation Breaks the Cache</h2>
+<p>The “Opus for planning, Sonnet for execution” dropdown looks free — but the KV cache is <strong>provider-and model-specific</strong>, so the first turn after the switch pays the full context cost (<a href="#prefix-stability">Prefix Stability</a>).</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Cost surface</th>
+<th style="text-align: left;">Same-model turn</th>
+<th style="text-align: left;">First turn after switch</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">KV cache</td>
+<td style="text-align: left;">Hit</td>
+<td style="text-align: left;"><strong>Miss</strong> — full prefill</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Tool-call shape in history</td>
+<td style="text-align: left;">In-distribution</td>
+<td style="text-align: left;"><strong>Out-of-distribution</strong></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">First-token latency</td>
+<td style="text-align: left;">Low</td>
+<td style="text-align: left;">High</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Risk of re-invoking another model’s tools</td>
+<td style="text-align: left;">None</td>
+<td style="text-align: left;">Real</td>
+</tr>
+</tbody>
+</table>
+<p>. . .</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Practical recommendation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Stay with <strong>one model</strong> for the duration of a conversation unless you have a concrete reason to switch. If you must switch, inject a system note: <em>“You just took over from another model. Some tool calls in this history are not yours — do not re-invoke them.”</em> Cursor, for example, ships this mitigation.</p>
+</div>
+</div>
+<div class="footer">
+<p>Source: <a href="https://cursor.com/blog/continually-improving-agent-harness">Cursor — <em>Continually Improving Our Agent Harness</em></a></p>
+</div>
+</section>
+</section>
+<section id="d.-memory" class="level1 sdaia-dark" data-background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)">
+<h1 class="sdaia-dark" data-background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)">D. Memory</h1>
+<p>Long-term, cross-session</p>
+<section id="sessions-vs-memory" class="level2">
+<h2 class="anchored" data-anchor-id="sessions-vs-memory">Sessions vs Memory</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><strong>Session (Short-Term Memory)</strong></p>
+<ul>
+<li>One conversation</li>
+<li>Raw events, verbatim</li>
+<li>Append-only log</li>
+<li>Lives &amp; dies with the conversation</li>
+</ul>
+</div><div class="column" style="width:50%;">
+<p><strong>Memory (Long-Term)</strong></p>
+<ul>
+<li>Spans <em>all</em> the user’s conversations</li>
+<li>Distilled, processed insights</li>
+<li>Curated (created, updated, deleted)</li>
+<li>Persists across sessions, forever (or until pruned)</li>
+</ul>
+</div>
+</div>
+<p>. . .</p>
+<blockquote class="blockquote">
+<p>Session = the messy desk during the project. Memory = the filing cabinet you sort into when the project is done.</p>
+</blockquote>
+</section>
+<section id="what-memory-unlocks" class="level2">
+<h2 class="anchored" data-anchor-id="what-memory-unlocks">What Memory Unlocks</h2>
+<div class="incremental">
+<ul class="incremental">
+<li><strong>Personalization</strong> — remember the user’s preferences, history, goals</li>
+<li><strong>Context window relief</strong> — distill 50 sessions into 10 facts</li>
+<li><strong>Self-improvement</strong> — record which strategies worked (procedural memory)</li>
+<li><strong>Cross-user insight</strong> — aggregated, anonymized signal across users</li>
+</ul>
+</div>
+</section>
+<section id="two-types-of-memory" class="level2">
+<h2 class="anchored" data-anchor-id="two-types-of-memory">Two Types of Memory</h2>
+<p>Borrowed from cognitive science:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 37%">
+<col style="width: 37%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Answers</th>
+<th style="text-align: left;">Example</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Declarative</strong></td>
+<td style="text-align: left;">“What?”</td>
+<td style="text-align: left;">“User prefers window seats.”</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Procedural</strong></td>
+<td style="text-align: left;">“How?”</td>
+<td style="text-align: left;">“When booking flights, search direct first, fall back to one-stop.”</td>
+</tr>
+</tbody>
+</table>
+<p>. . .</p>
+<blockquote class="blockquote">
+<p>Most memory systems today handle declarative memory. Procedural is the frontier — we’ll come back to it in Section F.</p>
+</blockquote>
+</section>
+<section id="memory-scope" class="level2">
+<h2 class="anchored" data-anchor-id="memory-scope">Memory Scope</h2>
+<p>Who does this memory describe?</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 42%">
+<col style="width: 23%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Scope</th>
+<th style="text-align: left;">Example</th>
+<th style="text-align: left;">Use</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>User</strong></td>
+<td style="text-align: left;"><code>"User prefers Arabic responses"</code></td>
+<td style="text-align: left;">Personalization (most common)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Application</strong></td>
+<td style="text-align: left;"><code>"Project codename ATLAS = Q4 launch"</code></td>
+<td style="text-align: left;">Shared facts for all users</td>
+</tr>
+</tbody>
+</table>
+<p>. . .</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Strict Isolation by Default
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>User-scoped memory must <strong>never</strong> leak across users. Application-scoped memory must be sanitized of any user PII.</p>
+</div>
+</div>
+<div class="notes">
+<ul>
+<li><strong>User Scope:</strong> Persists forever. Crucial for long-term personalization. Requires strict database-level row isolation (ACLs).</li>
+<li><strong>Application Scope:</strong> Shared across all users (e.g.&nbsp;system configurations, global facts). If updated dynamically by users, it is a high-risk vector for PII leaks or memory poisoning.</li>
+</ul>
+</div>
+</section>
+<section id="memory-organization-patterns" class="level2">
+<h2 class="anchored" data-anchor-id="memory-organization-patterns">Memory Organization Patterns</h2>
+<p>Three common shapes:</p>
+<div class="columns">
+<div class="column" style="width:33%;">
+<div class="qbox" style="border-top: 4px solid var(--sdaia-teal); background: rgba(0, 201, 167, 0.02); height: 100%; min-height: 440px; display: flex; flex-direction: column; justify-content: space-between; padding: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); margin-right: 5px;">
+<div>
+<span class="pill" style="background: rgba(0, 201, 167, 0.12); border-color: rgba(0, 201, 167, 0.25); color: var(--sdaia-navy); font-size: 0.45em; text-transform: uppercase; font-weight: bold; letter-spacing: 0.05em; padding: 2px 8px;">Atomic Facts</span>
+<h3 style="margin-top: 10px; margin-bottom: 5px; font-size: 0.85em; font-weight: 700; color: var(--sdaia-navy); border-bottom: none; padding-bottom: 0;" class="anchored">
+Collection
+</h3>
+<p style="font-size: 0.65em; line-height: 1.35; color: var(--muted); margin-bottom: 12px;">
+Many small, independent facts.
+</p>
+<div style="font-size: 0.72em; margin-bottom: 10px;">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="ot">[</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Prefers window seat"</span><span class="ot">,</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Vegetarian"</span><span class="ot">,</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Lives in Riyadh"</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="ot">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+<div style="font-size: 0.58em; color: var(--muted); border-top: 1px solid rgba(28, 53, 94, 0.1); padding-top: 8px; line-height: 1.35;">
+<p>🔍 <strong>Lookup:</strong> Semantic similarity search (covered in RAG).</p>
+</div>
+</div>
+</div><div class="column" style="width:33%;">
+<div class="qbox" style="border-top: 4px solid var(--sdaia-purple); background: rgba(155, 142, 192, 0.02); height: 100%; min-height: 440px; display: flex; flex-direction: column; justify-content: space-between; padding: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); margin-left: 2px; margin-right: 2px;">
+<div>
+<span class="pill" style="background: rgba(155, 142, 192, 0.12); border-color: rgba(155, 142, 192, 0.25); color: var(--sdaia-navy); font-size: 0.45em; text-transform: uppercase; font-weight: bold; letter-spacing: 0.05em; padding: 2px 8px;">Key-Value</span>
+<h3 style="margin-top: 10px; margin-bottom: 5px; font-size: 0.85em; font-weight: 700; color: var(--sdaia-navy); border-bottom: none; padding-bottom: 0;" class="anchored">
+Structured Profile
+</h3>
+<p style="font-size: 0.65em; line-height: 1.35; color: var(--muted); margin-bottom: 12px;">
+One record, many key-value fields.
+</p>
+<div style="font-size: 0.72em; margin-bottom: 10px;">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"seat"</span><span class="fu">:</span>  <span class="st">"window"</span><span class="fu">,</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"diet"</span><span class="fu">:</span>  <span class="st">"vegetarian"</span><span class="fu">,</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"city"</span><span class="fu">:</span>  <span class="st">"Riyadh"</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+<div style="font-size: 0.58em; color: var(--muted); border-top: 1px solid rgba(28, 53, 94, 0.1); padding-top: 8px; line-height: 1.35;">
+<p>⚡ <strong>Lookup:</strong> Direct key lookup or exact field access.</p>
+</div>
+</div>
+</div><div class="column" style="width:33%;">
+<div class="qbox" style="border-top: 4px solid var(--sdaia-orange); background: rgba(255, 122, 92, 0.02); height: 100%; min-height: 440px; display: flex; flex-direction: column; justify-content: space-between; padding: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); margin-left: 5px;">
+<div>
+<span class="pill" style="background: rgba(255, 122, 92, 0.12); border-color: rgba(255, 122, 92, 0.25); color: var(--sdaia-navy); font-size: 0.45em; text-transform: uppercase; font-weight: bold; letter-spacing: 0.05em; padding: 2px 8px;">Narrative</span>
+<h3 style="margin-top: 10px; margin-bottom: 5px; font-size: 0.85em; font-weight: 700; color: var(--sdaia-navy); border-bottom: none; padding-bottom: 0;" class="anchored">
+Rolling Summary
+</h3>
+<p style="font-size: 0.65em; line-height: 1.35; color: var(--muted); margin-bottom: 12px;">
+One natural-language doc, continuously updated/rewritten.
+</p>
+<div style="background: var(--sdaia-code-bg); border: 1px solid var(--sdaia-border); border-radius: 8px; padding: 12px; font-family: var(--font-family-monospace); font-size: 0.55em; line-height: 1.45; color: var(--text); min-height: 86px; display: flex; align-items: center; margin-bottom: 10px;">
+<p>“User is a vegetarian based in Riyadh who travels frequently and prefers window seats…”</p>
+</div>
+</div>
+<div style="font-size: 0.58em; color: var(--muted); border-top: 1px solid rgba(28, 53, 94, 0.1); padding-top: 8px; line-height: 1.35;">
+<p>🔄 <strong>Lookup:</strong> Whole-document context injection.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="where-memory-lives" class="level2">
+<h2 class="anchored" data-anchor-id="where-memory-lives">Where Memory Lives</h2>
+<p>These are the same storage families you saw in RAG. Here we focus on what’s distinct about <em>memory</em> content.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 31%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Storage</th>
+<th style="text-align: left;">Strength</th>
+<th style="text-align: left;">Weakness</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Vector DB</strong></td>
+<td style="text-align: left;">Semantic similarity (“things conceptually like X”)</td>
+<td style="text-align: left;">No relational reasoning</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Knowledge graph</strong></td>
+<td style="text-align: left;">“User → works_at → Company → in → City”</td>
+<td style="text-align: left;">Heavy schema, slower setup</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Hybrid</strong></td>
+<td style="text-align: left;">Graph nodes embedded as vectors</td>
+<td style="text-align: left;">More moving parts</td>
+</tr>
+</tbody>
+</table>
+<p>. . .</p>
+<blockquote class="blockquote">
+<p>Same tooling you saw in RAG. The <em>content</em> and <em>update patterns</em> are what differ.</p>
+</blockquote>
+</section>
+</section>
+<section id="memory-pipeline" class="level1 sdaia-dark" data-background-gradient="linear-gradient(135deg, #1C355E, #FF7A5C)">
+<h1 class="sdaia-dark" data-background-gradient="linear-gradient(135deg, #1C355E, #FF7A5C)">E. The Memory Pipeline</h1>
+<p>Extract, consolidate, retrieve</p>
+<section id="memory-generation-llm-driven-etl" class="level2">
+<h2 class="anchored" data-anchor-id="memory-generation-llm-driven-etl">Memory Generation = LLM-Driven ETL</h2>
+<pre class="{mermaid}"><code>%%| fig-width: 9
+graph LR
+    S["Session events"] --&gt;|extract| R["Raw memories"]
+    R --&gt;|"compare with existing"| C{"Consolidate"}
+    C --&gt;|"new"| CR["CREATE"]
+    C --&gt;|"contradicts"| D["DELETE"]
+    C --&gt;|"refines"| U["UPDATE"]
+    CR --&gt; ST["Memory Store"]
+    D --&gt; ST
+    U --&gt; ST
+
+    style S fill:#1C355E,stroke:#00C9A7,color:white
+    style R fill:#00C9A7,stroke:#1C355E,color:#1C355E
+    style C fill:#9B8EC0,stroke:#1C355E,color:#1C355E
+    style ST fill:#FF7A5C,stroke:#1C355E,color:#1C355E</code></pre>
+<p>The LLM decides: <em>what’s worth remembering, and how does it interact with what we already know?</em></p>
+<blockquote class="blockquote">
+<p><strong>Influential early treatment:</strong> <a href="https://arxiv.org/abs/2310.08560">MemGPT: Towards LLMs as Operating Systems</a> (Packer et al., 2023) framed LLM memory as OS-style virtual-context paging. The extract → consolidate retrieval triad we score below traces more directly to <a href="https://arxiv.org/abs/2304.03442">Generative Agents</a> (Park et al., 2023).</p>
+</blockquote>
+</section>
+<section id="extraction" class="level2 smaller">
+<h2 class="smaller anchored" data-anchor-id="extraction">Extraction</h2>
+<p>Filter the signal from the noise.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pydantic <span class="im">import</span> BaseModel</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> ExtractionResult(BaseModel):</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    facts: <span class="bu">list</span>[<span class="bu">str</span>]</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>EXTRACT_PROMPT <span class="op">=</span> <span class="st">"""Read the conversation. Extract only durable facts about the user that</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="st">would be useful in a future session: preferences, goals, constraints, key context.</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a><span class="st">Ignore: greetings, jokes, transient state, restated facts."""</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> extract(events: <span class="bu">list</span>[<span class="bu">dict</span>]) <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">dict</span>]:</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> completion(</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>        model<span class="op">=</span><span class="st">"gpt-4o"</span>,</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>        messages<span class="op">=</span>[</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>            {<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: EXTRACT_PROMPT},</span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>            {<span class="st">"role"</span>: <span class="st">"user"</span>,   <span class="st">"content"</span>: <span class="bu">str</span>(events)},</span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>        ],</span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>        response_format<span class="op">=</span>ExtractionResult,  <span class="co"># ← Pass the Pydantic schema</span></span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>    parsed <span class="op">=</span> ExtractionResult.model_validate_json(response.choices[<span class="dv">0</span>].message.content)</span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [f.fact <span class="cf">for</span> f <span class="kw">in</span> parsed.facts]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>. . .</p>
+<blockquote class="blockquote">
+<p>“Meaningful” is <em>application-specific</em>. A wellness coach extracts mood; a support agent extracts ticket numbers. Customize the prompt.</p>
+</blockquote>
+</section>
+<section id="consolidation" class="level2 smaller">
+<h2 class="smaller anchored" data-anchor-id="consolidation">Consolidation</h2>
+<p>Reconcile new extractions with what’s already stored.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>CONSOLIDATE_PROMPT <span class="op">=</span> <span class="st">"""Existing memories: </span><span class="sc">{existing}</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="st">New extracted facts: </span><span class="sc">{new}</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="st">For each new fact, decide:</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="st">- CREATE if novel</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a><span class="st">- UPDATE &lt;id&gt; if it refines an existing memory</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="st">- DELETE &lt;id&gt; if it contradicts and supersedes one</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a><span class="st">Return JSON list of operations."""</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>. . .</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 55%">
+<col style="width: 45%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Operation</th>
+<th style="text-align: left;">Trigger</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>CREATE</strong></td>
+<td style="text-align: left;">Topic is new</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>UPDATE</strong></td>
+<td style="text-align: left;">Same topic, more nuance (“interested in marketing” → “leads marketing for Q4 launch”)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>DELETE</strong></td>
+<td style="text-align: left;">Direct contradiction or invalidation</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Without Consolidation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>You get a noisy, contradictory log of every fact ever mentioned — <em>worse</em> than no memory at all.</p>
+</div>
+</div>
+</section>
+<section id="when-to-generate-memory" class="level2">
+<h2 class="anchored" data-anchor-id="when-to-generate-memory">When to Generate Memory</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Strategy</th>
+<th style="text-align: left;">Cost</th>
+<th style="text-align: left;">Freshness</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Every turn</strong></td>
+<td style="text-align: left;">Highest</td>
+<td style="text-align: left;">Most current</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Every N turns</strong></td>
+<td style="text-align: left;">Medium</td>
+<td style="text-align: left;">Lags by <em>N</em> turns</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>At session end</strong></td>
+<td style="text-align: left;">Lowest</td>
+<td style="text-align: left;">One batch per session</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Memory-as-a-tool</strong></td>
+<td style="text-align: left;">Variable</td>
+<td style="text-align: left;">Agent decides — most flexible</td>
+</tr>
+</tbody>
+</table>
+<p>. . .</p>
+<blockquote class="blockquote">
+<p><strong>Default:</strong> at session end, in the background. Use <em>memory-as-a-tool</em> when the agent should decide (“user just said ‘remember this’”).</p>
+</blockquote>
+</section>
+<section id="memory-as-a-tool" class="level2">
+<h2 class="anchored" data-anchor-id="memory-as-a-tool">Memory-as-a-Tool</h2>
+<p>Expose memory writes as a tool the agent can call.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> remember(fact: <span class="bu">str</span>, scope: <span class="bu">str</span> <span class="op">=</span> <span class="st">"user"</span>) <span class="op">-&gt;</span> <span class="bu">dict</span>:</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Persist a durable fact about the user.</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Use when the user says 'remember', or when they share a stable</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="co">    preference, goal, or constraint worth recalling later."""</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>    memory_store.upsert(user_id<span class="op">=</span>current_user, fact<span class="op">=</span>fact, scope<span class="op">=</span>scope)</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {<span class="st">"status"</span>: <span class="st">"ok"</span>}</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>agent_tools <span class="op">=</span> [search, calculate, remember]  <span class="co"># add to ReactAgent's toolkit</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="memory-provenance" class="level2">
+<h2 class="anchored" data-anchor-id="memory-provenance">Memory Provenance</h2>
+<p>Track <em>where</em> each memory came from.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Source</th>
+<th style="text-align: left;">Trust</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Bootstrapped</strong> (CRM, signup form)</td>
+<td style="text-align: left;">Highest — solves cold-start</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>User explicit</strong> (“remember my anniversary is…”)</td>
+<td style="text-align: left;">High</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>User implicit</strong> (inferred from chat)</td>
+<td style="text-align: left;">Medium</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Tool output</strong> (cached API response)</td>
+<td style="text-align: left;">Low — stale fast</td>
+</tr>
+</tbody>
+</table>
+<p>. . .</p>
+<p>When sources conflict, the <strong>highest-trust + most-recent</strong> wins. Without provenance, you can’t resolve conflicts at all.</p>
+</section>
+<section id="retrieval" class="level2">
+<h2 class="anchored" data-anchor-id="retrieval">Retrieval</h2>
+<p>RAG (which you saw earlier) ranks retrieval by <em>relevance</em> (topical similarity) alone. Memory retrieval needs two extra dimensions <strong>(Recency, Importance)</strong> on top of that — the triad introduced by <a href="https://arxiv.org/abs/2304.03442">Generative Agents</a> (Park et al., 2023):</p>
+<p>. . .</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 44%">
+<col style="width: 56%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Dimension</th>
+<th style="text-align: left;">What it asks</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Relevance</strong></td>
+<td style="text-align: left;">Is this memory topically related to the current turn?</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Recency</strong></td>
+<td style="text-align: left;">How recently was this captured?</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Importance</strong></td>
+<td style="text-align: left;">How significant was this memory at generation time?</td>
+</tr>
+</tbody>
+</table>
+<p>. . .</p>
+<pre class="text"><code># Weights are starting points, tune them.
+score = 0.6 × relevance + 0.2 × recency + 0.2 × importance</code></pre>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>Put the three on the same scale <em>first</em>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>You can use <strong>Min-max normalization</strong> to normalize each component across the candidate set before weighting.</p>
+</div>
+</div>
+</section>
+<section id="where-retrieved-memory-goes" class="level2">
+<h2 class="anchored" data-anchor-id="where-retrieved-memory-goes">Where Retrieved Memory Goes</h2>
+<p>Two placement options, with different trade-offs:</p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><strong>System prompt</strong></p>
+<pre><code>You are an assistant.
+Known about user:
+- Prefers Arabic
+- Vegetarian</code></pre>
+<ul>
+<li>High authority</li>
+<li>Always present</li>
+<li>Can over-influence (“everything is about food”)</li>
+</ul>
+</div><div class="column" style="width:50%;">
+<p><strong>Dialogue injection / tool</strong></p>
+<p>Retrieved as a tool result, mid-conversation.</p>
+<ul>
+<li>Only when relevant</li>
+<li>Lower over-influence risk</li>
+<li>Risk of <em>dialogue injection</em>: model may treat it as something the user said</li>
+</ul>
+</div>
+</div>
+<p>. . .</p>
+<blockquote class="blockquote">
+<p><strong>Hybrid:</strong> stable global facts (profile) in system prompt; episodic facts retrieved as needed.</p>
+</blockquote>
+</section>
+</section>
+<section id="procedural-memory" class="level1 sdaia-dark" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
+<h1 class="sdaia-dark" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">F. Procedural Memory</h1>
+<p>Self-improving agents</p>
+<section id="procedural-declarative" class="level2">
+<h2 class="anchored" data-anchor-id="procedural-declarative">Procedural ≠ Declarative</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Declarative</th>
+<th style="text-align: left;">Procedural</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Stores</td>
+<td style="text-align: left;">Facts</td>
+<td style="text-align: left;">Strategies / playbooks</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Source</td>
+<td style="text-align: left;">What the user said</td>
+<td style="text-align: left;">What worked in past runs</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Use</td>
+<td style="text-align: left;">“Insert into context as evidence”</td>
+<td style="text-align: left;">“Follow this approach for tasks like X”</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="the-self-improvement-loop" class="level2">
+<h2 class="anchored" data-anchor-id="the-self-improvement-loop">The Self-Improvement Loop</h2>
+<pre class="{mermaid}"><code>%%| fig-width: 9
+graph LR
+    A["Agent attempts task"] --&gt; O["Outcome"]
+    O --&gt;|"success"| E["Extract&lt;br/&gt;winning strategy"]
+    O --&gt;|"failure"| E2["Extract&lt;br/&gt;failure mode"]
+    E --&gt; P["Procedural Memory&lt;br/&gt;(playbook)"]
+    E2 --&gt; P
+    P --&gt;|"retrieve relevant playbook"| A
+
+    style A fill:#1C355E,stroke:#00C9A7,color:white
+    style O fill:#FF7A5C,stroke:#1C355E,color:#1C355E
+    style P fill:#00C9A7,stroke:#1C355E,color:#1C355E</code></pre>
+<p>. . .</p>
+<blockquote class="blockquote">
+<p>Each successful run leaves the agent slightly better at the <em>next</em> run, without retraining a single weight.</p>
+</blockquote>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>Failure mode
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Procedural memory entries are themselves LLM-generated — a bad playbook persists and re-corrupts every future run. Always score, version, and gate writes behind a success-rate threshold; “self-improving” agents that write unconditionally tend to drift, not learn.</p>
+</div>
+</div>
+<div class="footer">
+<p>Key Research: <a href="https://arxiv.org/abs/2303.11366"><strong>Reflexion</strong> (Shinn et al., 2023)</a> — verbal reinforcement · <a href="https://arxiv.org/abs/2305.16291"><strong>VOYAGER</strong> (Wang et al., 2023)</a> — skill libraries (procedural memory)</p>
+</div>
+</section>
+<section id="fine-tuning-vs-procedural-memory" class="level2">
+<h2 class="anchored" data-anchor-id="fine-tuning-vs-procedural-memory">Fine-Tuning vs Procedural Memory</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Fine-Tuning</th>
+<th style="text-align: left;">Procedural Memory</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Mechanism</td>
+<td style="text-align: left;">Updates model weights</td>
+<td style="text-align: left;">Injects a playbook into the prompt</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Setup</td>
+<td style="text-align: left;">Slow, offline, requires labeled data</td>
+<td style="text-align: left;">Fast, online, autonomous</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Reversibility</td>
+<td style="text-align: left;">Hard</td>
+<td style="text-align: left;">Trivial (delete the memory)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Per-user customization</td>
+<td style="text-align: left;">Expensive</td>
+<td style="text-align: left;">Free</td>
+</tr>
+</tbody>
+</table>
+<p>. . .</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>In-Context Learning Wins for Personalization
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Fine-tuning is right for global behavior changes. Procedural memory is right when the “right” approach varies per user, per task, or per week.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="production-evaluation" class="level1 sdaia-dark" data-background-gradient="linear-gradient(135deg, #1C355E, #FF7A5C)">
+<h1 class="sdaia-dark" data-background-gradient="linear-gradient(135deg, #1C355E, #FF7A5C)">G. Production &amp; Evaluation</h1>
+<p>What changes at scale</p>
+<section id="async-pipeline" class="level2">
+<h2 class="anchored" data-anchor-id="async-pipeline">Async Pipeline</h2>
+<pre class="{mermaid}"><code>%%| fig-width: 9
+graph LR
+    A["Agent replies"] --&gt; R["User"]
+    A -.-&gt;|"non-blocking"| Q["Memory Service"]
+    Q --&gt; E["Extract"]
+    E --&gt; C["Consolidate"]
+    C --&gt; S["Memory Store"]
+
+    style A fill:#1C355E,stroke:#00C9A7,color:white
+    style R fill:#00C9A7,stroke:#1C355E,color:#1C355E
+    style Q fill:#9B8EC0,stroke:#1C355E,color:#1C355E
+    style S fill:#FF7A5C,stroke:#1C355E,color:#1C355E</code></pre>
+<p>. . .</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Never Block on Memory Writes
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Memory generation costs an LLM call. Blocking the user’s reply on it adds 1–3 seconds of pure latency for <em>no</em> user-visible benefit.</p>
+</div>
+</div>
+</section>
+<section id="production-concerns" class="level2">
+<h2 class="anchored" data-anchor-id="production-concerns">Production Concerns</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 42%">
+<col style="width: 57%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Concern</th>
+<th style="text-align: left;">What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Concurrency</strong></td>
+<td style="text-align: left;">Optimistic locking on per-memory updates; queue heavy generation</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Failure handling</strong></td>
+<td style="text-align: left;">Retry with exponential backoff; dead-letter for repeated failures</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Multi-region</strong></td>
+<td style="text-align: left;">Memory store needs replication — consolidation requires consistent reads</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Privacy</strong></td>
+<td style="text-align: left;">Per-user ACLs; PII redaction <em>before</em> persistence; opt-out for memory generation; honor <strong>delete-on-request</strong> (GDPR-style targeted erasure of a user’s memories)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Memory poisoning</strong></td>
+<td style="text-align: left;">Malicious user input → “fact” extracted → poisons future turns. Sanitize at write time.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Embedding drift</strong></td>
+<td style="text-align: left;">Stored vectors go stale if you change the embedding model — keep the embedder versioned, and re-embed the store on upgrade</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="evaluation-measure-the-lift-not-the-fact-count" class="level2">
+<h2 class="anchored" data-anchor-id="evaluation-measure-the-lift-not-the-fact-count">Evaluation: Measure the Lift, Not the Fact Count</h2>
+<p>You already have the eval machinery from <strong>RAG evaluation</strong> — memory reuses all of it:</p>
+<ul>
+<li><strong>Extraction</strong> is graded like generation — precision / recall of captured facts vs a golden set</li>
+<li><strong>Retrieval</strong> is graded like RAG — Recall@K, latency</li>
+</ul>
+<p>. . .</p>
+<p>But those are <strong>leading indicators</strong>. The headline question is whether memory changes outcomes:</p>
+<blockquote class="blockquote">
+<p>Measure memory by <strong>task-success lift</strong> — not by counting facts.</p>
+</blockquote>
+<p>. . .</p>
+</section>
+<section id="evaluation-ablation-vs.-ab-testing" class="level2">
+<h2 class="anchored" data-anchor-id="evaluation-ablation-vs.-ab-testing">Evaluation: Ablation vs.&nbsp;A/B Testing</h2>
+<section id="prove-it-once-then-ab-the-config" class="level3">
+<h3 class="anchored" data-anchor-id="prove-it-once-then-ab-the-config">Prove it once, then A/B the <em>config</em></h3>
+<p>Memory isn’t free — tokens, latency, poisoning, over-influence — so the lift is <strong>not</strong> guaranteed.</p>
+<ol type="1">
+<li><strong>Justify it once</strong> with a memory-on vs memory-off <strong>ablation</strong>: replay your golden sessions with the pipeline wired in vs stubbed out.</li>
+<li><strong>After that, on/off retires.</strong> A/B the <em>configuration</em> instead — injection placement, recency/importance weights, extraction cadence.</li>
+</ol>
+<p><a href="../../ai_agents/slides/observability_and_evaluation.html">Observability &amp; Evaluation</a> will frame Task Success Rate as the headline agent metric; this is its memory-specific instance.</p>
+</section>
+</section>
+</section>
+<section id="h.-wrap-up" class="level1 sdaia-dark" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
+<h1 class="sdaia-dark" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">H. Wrap-up</h1>
+<section id="key-takeaways" class="level2">
+<h2 class="anchored" data-anchor-id="key-takeaways">Key Takeaways</h2>
+<ol type="1">
+<li><strong>LLMs are stateless.</strong> Context Engineering is the discipline of building the <em>right</em> payload every turn.</li>
+<li><strong>Sessions</strong> = one conversation, events + state, persisted in a durable store.</li>
+<li><strong>Context Windows</strong> are expensive and performance-bound—be strategic about what you include.</li>
+<li><strong>Compact what you send, not what you store.</strong> Sliding window, token cap, recursive summary.</li>
+<li><strong>Memory</strong> = cross-session, distilled. Declarative for facts, procedural for playbooks.</li>
+<li><strong>Memory pipeline</strong> = extract → consolidate (CREATE/UPDATE/DELETE) → store → retrieve.</li>
+<li><strong>Always async, always isolated, always evaluated.</strong></li>
+</ol>
+</section>
+<section id="further-reading-foundational-research" class="level2">
+<h2 class="anchored" data-anchor-id="further-reading-foundational-research">Further Reading &amp; Foundational Research</h2>
+<ul>
+<li><a href="https://www.kaggle.com/whitepaper-context-engineering-sessions-and-memory"><strong>Context Engineering: Sessions &amp; Memory</strong></a> — Kimberly Milam &amp; Antonio Gulli, Google, Nov 2025</li>
+<li><strong>Generative Agents</strong> (Park et al., 2023) — <em>Seminal work on memory streams and scoring.</em></li>
+<li><strong>MemGPT</strong> (Packer et al., 2023) — <em>Foundational “LLMs as OS” architecture for stateful agents.</em></li>
+<li><strong>Reflexion &amp; Voyager</strong> (2023) — <em>Key papers for self-improving agents and procedural memory.</em></li>
+</ul>
+<p>. . .</p>
+<section id="tooling" class="level3">
+<h3 class="anchored" data-anchor-id="tooling">Tooling</h3>
+<ul>
+<li>LangGraph: state-as-session pattern</li>
+<li>Vertex Agent Engine: Sessions &amp; Memory Bank (managed)</li>
+<li>Mem0, Zep: open memory managers</li>
+</ul>
+</section>
+</section>
 </section>
 
 </main>
