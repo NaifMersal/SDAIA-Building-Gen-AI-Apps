@@ -9,7 +9,7 @@
 <link href="sessions_and_memory_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.9.38">
 
-  <meta name="dcterms.date" content="2026-05-31">
+  <meta name="dcterms.date" content="2026-06-01">
   <title>Context Engineering: Sessions &amp; Memory</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -207,7 +207,7 @@
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-05-31</p>
+  <p class="date">2026-06-01</p>
 </section>
 <section>
 <section id="a.-context-engineering" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
@@ -747,9 +747,61 @@
 </div>
 </div>
 </section>
+<section id="prefix-stability" class="slide level2">
+<h2>Prefix Stability: The Cache’s One Rule</h2>
+<p>The KV cache matches from the <strong>front</strong> and stops at the first difference: a hit requires the prefix to be <strong>byte-identical</strong> to a previous turn.</p>
+<div class="fragment">
+<p>So <em>where</em> you place content matters as much as <em>how much</em> you send:</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Position</th>
+<th style="text-align: left;">Holds</th>
+<th style="text-align: left;">On a change</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Stable prefix</strong></td>
+<td style="text-align: left;">system prompt, durable memory, tool list</td>
+<td style="text-align: left;">Cached — reused every turn</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Volatile tail</strong></td>
+<td style="text-align: left;">latest user turn, fresh retrieval</td>
+<td style="text-align: left;">Re-encoded every turn (cheap — it’s small)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="fragment">
+<p>Change one token early — swap a memory, reorder the tool list — and <strong>every token after it re-prefills at full cost</strong>. The lever: keep volatile content at the <em>end</em> and treat the prefix as frozen.</p>
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Foreshadow: a production consequence</strong></p>
+</div>
+<div class="callout-content">
+<p><a href="../../context_engineering/slides/hermes_case_study.html">Hermes Agent (§3)</a> pushes this to its conclusion — it <em>freezes</em> injected memory at session start to keep the prefix a stable cache key, accepting some staleness to keep the hit. Same rule, all the way.</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<p>Source: <a href="https://platform.claude.com/docs/en/docs/build-with-claude/prompt-caching">Anthropic — Prompt caching</a> — “cache hits require 100% identical prompt segments”</p>
+</div>
+</div>
+</section>
 <section id="switching-models-mid-conversation-breaks-the-cache" class="slide level2">
 <h2>Switching Models Mid-Conversation Breaks the Cache</h2>
-<p>The “Opus for planning, Sonnet for execution” dropdown looks free — but the KV cache is <strong>provider- and model-specific</strong>, so the first turn after the switch pays the full context cost.</p>
+<p>The “Opus for planning, Sonnet for execution” dropdown looks free — but the KV cache is <strong>provider- and model-specific</strong>, so the first turn after the switch pays the full context cost — a prefix change like any other (<a href="#/prefix-stability">Prefix Stability</a>).</p>
 <table class="caption-top">
 <colgroup>
 <col style="width: 33%">
