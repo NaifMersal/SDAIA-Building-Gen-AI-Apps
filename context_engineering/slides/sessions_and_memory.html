@@ -9,7 +9,7 @@
 <link href="sessions_and_memory_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.9.38">
 
-  <meta name="dcterms.date" content="2026-06-01">
+  <meta name="dcterms.date" content="2026-06-02">
   <title>Context Engineering: Sessions &amp; Memory</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -207,7 +207,7 @@
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-06-01</p>
+  <p class="date">2026-06-02</p>
 </section>
 <section>
 <section id="a.-context-engineering" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
@@ -378,7 +378,7 @@
 </div>
 </div>
 </section>
-<section id="session-a-minimal-implementation" class="slide level2">
+<section id="session-a-minimal-implementation" class="slide level2 smaller">
 <h2>Session: A Minimal Implementation</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href=""></a><span class="kw">class</span> Session:</span>
 <span id="cb2-2"><a href=""></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, session_id: <span class="bu">str</span>, store):</span>
@@ -794,14 +794,11 @@
 </div>
 </div>
 </div>
-<div class="footer">
-<p>Source: <a href="https://platform.claude.com/docs/en/docs/build-with-claude/prompt-caching">Anthropic — Prompt caching</a> — “cache hits require 100% identical prompt segments”</p>
-</div>
 </div>
 </section>
 <section id="switching-models-mid-conversation-breaks-the-cache" class="slide level2">
 <h2>Switching Models Mid-Conversation Breaks the Cache</h2>
-<p>The “Opus for planning, Sonnet for execution” dropdown looks free — but the KV cache is <strong>provider- and model-specific</strong>, so the first turn after the switch pays the full context cost — a prefix change like any other (<a href="#/prefix-stability">Prefix Stability</a>).</p>
+<p>The “Opus for planning, Sonnet for execution” dropdown looks free — but the KV cache is <strong>provider-and model-specific</strong>, so the first turn after the switch pays the full context cost (<a href="#/prefix-stability">Prefix Stability</a>).</p>
 <table class="caption-top">
 <colgroup>
 <col style="width: 33%">
@@ -1308,7 +1305,7 @@ One natural-language doc, continuously updated/rewritten.
 </section>
 <section id="retrieval" class="slide level2">
 <h2>Retrieval</h2>
-<p>RAG (which you saw earlier) ranks retrieval by <em>relevance</em> (topical similarity) alone. Memory retrieval needs <strong>two extra dimensions(Recency, Importance)</strong> on top of that — the triad introduced by <a href="https://arxiv.org/abs/2304.03442">Generative Agents</a> (Park et al., 2023):</p>
+<p>RAG (which you saw earlier) ranks retrieval by <em>relevance</em> (topical similarity) alone. Memory retrieval needs two extra dimensions <strong>(Recency, Importance)</strong> on top of that — the triad introduced by <a href="https://arxiv.org/abs/2304.03442">Generative Agents</a> (Park et al., 2023):</p>
 <div class="fragment">
 <table class="caption-top">
 <colgroup>
@@ -1666,14 +1663,8 @@ Known about user:
 <li>Vertex Agent Engine: Sessions &amp; Memory Bank (managed)</li>
 <li>Mem0, Zep: open memory managers</li>
 </ul>
-</div>
-</section>
-<section id="questions" class="slide level2" data-background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)">
-<h2>Questions?</h2>
-<div class="r-fit-text">
-<p>Session 4 Complete</p>
-</div>
 
+</div>
 </section></section>
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">
