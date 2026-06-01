@@ -28,13 +28,16 @@ Then open `slides/index.html` in your browser.
 
 ### Capstone Project
 
-The capstone project starter code lives on a dedicated `project` branch. To access the project files, you can switch branches or add a local worktree:
+The capstone project starter code lives on a dedicated `project` branch. To access the project files, you can clone the branch directly or work from your existing clone:
 
 ```bash
-# To switch to the project branch directly:
+# Fresh, project-only clone
+git clone -b project --single-branch https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps.git project
+
+# ...or, from your existing clone, switch to the project branch directly:
 git checkout project
 
-# ...or, to checkout the project branch into a separate sibling folder:
+# ...or, checkout the project branch into a separate sibling folder:
 git fetch origin project
 git worktree add ../project project
 ```
