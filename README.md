@@ -26,6 +26,19 @@ git worktree add ../slides gh-pages
 
 Then open `slides/index.html` in your browser.
 
+### Capstone Project
+
+The capstone project starter code lives on a dedicated `project` branch. To access the project files, you can switch branches or add a local worktree:
+
+```bash
+# To switch to the project branch directly:
+git checkout project
+
+# ...or, to checkout the project branch into a separate sibling folder:
+git fetch origin project
+git worktree add ../project project
+```
+
 ## Getting Started
 
 ### 1. Fork this Repository
@@ -50,13 +63,13 @@ pip install -r requirements.txt   # or follow the notebook's install cell
 ├── NN_module_name/
 │   ├── labs/                      # Lab notebooks (fill in the TODOs)
 │   └── homework/                  # Homework assignments
-├── shared/                        # Shared helpers imported by labs
-└── project_starter/               # Capstone project scaffold
+└── shared/                        # Shared helpers imported by labs
 ```
 
 > Rendered slides are not on this branch — browse them at the [Course
 > Index & Slides](#course-index--slides) link above, or clone the
-> `gh-pages` branch (see *Slides offline*).
+> `gh-pages` branch (see *Slides offline*). The capstone project
+> starter code is also hosted on a separate `project` branch (see *Capstone Project*).
 
 ## Working on Labs
 

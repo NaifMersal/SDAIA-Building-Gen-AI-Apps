@@ -1,5 +1,9 @@
 # Module 05 Dependencies
-anthropic>=0.25.0
 litellm>=1.50.0
 python-dotenv>=1.0.0
 llm-guard>=0.3.0
+pytest>=8.0.0
+networkx>=3.0
+matplotlib>=3.7.0
+pandas>=2.0.0
+seaborn>=0.13.0
