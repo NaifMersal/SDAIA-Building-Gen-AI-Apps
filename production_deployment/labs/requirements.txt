@@ -1,0 +1,8 @@
+# Module 06 Dependencies
+anthropic>=0.25.0
+sentence-transformers>=3.0.0
+numpy>=1.24.0
+litellm>=1.50.0
+deepeval>=0.21.0
+prometheus-client>=0.20.0
+langfuse>=2.0.0

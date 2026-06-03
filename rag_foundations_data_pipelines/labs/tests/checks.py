@@ -65,16 +65,27 @@ def check_lab_4_5(variations):
 
 # Lab 5
 def check_lab_5_4(analysis):
+    # Retrieval is scored with DeepEval's Contextual* metrics (LLM-as-judge),
+    # so we only assert the per-query summary was populated, not exact scores.
     assert analysis is not None, "Should return results"
-    assert all(r['hit'] is not None for r in analysis), "Hit should be calculated"
-    assert all(r['precision'] is not None for r in analysis), "Precision should be calculated"
-    print("✅ Per-query analysis working!")
+    assert len(analysis) > 0, "Should analyze at least one query"
+    assert all(r.get('contextual_precision') is not None for r in analysis), \
+        "Run ContextualPrecisionMetric for each query"
+    assert all(r.get('passed') is not None for r in analysis), \
+        "Determine pass/fail for each query"
+    print("✅ Per-query retrieval analysis working!")
 
 def check_lab_5_6(suite_results):
+    # Generation is scored with DeepEval's Faithfulness + AnswerRelevancy metrics.
     assert suite_results is not None
-    assert all(r['faithfulness'] is not None for r in suite_results), "Calculate faithfulness"
-    assert all(r['passed'] is not None for r in suite_results), "Determine pass/fail"
-    print("✅ Eval suite working!")
+    assert len(suite_results) > 0, "Should evaluate at least one response"
+    assert all(r.get('faithfulness') is not None for r in suite_results), \
+        "Run FaithfulnessMetric for each response"
+    assert all(r.get('relevancy') is not None for r in suite_results), \
+        "Run AnswerRelevancyMetric for each response"
+    assert all(r.get('passed') is not None for r in suite_results), \
+        "Determine pass/fail for each response"
+    print("✅ Generation eval suite working!")
 
 # Lab 6
 def check_lab_6_3(optimal):
@@ -83,3 +94,14 @@ def check_lab_6_3(optimal):
     assert optimal['M'] in [32, 64], f"Expected M=32 or 64, got {optimal['M']}"
     assert 'ef_construction' in optimal or 'ef_search' in optimal, "Should include an EF parameter"
     print("✅ Configuration optimizer working!")
+
+def check_lab_6_4(results):
+    assert results is not None, "Should return a results dict"
+    for k in ("flat", "hnsw", "sq8"):
+        assert k in results, f"Missing index type: {k}"
+        assert results[k].get("recall") is not None, f"{k}: compute recall@10"
+        assert results[k].get("search_ms") is not None, f"{k}: measure search latency"
+    # Flat is exact => it IS the ground truth, so recall@10 must be 1.0.
+    # HNSW/SQ8 recall is checked for presence only (hardware/seed variance).
+    assert abs(results["flat"]["recall"] - 1.0) < 1e-6, "Flat (exact) recall@10 must be 1.0"
+    print("✅ FAISS quantization benchmark working!")
