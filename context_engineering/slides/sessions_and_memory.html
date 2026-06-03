@@ -9,7 +9,7 @@
 <link href="sessions_and_memory_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.9.38">
 
-  <meta name="dcterms.date" content="2026-06-02">
+  <meta name="dcterms.date" content="2026-06-03">
   <title>Context Engineering: Sessions &amp; Memory</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -98,7 +98,7 @@
     code span.vs { color: #20794d; } /* VerbatimString */
     code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="sessions_and_memory_files/libs/revealjs/dist/theme/quarto-58ba9499846de55aa5593708634b0fe7.css">
+  <link rel="stylesheet" href="sessions_and_memory_files/libs/revealjs/dist/theme/quarto-05b633aaffd58596cc6573a610a4b559.css">
   <link href="sessions_and_memory_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="sessions_and_memory_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="sessions_and_memory_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -207,7 +207,7 @@
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-06-02</p>
+  <p class="date">2026-06-03</p>
 </section>
 <section>
 <section id="a.-context-engineering" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
@@ -217,14 +217,14 @@
 <section id="agenda" class="slide level2">
 <h2>Agenda</h2>
 <ul>
-<li><strong>A. Context Engineering</strong> — the discipline (~5 min)</li>
-<li><strong>B. Sessions (Short-Term Memory)</strong> — events, state, persistence (~10 min)</li>
-<li><strong>C. Long Context</strong> — compaction strategies, mid-conversation model switching (~10 min)</li>
-<li><strong>D. Memory</strong> — long-term, cross-session (~10 min)</li>
-<li><strong>E. Memory Pipeline</strong> — extract, consolidate, retrieve (~10 min)</li>
-<li><strong>F. Procedural Memory</strong> — self-improving agents (~5 min)</li>
-<li><strong>G. Production &amp; Eval</strong> — async, security, metrics (~5 min)</li>
-<li><strong>H. Wrap-up</strong> — key takeaways (~3 min)</li>
+<li><strong>A. Context Engineering</strong> — the discipline</li>
+<li><strong>B. Sessions (Short-Term Memory)</strong> — events, state, persistence</li>
+<li><strong>C. Long Context</strong> — compaction strategies, mid-conversation model switching</li>
+<li><strong>D. Memory</strong> — long-term, cross-session</li>
+<li><strong>E. Memory Pipeline</strong> — extract, consolidate, retrieve</li>
+<li><strong>F. Procedural Memory</strong> — self-improving agents</li>
+<li><strong>G. Production &amp; Eval</strong> — async, security, metrics</li>
+<li><strong>H. Wrap-up</strong> — key takeaways</li>
 </ul>
 </section>
 <section id="from-prompt-engineering-to-context-engineering" class="slide level2">
@@ -744,6 +744,111 @@
 <p>Cheapest to implement, “good enough” for most agents. Add sophistication only when you have data showing it’s needed.</p>
 </div>
 </div>
+</div>
+</div>
+</section>
+<section id="beyond-compaction-context-as-an-environment" class="slide level2">
+<h2>Beyond Compaction: Context as an Environment</h2>
+<p>Compaction and pruning <em>throw context away</em> to dodge “Lost in the Middle.” A frontier alternative flips the framing: <strong>keep all of it, and let the model query it with code.</strong></p>
+<div class="fragment">
+<p><strong>Recursive Language Models (RLMs)</strong> — instead of feeding a giant prompt into the transformer:</p>
+<ol type="1">
+<li class="fragment">The full prompt is loaded as a <strong>variable in a Python REPL</strong> — part of the <em>environment</em>, not the attention window.</li>
+<li class="fragment">The <strong>root LLM writes code</strong> to inspect it — regex filters, chunking, slicing — to find what matters.</li>
+<li class="fragment">It <strong>recursively calls sub-LLMs</strong> on those slices, then aggregates their answers.</li>
+</ol>
+<aside class="notes">
+<ul>
+<li>The core trick: the model never attends over the whole haystack at once, so it sidesteps the token-level degradation (“context rot”) from the Lost-in-the-Middle slide. Attention quality is preserved because each sub-call sees a small, relevant slice.</li>
+<li>“Recursive” because the root model invokes the <em>same</em> capability on sub-tasks — in the paper’s experiments GPT-5 is the root and GPT-5-mini handles sub-calls.</li>
+<li>Contrast with RAG: RAG retrieves before the model runs; here the model itself decides how to navigate the full text programmatically, mid-reasoning.</li>
+</ul>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</div>
+</section>
+<section id="beyond-compaction-context-as-an-environment-ii" class="slide level2 smaller">
+<h2>Beyond Compaction: Context as an Environment (II)</h2>
+<div class="cell" data-reveal="true" data-fig-width="9" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<pre class="mermaid mermaid-js">graph LR
+    C["Long context&lt;br/&gt;(10M+ tokens)"] --&gt;|"load as variable"| R["Python REPL"]
+    R --&gt; L["Root LLM&lt;br/&gt;writes code"]
+    L --&gt;|"slice / filter"| S["Relevant chunks"]
+    S --&gt;|"recurse"| Sub["Sub-LLM calls"]
+    Sub --&gt; A["Aggregate → Answer"]
+    L -.-&gt;|"iterate"| R
+
+    style C fill:#1C355E,stroke:#00C9A7,color:white
+    style R fill:#9B8EC0,stroke:#1C355E,color:#1C355E
+    style L fill:#00C9A7,stroke:#1C355E,color:#1C355E
+    style Sub fill:#FF7A5C,stroke:#1C355E,color:#1C355E
+    style A fill:#1C355E,stroke:#00C9A7,color:white
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<div class="fragment">
+<p><strong>Why it matters:</strong> on long-document retrieval (BrowseComp-Plus, millions of tokens), the base model simply <em>can’t fit the input</em> — while the RLM scales to inputs ~2 orders of magnitude past the context window, often at <strong>lower median cost</strong> than one stuffed call.</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Trade-off</th>
+<th style="text-align: left;">Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Worse on short inputs</strong></td>
+<td style="text-align: left;">A direct call wins below a crossover length — only pays off when context is huge</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>High cost variance</strong></td>
+<td style="text-align: left;">Runaway trajectories can cost far more than one call</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Slower</strong></td>
+<td style="text-align: left;">Sub-calls run sequentially today</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Not trained for it</strong></td>
+<td style="text-align: left;">Models navigate their own context inefficiently</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Same word, opposite philosophy</strong></p>
+</div>
+<div class="callout-content">
+<p><em>Recursive summarization</em> (earlier) is <strong>lossy</strong> — one cheap pass that discards detail. RLM is <strong>lossless navigation</strong> — it keeps everything and pays per query. A 2025 preprint and frontier technique, not yet settled practice.</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<p>Source: <a href="https://arxiv.org/abs/2512.24601">Zhang, Kraska &amp; Khattab — <em>Recursive Language Models</em> (arXiv:2512.24601, 2025)</a></p>
 </div>
 </div>
 </section>
@@ -1655,6 +1760,7 @@ Known about user:
 <li><strong>Generative Agents</strong> (Park et al., 2023) — <em>Seminal work on memory streams and scoring.</em></li>
 <li><strong>MemGPT</strong> (Packer et al., 2023) — <em>Foundational “LLMs as OS” architecture for stateful agents.</em></li>
 <li><strong>Reflexion &amp; Voyager</strong> (2023) — <em>Key papers for self-improving agents and procedural memory.</em></li>
+<li><a href="https://arxiv.org/abs/2512.24601"><strong>Recursive Language Models</strong></a> (Zhang, Kraska &amp; Khattab, 2025) — <em>Treat long context as a navigable environment instead of compacting it.</em></li>
 </ul>
 <div class="fragment">
 <h3 id="tooling">Tooling</h3>

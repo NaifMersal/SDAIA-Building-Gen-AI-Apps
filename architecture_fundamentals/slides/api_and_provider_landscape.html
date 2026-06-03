@@ -9,7 +9,7 @@
 <link href="api_and_provider_landscape_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.9.38">
 
-  <meta name="dcterms.date" content="2026-06-02">
+  <meta name="dcterms.date" content="2026-06-03">
   <title>API &amp; Provider Landscape</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -98,7 +98,7 @@
     code span.vs { color: #20794d; } /* VerbatimString */
     code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="api_and_provider_landscape_files/libs/revealjs/dist/theme/quarto-58ba9499846de55aa5593708634b0fe7.css">
+  <link rel="stylesheet" href="api_and_provider_landscape_files/libs/revealjs/dist/theme/quarto-05b633aaffd58596cc6573a610a4b559.css">
   <link href="api_and_provider_landscape_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="api_and_provider_landscape_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="api_and_provider_landscape_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -207,7 +207,7 @@
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-06-02</p>
+  <p class="date">2026-06-03</p>
 </section>
 <section id="agenda" class="slide level2">
 <h2>Agenda</h2>
@@ -658,27 +658,66 @@
 <td>Return tokens as generated</td>
 <td><code>True</code> for chat UIs, <code>False</code> for parsing</td>
 </tr>
+<tr class="odd">
+<td><code>reasoning_effort</code></td>
+<td>How hard a reasoning model thinks</td>
+<td><code>"low"</code>, <code>"medium"</code>, <code>"high"</code></td>
+</tr>
 </tbody>
 </table>
+</section>
+<section id="reasoning-parameters" class="slide level2 smaller">
+<h2>Reasoning Parameters</h2>
+<p>The <a href="../../architecture_fundamentals/slides/genai_fundamentals.html">thinking models</a> from Session 1 are just one more parameter away.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href=""></a><span class="im">from</span> litellm <span class="im">import</span> completion</span>
+<span id="cb3-2"><a href=""></a></span>
+<span id="cb3-3"><a href=""></a>resp <span class="op">=</span> completion(</span>
+<span id="cb3-4"><a href=""></a>    model<span class="op">=</span><span class="st">"anthropic/claude-opus-4-8"</span>,</span>
+<span id="cb3-5"><a href=""></a>    messages<span class="op">=</span>[{<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="st">"Prove √2 is irrational."</span>}],</span>
+<span id="cb3-6"><a href=""></a>    reasoning_effort<span class="op">=</span><span class="st">"high"</span>,   <span class="co"># adaptive thinking: the model decides how much to think</span></span>
+<span id="cb3-7"><a href=""></a>)</span>
+<span id="cb3-8"><a href=""></a></span>
+<span id="cb3-9"><a href=""></a><span class="bu">print</span>(resp.choices[<span class="dv">0</span>].message.reasoning_content)  <span class="co"># standardized thinking/reasoning content</span></span>
+<span id="cb3-10"><a href=""></a><span class="bu">print</span>(resp.choices[<span class="dv">0</span>].message.content)            <span class="co"># the final answer</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-note no-icon callout-style-simple">
+<div class="callout-body">
+<div class="callout-content">
+<p><strong>Standardization:</strong> LiteLLM standardizes reasoning output into <code>message.reasoning_content</code> across all supported providers (OpenAI, Anthropic, DeepSeek, Vertex, Google, etc.). This feature requires <strong><a href="https://docs.litellm.ai/docs/reasoning_content">LiteLLM v1.63.0+</a></strong>.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Same trade-off as Session 1</strong></p>
+</div>
+<div class="callout-content">
+<p>Higher effort = better answers, more cost and latency. Reach for it on math, code, and audit tasks — not real-time chat.</p>
+</div>
+</div>
+</div>
 </section>
 <section id="streaming-responses" class="slide level2">
 <h2>Streaming Responses</h2>
 <p>Return tokens as they’re generated, instead of waiting for the full response.</p>
 <div class="columns">
 <div class="column" style="width:60%;">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href=""></a><span class="im">from</span> litellm <span class="im">import</span> completion</span>
-<span id="cb3-2"><a href=""></a></span>
-<span id="cb3-3"><a href=""></a>response <span class="op">=</span> completion(</span>
-<span id="cb3-4"><a href=""></a>    model<span class="op">=</span><span class="st">"openrouter/.../llama-3.1-8b"</span>,</span>
-<span id="cb3-5"><a href=""></a>    messages<span class="op">=</span>[{<span class="st">"role"</span>: <span class="st">"user"</span>,</span>
-<span id="cb3-6"><a href=""></a>               <span class="st">"content"</span>: <span class="st">"Tell me a story."</span>}],</span>
-<span id="cb3-7"><a href=""></a>    stream<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb3-8"><a href=""></a>)</span>
-<span id="cb3-9"><a href=""></a></span>
-<span id="cb3-10"><a href=""></a><span class="cf">for</span> chunk <span class="kw">in</span> response:</span>
-<span id="cb3-11"><a href=""></a>    delta <span class="op">=</span> chunk.choices[<span class="dv">0</span>].delta.content</span>
-<span id="cb3-12"><a href=""></a>    <span class="cf">if</span> delta:</span>
-<span id="cb3-13"><a href=""></a>        <span class="bu">print</span>(delta, end<span class="op">=</span><span class="st">""</span>, flush<span class="op">=</span><span class="va">True</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href=""></a><span class="im">from</span> litellm <span class="im">import</span> completion</span>
+<span id="cb4-2"><a href=""></a></span>
+<span id="cb4-3"><a href=""></a>response <span class="op">=</span> completion(</span>
+<span id="cb4-4"><a href=""></a>    model<span class="op">=</span><span class="st">"openrouter/.../llama-3.1-8b"</span>,</span>
+<span id="cb4-5"><a href=""></a>    messages<span class="op">=</span>[{<span class="st">"role"</span>: <span class="st">"user"</span>,</span>
+<span id="cb4-6"><a href=""></a>               <span class="st">"content"</span>: <span class="st">"Tell me a story."</span>}],</span>
+<span id="cb4-7"><a href=""></a>    stream<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb4-8"><a href=""></a>)</span>
+<span id="cb4-9"><a href=""></a></span>
+<span id="cb4-10"><a href=""></a><span class="cf">for</span> chunk <span class="kw">in</span> response:</span>
+<span id="cb4-11"><a href=""></a>    delta <span class="op">=</span> chunk.choices[<span class="dv">0</span>].delta.content</span>
+<span id="cb4-12"><a href=""></a>    <span class="cf">if</span> delta:</span>
+<span id="cb4-13"><a href=""></a>        <span class="bu">print</span>(delta, end<span class="op">=</span><span class="st">""</span>, flush<span class="op">=</span><span class="va">True</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div><div class="column" style="width:40%;">
 <table class="caption-top">
 <thead>
@@ -771,25 +810,25 @@
 </div>
 </div>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href=""></a><span class="co"># Measuring TTFT with streaming</span></span>
-<span id="cb4-2"><a href=""></a><span class="im">import</span> time</span>
-<span id="cb4-3"><a href=""></a><span class="im">from</span> litellm <span class="im">import</span> completion</span>
-<span id="cb4-4"><a href=""></a></span>
-<span id="cb4-5"><a href=""></a>start <span class="op">=</span> time.time()</span>
-<span id="cb4-6"><a href=""></a>first_token_time <span class="op">=</span> <span class="va">None</span></span>
-<span id="cb4-7"><a href=""></a></span>
-<span id="cb4-8"><a href=""></a>response <span class="op">=</span> completion(</span>
-<span id="cb4-9"><a href=""></a>    model<span class="op">=</span><span class="st">"openrouter/meta-llama/llama-3.1-8b-instruct:free"</span>,</span>
-<span id="cb4-10"><a href=""></a>    messages<span class="op">=</span>[{<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="st">"Tell me a story."</span>}],</span>
-<span id="cb4-11"><a href=""></a>    stream<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb4-12"><a href=""></a>)</span>
-<span id="cb4-13"><a href=""></a></span>
-<span id="cb4-14"><a href=""></a><span class="cf">for</span> chunk <span class="kw">in</span> response:</span>
-<span id="cb4-15"><a href=""></a>    <span class="cf">if</span> chunk.choices[<span class="dv">0</span>].delta.content:</span>
-<span id="cb4-16"><a href=""></a>        <span class="cf">if</span> first_token_time <span class="kw">is</span> <span class="va">None</span>:</span>
-<span id="cb4-17"><a href=""></a>            first_token_time <span class="op">=</span> time.time()</span>
-<span id="cb4-18"><a href=""></a>            ttft_ms <span class="op">=</span> (first_token_time <span class="op">-</span> start) <span class="op">*</span> <span class="dv">1000</span></span>
-<span id="cb4-19"><a href=""></a>            <span class="bu">print</span>(<span class="ss">f"TTFT: </span><span class="sc">{</span>ttft_ms<span class="sc">:.0f}</span><span class="ss"> ms"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href=""></a><span class="co"># Measuring TTFT with streaming</span></span>
+<span id="cb5-2"><a href=""></a><span class="im">import</span> time</span>
+<span id="cb5-3"><a href=""></a><span class="im">from</span> litellm <span class="im">import</span> completion</span>
+<span id="cb5-4"><a href=""></a></span>
+<span id="cb5-5"><a href=""></a>start <span class="op">=</span> time.time()</span>
+<span id="cb5-6"><a href=""></a>first_token_time <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb5-7"><a href=""></a></span>
+<span id="cb5-8"><a href=""></a>response <span class="op">=</span> completion(</span>
+<span id="cb5-9"><a href=""></a>    model<span class="op">=</span><span class="st">"openrouter/meta-llama/llama-3.1-8b-instruct:free"</span>,</span>
+<span id="cb5-10"><a href=""></a>    messages<span class="op">=</span>[{<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="st">"Tell me a story."</span>}],</span>
+<span id="cb5-11"><a href=""></a>    stream<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb5-12"><a href=""></a>)</span>
+<span id="cb5-13"><a href=""></a></span>
+<span id="cb5-14"><a href=""></a><span class="cf">for</span> chunk <span class="kw">in</span> response:</span>
+<span id="cb5-15"><a href=""></a>    <span class="cf">if</span> chunk.choices[<span class="dv">0</span>].delta.content:</span>
+<span id="cb5-16"><a href=""></a>        <span class="cf">if</span> first_token_time <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb5-17"><a href=""></a>            first_token_time <span class="op">=</span> time.time()</span>
+<span id="cb5-18"><a href=""></a>            ttft_ms <span class="op">=</span> (first_token_time <span class="op">-</span> start) <span class="op">*</span> <span class="dv">1000</span></span>
+<span id="cb5-19"><a href=""></a>            <span class="bu">print</span>(<span class="ss">f"TTFT: </span><span class="sc">{</span>ttft_ms<span class="sc">:.0f}</span><span class="ss"> ms"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section></section>
 <section>
 <section id="e.-security-first" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #FF7A5C)">
@@ -811,23 +850,23 @@
 </div>
 </div>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href=""></a><span class="co"># ❌ DO NOT do this</span></span>
-<span id="cb5-2"><a href=""></a>response <span class="op">=</span> completion(model<span class="op">=</span><span class="st">"..."</span>, api_key<span class="op">=</span><span class="st">"sk-or-v1-abc123realtoken"</span>)</span>
-<span id="cb5-3"><a href=""></a></span>
-<span id="cb5-4"><a href=""></a><span class="co"># ✅ DO this — LiteLLM reads OPENROUTER_API_KEY from the environment</span></span>
-<span id="cb5-5"><a href=""></a><span class="im">import</span> os</span>
-<span id="cb5-6"><a href=""></a><span class="im">from</span> dotenv <span class="im">import</span> load_dotenv</span>
-<span id="cb5-7"><a href=""></a>load_dotenv()</span>
-<span id="cb5-8"><a href=""></a></span>
-<span id="cb5-9"><a href=""></a>response <span class="op">=</span> completion(model<span class="op">=</span><span class="st">"openrouter/meta-llama/llama-3.1-8b-instruct:free"</span>,</span>
-<span id="cb5-10"><a href=""></a>                      messages<span class="op">=</span>[{<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="st">"Hello"</span>}])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href=""></a><span class="co"># ❌ DO NOT do this</span></span>
+<span id="cb6-2"><a href=""></a>response <span class="op">=</span> completion(model<span class="op">=</span><span class="st">"..."</span>, api_key<span class="op">=</span><span class="st">"sk-or-v1-abc123realtoken"</span>)</span>
+<span id="cb6-3"><a href=""></a></span>
+<span id="cb6-4"><a href=""></a><span class="co"># ✅ DO this — LiteLLM reads OPENROUTER_API_KEY from the environment</span></span>
+<span id="cb6-5"><a href=""></a><span class="im">import</span> os</span>
+<span id="cb6-6"><a href=""></a><span class="im">from</span> dotenv <span class="im">import</span> load_dotenv</span>
+<span id="cb6-7"><a href=""></a>load_dotenv()</span>
+<span id="cb6-8"><a href=""></a></span>
+<span id="cb6-9"><a href=""></a>response <span class="op">=</span> completion(model<span class="op">=</span><span class="st">"openrouter/meta-llama/llama-3.1-8b-instruct:free"</span>,</span>
+<span id="cb6-10"><a href=""></a>                      messages<span class="op">=</span>[{<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="st">"Hello"</span>}])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><strong>The <code>.env</code> pattern (development):</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href=""></a><span class="co"># .env</span></span>
-<span id="cb6-2"><a href=""></a><span class="va">OPENROUTER_API_KEY</span><span class="op">=</span>sk-or-v1-your_token_here</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href=""></a><span class="co"># Ensure required API keys are present</span></span>
-<span id="cb7-2"><a href=""></a><span class="cf">if</span> <span class="kw">not</span> os.getenv(<span class="st">"OPENROUTER_API_KEY"</span>):</span>
-<span id="cb7-3"><a href=""></a>    <span class="cf">raise</span> <span class="pp">EnvironmentError</span>(</span>
-<span id="cb7-4"><a href=""></a>        <span class="st">"OPENROUTER_API_KEY not found. Set it in .env or as an env var."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href=""></a><span class="co"># .env</span></span>
+<span id="cb7-2"><a href=""></a><span class="va">OPENROUTER_API_KEY</span><span class="op">=</span>sk-or-v1-your_token_here</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href=""></a><span class="co"># Ensure required API keys are present</span></span>
+<span id="cb8-2"><a href=""></a><span class="cf">if</span> <span class="kw">not</span> os.getenv(<span class="st">"OPENROUTER_API_KEY"</span>):</span>
+<span id="cb8-3"><a href=""></a>    <span class="cf">raise</span> <span class="pp">EnvironmentError</span>(</span>
+<span id="cb8-4"><a href=""></a>        <span class="st">"OPENROUTER_API_KEY not found. Set it in .env or as an env var."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="gitignore-production-secrets" class="slide level2 smaller">
 <h2><code>.gitignore</code> + Production Secrets</h2>
@@ -846,16 +885,16 @@
 </div>
 <div class="columns">
 <div class="column" style="width:50%;">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href=""></a><span class="co"># .gitignore</span></span>
-<span id="cb8-2"><a href=""></a><span class="ex">.env</span></span>
-<span id="cb8-3"><a href=""></a><span class="ex">.env.local</span></span>
-<span id="cb8-4"><a href=""></a><span class="ex">*.env</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href=""></a><span class="co"># .gitignore</span></span>
+<span id="cb9-2"><a href=""></a><span class="ex">.env</span></span>
+<span id="cb9-3"><a href=""></a><span class="ex">.env.local</span></span>
+<span id="cb9-4"><a href=""></a><span class="ex">*.env</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><strong>Setting env vars directly (CI / shell):</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href=""></a><span class="co"># Linux / macOS</span></span>
-<span id="cb9-2"><a href=""></a><span class="bu">export</span> <span class="va">OPENROUTER_API_KEY</span><span class="op">=</span>sk-or-v1-...</span>
-<span id="cb9-3"><a href=""></a></span>
-<span id="cb9-4"><a href=""></a><span class="co"># Windows PowerShell</span></span>
-<span id="cb9-5"><a href=""></a><span class="va">$env</span><span class="ex">:OPENROUTER_API_KEY</span> = <span class="st">"sk-or-v1-..."</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href=""></a><span class="co"># Linux / macOS</span></span>
+<span id="cb10-2"><a href=""></a><span class="bu">export</span> <span class="va">OPENROUTER_API_KEY</span><span class="op">=</span>sk-or-v1-...</span>
+<span id="cb10-3"><a href=""></a></span>
+<span id="cb10-4"><a href=""></a><span class="co"># Windows PowerShell</span></span>
+<span id="cb10-5"><a href=""></a><span class="va">$env</span><span class="ex">:OPENROUTER_API_KEY</span> = <span class="st">"sk-or-v1-..."</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div><div class="column" style="width:50%;">
 <table class="caption-top">
 <thead>
@@ -921,6 +960,7 @@
 <li><strong>OpenRouter</strong> provides free access to strong models — perfect for prototyping; mix providers in production.</li>
 <li><strong>Benchmarks move fast</strong> — use <strong>Artificial Analysis</strong> and the <strong>OALL (Arabic LLM Leaderboard)</strong> to stay updated.</li>
 <li><strong>Stream when a user is waiting</strong> — and not when you’ll parse the output as JSON.</li>
+<li><strong>Control reasoning with <code>reasoning_effort</code></strong> — let the model decide how hard to think; trade speed and cost for correctness.</li>
 <li><strong>Performance metrics matter</strong> — measure TTFT and TPS, don’t guess.</li>
 <li><strong>Security is non-negotiable</strong> — <code>.env</code> for development, secrets managers for production.</li>
 <li><strong>Design for provider abstraction</strong> — make switching providers trivial.</li>

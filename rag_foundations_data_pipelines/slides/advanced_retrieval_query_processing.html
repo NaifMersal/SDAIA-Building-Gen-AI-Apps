@@ -9,7 +9,7 @@
 <link href="advanced_retrieval_query_processing_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.9.38">
 
-  <meta name="dcterms.date" content="2026-06-02">
+  <meta name="dcterms.date" content="2026-06-03">
   <title>Beyond Basic Search</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -98,7 +98,7 @@
     code span.vs { color: #20794d; } /* VerbatimString */
     code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="advanced_retrieval_query_processing_files/libs/revealjs/dist/theme/quarto-58ba9499846de55aa5593708634b0fe7.css">
+  <link rel="stylesheet" href="advanced_retrieval_query_processing_files/libs/revealjs/dist/theme/quarto-05b633aaffd58596cc6573a610a4b559.css">
   <link href="advanced_retrieval_query_processing_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="advanced_retrieval_query_processing_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="advanced_retrieval_query_processing_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -202,12 +202,12 @@
 
 <section id="title-slide" data-background-image="../../slides_template/assets/anim.svg" data-background-opacity="0.15" data-background-size="cover" class="quarto-title-block center">
   <h1 class="title">Beyond Basic Search</h1>
-  <p class="subtitle">RAG Foundations &amp; Data Pipelines — Session 4</p>
+  <p class="subtitle">RAG Foundations &amp; Data Pipelines — Session 5</p>
 
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-06-02</p>
+  <p class="date">2026-06-03</p>
 </section>
 <section>
 <section id="a.-why-simple-search-fails" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
@@ -220,10 +220,24 @@
 <li><strong>A. Why Simple Search Fails</strong> — Limitations of basic vector search</li>
 <li><strong>B. Hybrid Search</strong> — Combining keyword and semantic retrieval</li>
 <li><strong>C. Re-Ranking</strong> — The cross-encoder quality gate</li>
-<li><strong>D. Query Understanding</strong> — Preprocessing and intent classification</li>
-<li><strong>E. Query Expansion</strong> — Generating better search queries</li>
-<li><strong>F. Wrap-up</strong> — The complete advanced retrieval pipeline</li>
+<li><strong>D. Adaptive Retrieval</strong> — CRAG and Self-RAG</li>
+<li><strong>E. Query Understanding</strong> — Preprocessing and intent classification</li>
+<li><strong>F. Query Expansion</strong> — Generating better search queries</li>
+<li><strong>G. Wrap-up</strong> — The complete advanced retrieval pipeline</li>
 </ul>
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>You can measure now</strong></p>
+</div>
+<div class="callout-content">
+<p>In Session 4 you built a golden dataset and recorded a baseline (Hit Rate, MRR, Precision/Recall). Every technique in this session earns its place by <strong>moving those numbers</strong> — run the eval suite before and after each change.</p>
+</div>
+</div>
+</div>
 </section>
 <section id="when-semantic-search-misses" class="slide level2">
 <h2>When Semantic Search Misses</h2>
@@ -237,8 +251,9 @@
 <p>User: “How do I fix X?” Doc: “Troubleshooting X”</p>
 <p>Semantic distance is larger than expected.</p>
 </div><div class="column" style="width:34%;">
-<p><strong>Lost in the Middle</strong></p>
-<p>LLMs struggle when the answer is buried in the middle of a long context window.</p>
+<p><strong>Complex Questions</strong></p>
+<p>“Compare X and Y across 2023 and 2024”</p>
+<p>One query can’t capture every facet — recall suffers.</p>
 </div></div>
 </section>
 <section id="the-advanced-pipeline" class="slide level2">
@@ -374,27 +389,30 @@
 <tbody>
 <tr class="odd">
 <td>Doc A</td>
-<td style="text-align: center;">1</td>
-<td style="text-align: center;">3</td>
-<td style="text-align: center;">1/61 + 1/63 = <strong>0.0326</strong></td>
+<td style="text-align: center;">1st</td>
+<td style="text-align: center;">3rd</td>
+<td style="text-align: center;">1/60 + 1/62 = <strong>0.0328</strong></td>
 </tr>
 <tr class="even">
 <td>Doc B</td>
-<td style="text-align: center;">2</td>
+<td style="text-align: center;">2nd</td>
 <td style="text-align: center;">—</td>
-<td style="text-align: center;">1/62 = <strong>0.0161</strong></td>
+<td style="text-align: center;">1/61 = <strong>0.0164</strong></td>
 </tr>
 <tr class="odd">
 <td>Doc C</td>
-<td style="text-align: center;">3</td>
-<td style="text-align: center;">1</td>
-<td style="text-align: center;">1/63 + 1/61 = <strong>0.0322</strong></td>
+<td style="text-align: center;">3rd</td>
+<td style="text-align: center;">1st</td>
+<td style="text-align: center;">1/62 + 1/60 = <strong>0.0328</strong></td>
 </tr>
 </tbody>
 </table>
-<p>Documents that score well in <strong>both</strong> systems rise to the top.</p>
+<p>Documents that score well in <strong>both</strong> systems rise to the top — Doc A and Doc C tie here precisely because 1st-and-3rd is symmetric, while Doc B (seen by only one ranker) falls behind.</p>
+
 </div>
-</section>
+<aside><div>
+<p>The 1st-ranked doc contributes <code>1/(0 + k)</code>: the code (next slides) indexes rank from <strong>0</strong> via <code>enumerate</code>. This constant offset never changes the ordering.</p>
+</div></aside></section>
 <section id="rrf-visual" class="slide level2">
 <h2>RRF Visual</h2>
 
@@ -551,9 +569,221 @@
 </div></div>
 </section></section>
 <section>
-<section id="d.-query-understanding" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
-<h1>D. Query Understanding</h1>
+<section id="d.-adaptive-retrieval" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)">
+<h1>D. Adaptive Retrieval</h1>
+<p>Let evaluation drive a corrective action at query time</p>
+</section>
+<section id="corrective-rag-crag" class="slide level2">
+<h2>Corrective RAG (CRAG)</h2>
+<p><a href="https://arxiv.org/abs/2401.15884">Corrective Retrieval-Augmented Generation</a> (Yan et al., 2024).</p>
+<div class="cell" data-reveal="true" data-fig-width="10" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart LR
+    Q["Query"] --&gt; R["Retrieve&lt;br/&gt;Documents"]
+    R --&gt; E{"Evaluate&lt;br/&gt;Relevance"}
+    E -- "High&lt;br/&gt;Confidence" --&gt; P["Pass Through"]
+    E -- "Ambiguous" --&gt; F["Filter Noise&lt;br/&gt;+ Supplement"]
+    E -- "Incorrect" --&gt; W["Discard +&lt;br/&gt;Web Search"]
+    P &amp; F &amp; W --&gt; G["LLM&lt;br/&gt;Generation"]
+
+    style Q fill:#9B8EC0,stroke:#1C355E,color:#fff
+    style R fill:#00C9A7,stroke:#1C355E,color:#fff
+    style E fill:#FF7A5C,stroke:#1C355E,color:#fff
+    style P fill:#00C9A7,stroke:#1C355E,color:#fff
+    style F fill:#9B8EC0,stroke:#1C355E,color:#fff
+    style W fill:#FF7A5C,stroke:#1C355E,color:#fff
+    style G fill:#1C355E,stroke:#1C355E,color:#fff
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<p>The same <strong>relevance evaluation</strong> you learned to measure offline now runs <strong>online</strong> — a corrective action is taken based on confidence.</p>
+</section>
+<section id="crag-when-to-use" class="slide level2">
+<h2>CRAG — When to Use</h2>
+<p><strong>Best fit for:</strong></p>
+<ul>
+<li><strong>Noisy corpora</strong> — many tangentially-related documents reduce retrieval precision</li>
+<li><strong>Time-sensitive knowledge</strong> — internal docs may be outdated; web fallback provides freshness</li>
+<li><strong>High-stakes domains</strong> — medical, legal, financial, where a wrong answer is worse than no answer</li>
+</ul>
+<div class="fragment">
+<table class="caption-top">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Factor</th>
+<th>Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Web fallback latency</strong></td>
+<td>+1–3 seconds per corrected query</td>
+</tr>
+<tr class="even">
+<td><strong>Knowledge freshness</strong></td>
+<td>Dramatically improved for dynamic topics</td>
+</tr>
+<tr class="odd">
+<td><strong>Implementation cost</strong></td>
+<td>Requires a relevance evaluator + fallback retriever</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="self-rag-adaptive-retrieval" class="slide level2">
+<h2>Self-RAG — Adaptive Retrieval</h2>
+<p><a href="https://arxiv.org/abs/2310.11511">Self-RAG: Learning to Retrieve, Generate, and Critique</a> (Asai et al., 2023).</p>
+<p>Standard RAG <strong>always</strong> retrieves regardless of need. Self-RAG lets the model decide.</p>
+<div class="fragment">
+<p>The model generates <strong>reflection tokens</strong> inline as it reasons:</p>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Token</th>
+<th>Question the Model Asks</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>[Retrieve]</code></td>
+<td>“Do I need external knowledge here?”</td>
+</tr>
+<tr class="even">
+<td><code>[IsRel]</code></td>
+<td>“Is this retrieved passage relevant to the query?”</td>
+</tr>
+<tr class="odd">
+<td><code>[IsSup]</code></td>
+<td>“Does this passage support my claim?”</td>
+</tr>
+<tr class="even">
+<td><code>[IsUse]</code></td>
+<td>“Is my final output useful to the user?”</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>For simple factual questions, Self-RAG skips retrieval entirely — saving latency and cost.</p>
+</blockquote>
+</div>
+</section>
+<section id="self-rag-vs-standard-rag" class="slide level2">
+<h2>Self-RAG vs Standard RAG</h2>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Aspect</th>
+<th style="text-align: center;">Standard RAG</th>
+<th style="text-align: center;">Self-RAG</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Retrieval trigger</strong></td>
+<td style="text-align: center;">Always</td>
+<td style="text-align: center;">Adaptive (on demand)</td>
+</tr>
+<tr class="even">
+<td><strong>Self-critique</strong></td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">Yes (reflection tokens)</td>
+</tr>
+<tr class="odd">
+<td><strong>Latency</strong></td>
+<td style="text-align: center;">Predictable</td>
+<td style="text-align: center;">Variable</td>
+</tr>
+<tr class="even">
+<td><strong>Simple query overhead</strong></td>
+<td style="text-align: center;">High</td>
+<td style="text-align: center;">Low (skips retrieval)</td>
+</tr>
+<tr class="odd">
+<td><strong>Complex query accuracy</strong></td>
+<td style="text-align: center;">Moderate</td>
+<td style="text-align: center;">Higher</td>
+</tr>
+<tr class="even">
+<td><strong>Implementation complexity</strong></td>
+<td style="text-align: center;">Low</td>
+<td style="text-align: center;">High (fine-tuned model)</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>When to Apply</strong></p>
+</div>
+<div class="callout-content">
+<p><strong>CRAG</strong> when your knowledge base is noisy or incomplete. <strong>Self-RAG</strong> when query complexity varies widely and retrieval should be selective.</p>
+</div>
+</div>
+</div>
+</section></section>
+<section>
+<section id="e.-query-understanding" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
+<h1>E. Query Understanding</h1>
 <p>Making queries retrieval-friendly</p>
+</section>
+<section id="a-menu-not-a-mandatory-pipeline" class="slide level2">
+<h2>A Menu, Not a Mandatory Pipeline</h2>
+<p>Hybrid search (B) + re-ranking (C) are the <strong>spine</strong> — almost always worth it. Adaptive retrieval (D) and everything in E and F is <strong>situational</strong>: add a technique only when your evals show the matching symptom.</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 67%">
+<col style="width: 32%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Symptom in your evals</th>
+<th>Reach for</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Queries land on the wrong sub-topic</td>
+<td>Intent classification / routing</td>
+</tr>
+<tr class="even">
+<td>“2024 EMEA report” returns the wrong year</td>
+<td>Query translation → metadata filter</td>
+</tr>
+<tr class="odd">
+<td>Vague or under-specified queries</td>
+<td>Multi-query expansion</td>
+</tr>
+<tr class="even">
+<td>Multi-part or comparison questions</td>
+<td>Query decomposition</td>
+</tr>
+<tr class="odd">
+<td>Answer is retrieved but ignored mid-context</td>
+<td>Re-order for “lost in the middle”</td>
+</tr>
+<tr class="even">
+<td>The same queries repeat</td>
+<td>Caching</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Each add-on costs latency and complexity — earn it with a measured gain, don’t bolt on all six by default.</p>
+</blockquote>
 </section>
 <section id="intent-classification" class="slide level2">
 <h2>Intent Classification</h2>
@@ -571,21 +801,32 @@
 <span id="cb6-11"><a href=""></a>    is_complex: <span class="bu">bool</span></span>
 <span id="cb6-12"><a href=""></a>    suggested_strategy: <span class="bu">str</span></span>
 <span id="cb6-13"><a href=""></a></span>
-<span id="cb6-14"><a href=""></a><span class="co"># LLM call with response_format</span></span>
-<span id="cb6-15"><a href=""></a>analysis <span class="op">=</span> client.chat.completions.create(</span>
+<span id="cb6-14"><a href=""></a><span class="co"># OpenAI SDK shown; route via LiteLLM to reuse the DeepSeek stack</span></span>
+<span id="cb6-15"><a href=""></a>completion <span class="op">=</span> client.beta.chat.completions.parse(</span>
 <span id="cb6-16"><a href=""></a>    model<span class="op">=</span><span class="st">"gpt-4o"</span>,</span>
 <span id="cb6-17"><a href=""></a>    messages<span class="op">=</span>[{<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: user_query}],</span>
-<span id="cb6-18"><a href=""></a>    response_format<span class="op">=</span>QueryAnalysis</span>
-<span id="cb6-19"><a href=""></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb6-18"><a href=""></a>    response_format<span class="op">=</span>QueryAnalysis,</span>
+<span id="cb6-19"><a href=""></a>)</span>
+<span id="cb6-20"><a href=""></a>analysis <span class="op">=</span> completion.choices[<span class="dv">0</span>].message.parsed</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="semantic-routing" class="slide level2">
 <h2>Semantic Routing</h2>
 <p>For high-traffic systems, use <strong>Embeddings</strong> to route queries without an LLM call.</p>
 <div class="columns">
 <div class="column" style="width:50%;">
-<p><strong>How it Works</strong> - Create pre-defined “Route Embeddings” for each category. - Compare user query embedding to Route embeddings. - If similarity &gt; threshold, fire that route.</p>
+<p><strong>How it Works</strong></p>
+<ul>
+<li>Create pre-defined “Route Embeddings” for each category.</li>
+<li>Compare user query embedding to Route embeddings.</li>
+<li>If similarity &gt; threshold, fire that route.</li>
+</ul>
 </div><div class="column" style="width:50%;">
-<p><strong>Why use it?</strong> - <strong>Latency</strong>: Sub-10ms routing vs 500ms+ for LLM. - <strong>Cost</strong>: Fraction of a cent per 1k queries. - <strong>Tools</strong>: <code>semantic-router</code> (by Aurelio AI) or simple vector similarity.</p>
+<p><strong>Why use it?</strong></p>
+<ul>
+<li><strong>Latency</strong>: Sub-10ms routing vs 500ms+ for LLM.</li>
+<li><strong>Cost</strong>: Fraction of a cent per 1k queries.</li>
+<li><strong>Tools</strong>: <code>semantic-router</code> (by Aurelio AI) or simple vector similarity.</li>
+</ul>
 </div></div>
 </section>
 <section id="query-translation-text-to-filter" class="slide level2">
@@ -607,8 +848,8 @@
 </div>
 </section></section>
 <section>
-<section id="e.-query-expansion" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #FF7A5C)">
-<h1>E. Query Expansion</h1>
+<section id="f.-query-expansion" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #FF7A5C)">
+<h1>F. Query Expansion</h1>
 <p>Capturing what the user really means</p>
 </section>
 <section id="multi-query-generation" class="slide level2">
@@ -726,49 +967,6 @@
 </blockquote>
 </div>
 </section>
-<section id="lost-in-the-middle" class="slide level2">
-<h2>Lost in the Middle</h2>
-<div class="callout callout-important callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>The Problem</strong></p>
-</div>
-<div class="callout-content">
-<p>LLMs perform worse when the relevant answer is in the <strong>middle</strong> of the context window. They attend best to the beginning and end.</p>
-</div>
-</div>
-</div>
-<p><strong>Ordering Strategies:</strong></p>
-<table class="caption-top">
-<thead>
-<tr class="header">
-<th>Strategy</th>
-<th>How It Works</th>
-<th>When to Use</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>Score-descending</strong></td>
-<td>Best first</td>
-<td>Default, general purpose</td>
-</tr>
-<tr class="even">
-<td><strong>Interleaved</strong></td>
-<td>Best at start and end</td>
-<td>Long context windows</td>
-</tr>
-<tr class="odd">
-<td><strong>Reverse</strong></td>
-<td>Best at the end</td>
-<td>Short, focused contexts</td>
-</tr>
-</tbody>
-</table>
-</section>
 <section id="caching" class="slide level2">
 <h2>Caching</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href=""></a><span class="kw">class</span> QueryCache:</span>
@@ -793,8 +991,8 @@
 </blockquote>
 </section></section>
 <section>
-<section id="f.-wrap-up" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)">
-<h1>F. Wrap-up</h1>
+<section id="g.-wrap-up" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)">
+<h1>G. Wrap-up</h1>
 <p>The complete advanced pipeline</p>
 </section>
 <section id="complete-pipeline" class="slide level2">
@@ -848,7 +1046,7 @@
 <li><strong>Measurably higher recall &amp; precision</strong></li>
 </ul>
 </div></div>
-<p><em>These comparisons are illustrative. Actual values depend on your corpus, embedding model, and query distribution. Measure using your own golden dataset (<a href="../../rag_foundations_data_pipelines/slides/response_synthesis_evaluation.html">From Context to Answer</a>).</em></p>
+<p><em>These comparisons are illustrative. Actual values depend on your corpus, embedding model, and query distribution. Measure using the golden dataset you built in <a href="../../rag_foundations_data_pipelines/slides/rag_evaluation.html">Measuring RAG Quality</a>.</em></p>
 </section>
 <section id="key-takeaways" class="slide level2 sdaia-dark" data-background-color="#1C355E">
 <h2>Key Takeaways</h2>
@@ -869,7 +1067,7 @@
 <p><strong>Up Next</strong></p>
 </div>
 <div class="callout-content">
-<p><strong>Lab 4</strong>: Upgrade the Retriever — implement hybrid search with BM25, add cross-encoder re-ranking, and compare results against the basic pipeline.</p>
+<p><strong>Lab 5</strong>: Upgrade the Retriever — implement hybrid search with BM25, add cross-encoder re-ranking, and measure the gain against your Session 4 baseline.</p>
 </div>
 </div>
 </div>

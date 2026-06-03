@@ -9,7 +9,7 @@
 <link href="when_to_fine_tune_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.9.38">
 
-  <meta name="dcterms.date" content="2026-06-02">
+  <meta name="dcterms.date" content="2026-06-03">
   <title>When to Fine-Tune</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -98,7 +98,7 @@
     code span.vs { color: #20794d; } /* VerbatimString */
     code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="when_to_fine_tune_files/libs/revealjs/dist/theme/quarto-58ba9499846de55aa5593708634b0fe7.css">
+  <link rel="stylesheet" href="when_to_fine_tune_files/libs/revealjs/dist/theme/quarto-05b633aaffd58596cc6573a610a4b559.css">
   <link href="when_to_fine_tune_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="when_to_fine_tune_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="when_to_fine_tune_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -207,7 +207,7 @@
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-06-02</p>
+  <p class="date">2026-06-03</p>
 </section>
 <section>
 <section id="a.-the-adaptation-ladder" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
@@ -510,7 +510,7 @@
 <p>Fine-tuning teaches the model <em>how to behave</em> — not <em>what is currently true</em>.</p>
 </div>
 </section>
-<section id="case-study-galactica-2022" class="slide level2 smaller">
+<section id="case-study-galactica-2022" class="slide level2">
 <h2>Case Study: Galactica (2022)</h2>
 <p>Meta released <strong>Galactica</strong>, a 120B model fine-tuned on scientific papers. The pitch: a “scientific assistant” that could generate research literature, equations, and citations.</p>
 <ul>
@@ -539,7 +539,7 @@
 <h1>E. Cost Reality Check</h1>
 <p>The numbers nobody mentions in the demo</p>
 </section>
-<section id="where-the-money-actually-goes" class="slide level2 smaller">
+<section id="where-the-money-actually-goes" class="slide level2">
 <h2>Where the Money Actually Goes</h2>
 <table class="caption-top">
 <colgroup>
@@ -599,8 +599,8 @@
 <section id="when-the-math-works" class="slide level2">
 <h2>When the Math Works</h2>
 <ul>
-<li class="fragment"><strong>Volume threshold:</strong> roughly when monthly hosted-API spend on a narrow task exceeds ~$2K/month, in-house fine-tuned models start to win on TCO.</li>
-<li class="fragment"><strong>Stability threshold:</strong> the task definition must be stable for 6+ months. Otherwise retraining costs erase the savings.</li>
+<li class="fragment"><strong>Volume threshold:</strong> roughly when monthly hosted-API spend on a narrow task exceeds ~$2K/month, in-house fine-tuned models start to win on <strong>Total Cost of Ownership (TCO)</strong>.</li>
+<li class="fragment"><strong>Stability threshold:</strong> the task definition must be stable, for example, for more than 6 months. Otherwise retraining costs erase the savings.</li>
 <li class="fragment"><strong>Eval threshold:</strong> you can articulate “the model is better at X” with a measurable score, not a vibes-check.</li>
 </ul>
 <div class="fragment">

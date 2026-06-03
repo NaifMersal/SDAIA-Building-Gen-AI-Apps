@@ -9,7 +9,7 @@
 <link href="rag_architecture_foundations_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.9.38">
 
-  <meta name="dcterms.date" content="2026-06-02">
+  <meta name="dcterms.date" content="2026-06-03">
   <title>RAG Architecture &amp; Foundations</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -32,7 +32,7 @@
       vertical-align: middle;
     }
   </style>
-  <link rel="stylesheet" href="rag_architecture_foundations_files/libs/revealjs/dist/theme/quarto-58ba9499846de55aa5593708634b0fe7.css">
+  <link rel="stylesheet" href="rag_architecture_foundations_files/libs/revealjs/dist/theme/quarto-05b633aaffd58596cc6573a610a4b559.css">
   <link href="rag_architecture_foundations_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="rag_architecture_foundations_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="rag_architecture_foundations_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -141,7 +141,7 @@
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-06-02</p>
+  <p class="date">2026-06-03</p>
 </section>
 <section>
 <section id="a.-the-rag-paradigm" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
@@ -405,7 +405,7 @@
 <ul>
 <li>Similar text → nearby vectors</li>
 <li>“Dog” ≈ “Puppy” in vector space</li>
-<li><code>king - man + woman ≈ queen</code></li>
+<li><code>king - man + woman ≈ queen</code> (classic word2vec analogy)</li>
 <li>Meaning encoded as geometry</li>
 </ul>
 </div><div class="column" style="width:50%;">
@@ -517,7 +517,7 @@
 <li>Sum Pooling (TF-IDF): Long documents = Massive magnitude (vector explodes).</li>
 <li>Average Pooling (Word2Vec): Long documents = Tiny magnitude (vector collapses).</li>
 <li>Raw Transformers (Base BERT): Length doesn’t matter, but all vectors are crammed into a tiny cone (Anisotropy).</li>
-<li>Modern Embeddings (OpenAI/SBERT): All vectors are mathematically forced to have a magnitude of exactly 1, allowing us to safely use Cosine Similarity (Dot Product) for lightning-fast retrieval.</li>
+<li>Modern Embeddings (OpenAI/SBERT): vectors are typically normalized to unit length — OpenAI’s <code>text-embedding-3</code> returns them already L2-normalized, while with SBERT you normalize yourself (e.g.&nbsp;<code>model.encode(..., normalize_embeddings=True)</code>). Once normalized, cosine similarity equals the dot product, allowing lightning-fast retrieval.</li>
 </ul>
 <style type="text/css">
         span.MJX_Assistive_MathML {
@@ -544,7 +544,7 @@
 <p><strong>Bottom Line</strong></p>
 </div>
 <div class="callout-content">
-<p>For text embeddings, <strong>prefer cosine similarity</strong> by default. Some models (e.g., OpenAI text-embedding-3) are trained for dot product — check your model’s documentation.</p>
+<p>For text embeddings, <strong>prefer cosine similarity</strong> by default. Some models (e.g., OpenAI text-embedding-3) return L2-normalized vectors, so cosine and dot product are equivalent — check your model’s documentation.</p>
 </div>
 </div>
 </div>
@@ -577,7 +577,7 @@
 </tr>
 <tr class="even">
 <td><strong>Manhattan (L1)</strong></td>
-<td>Sparse vectors, BM25-style lexical search</td>
+<td>High-dimensional / sparse features; robust to outliers</td>
 </tr>
 </tbody>
 </table>
@@ -785,7 +785,7 @@
 <p><strong>Garbage in, garbage out</strong></p>
 </div>
 <div class="callout-content">
-<p>A weaker LLM with strong retrieval will outperform a stronger LLM fed irrelevant chunks. Retrieval is <em>often</em> the bottleneck in production RAG systems — though for reasoning-heavy tasks (e.g.&nbsp;“compare these three papers”) the LLM becomes the bottleneck instead. Citation-aware prompting (covered in <a href="../../rag_foundations_data_pipelines/slides/response_synthesis_evaluation.html">From Context to Answer</a>) helps surface retrieval failures that would otherwise stay invisible.</p>
+<p>A weaker LLM with strong retrieval will outperform a stronger LLM fed irrelevant chunks. Retrieval is <em>often</em> the bottleneck in production RAG systems — though for reasoning-heavy tasks (e.g.&nbsp;“compare these three papers”) the LLM becomes the bottleneck instead. Citation-aware prompting (covered in <a href="../../rag_foundations_data_pipelines/slides/response_synthesis.html">From Context to Answer</a>) helps surface retrieval failures that would otherwise stay invisible.</p>
 </div>
 </div>
 </div>
@@ -894,19 +894,6 @@
 <li><strong>Model choice</strong> depends on accuracy needs, budget, and privacy requirements</li>
 <li><strong>Three pillars</strong>: Retriever (search), Generator (LLM), Orchestrator (glue)</li>
 </ol>
-<div class="callout callout-tip callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Up Next</strong></p>
-</div>
-<div class="callout-content">
-<p><strong>Lab 1</strong>: Build the Document Ingestion Pipeline — extracting and cleaning text from PDFs and web pages for our Research Assistant.</p>
-</div>
-</div>
-</div>
 
 </section></section>
     </div>

@@ -9,7 +9,7 @@
 <link href="observability_and_evaluation_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.9.38">
 
-  <meta name="dcterms.date" content="2026-06-02">
+  <meta name="dcterms.date" content="2026-06-03">
   <title>Observability &amp; Evaluation</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -98,7 +98,7 @@
     code span.vs { color: #20794d; } /* VerbatimString */
     code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="observability_and_evaluation_files/libs/revealjs/dist/theme/quarto-58ba9499846de55aa5593708634b0fe7.css">
+  <link rel="stylesheet" href="observability_and_evaluation_files/libs/revealjs/dist/theme/quarto-05b633aaffd58596cc6573a610a4b559.css">
   <link href="observability_and_evaluation_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="observability_and_evaluation_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="observability_and_evaluation_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -207,7 +207,7 @@
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-06-02</p>
+  <p class="date">2026-06-03</p>
 </section>
 <section>
 <section id="agent-quality-pillars" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
@@ -221,49 +221,40 @@
 <tr class="header">
 <th style="text-align: left;">Section</th>
 <th style="text-align: left;">Topic</th>
-<th style="text-align: center;">Time</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;"><strong>A</strong></td>
 <td style="text-align: left;">What Makes a Good Agent?</td>
-<td style="text-align: center;">~10 min</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"><strong>B</strong></td>
 <td style="text-align: left;">Structured Tracing</td>
-<td style="text-align: center;">~8 min</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;"><strong>C</strong></td>
 <td style="text-align: left;">Catching Loops</td>
-<td style="text-align: center;">~8 min</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"><strong>D</strong></td>
 <td style="text-align: left;">Cost Tracking &amp; Budgets</td>
-<td style="text-align: center;">~4 min</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;"><strong>E</strong></td>
 <td style="text-align: left;">From Traces to Production Metrics</td>
-<td style="text-align: center;">~10 min</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"><strong>F</strong></td>
 <td style="text-align: left;">Evaluating Quality with DeepEval</td>
-<td style="text-align: center;">~15 min</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;"><strong>G</strong></td>
 <td style="text-align: left;">Closing the Loop: The Quality Flywheel</td>
-<td style="text-align: center;">~4 min</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"><strong>H</strong></td>
 <td style="text-align: left;">Wrap-up &amp; Lab Preview</td>
-<td style="text-align: center;">~2 min</td>
 </tr>
 </tbody>
 </table>
@@ -895,16 +886,6 @@ Step 6: "I need to search for more info..."</code></pre>
 <span id="cb12-22"><a href=""></a></span>
 <span id="cb12-23"><a href=""></a>            <span class="va">self</span>._daily_spend[day_key] <span class="op">=</span> day_spend <span class="op">+</span> cost_usd</span>
 <span id="cb12-24"><a href=""></a>            <span class="cf">return</span> <span class="va">True</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="callout callout-note callout-style-simple">
-<div class="callout-body">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-content">
-<p>Reference implementation — pattern to apply in your own services, not exercised in today’s lab.</p>
-</div>
-</div>
-</div>
 </section></section>
 <section>
 <section id="e.-from-traces-to-production-metrics" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #FF7A5C, #1C355E)">
@@ -990,8 +971,8 @@ Step 6: "I need to search for more info..."</code></pre>
 </div>
 </div>
 </section>
-<section id="derive-your-own-metric-cursors-keep-rate" class="slide level2 smaller">
-<h2>Derive Your Own Metric: Cursor’s Keep Rate</h2>
+<section id="derive-your-own-metric-cursors-keep-rate" class="slide level2">
+<h2>Derive Your Own Metric: <a href="https://cursor.com/blog/continually-improving-agent-harness">Cursor’s Keep Rate</a></h2>
 <p>Benchmarks measure a frozen task set. <strong>Real production demands a metric tailored to your product’s actual value.</strong></p>
 <div class="callout callout-tip callout-titled callout-style-default">
 <div class="callout-body">
@@ -1002,68 +983,64 @@ Step 6: "I need to search for more info..."</code></pre>
 <p><strong>Case Study: Cursor’s “Keep Rate”</strong></p>
 </div>
 <div class="callout-content">
-<blockquote>
-<p><em>The fraction of agent-generated code that remains in the user’s codebase after a fixed interval.</em></p>
-</blockquote>
-<p>User keeps it → keep rate goes up. User deletes or rewrites it → keep rate drops. This measures what survives contact with the user.</p>
+<p><span class="math display">\[\text{Keep Rate} = \frac{\text{Agent-generated code remaining in codebase after interval } \Delta t}{\text{Total agent-generated code inserted}}\]</span></p>
+<p>User keeps it → Keep Rate goes up. User deletes or rewrites it → Keep Rate drops. This measures what survives contact with the user.</p>
 </div>
 </div>
 </div>
 <div class="fragment">
-<table class="caption-top">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">Metric Type</th>
-<th style="text-align: left;">Example Metric</th>
-<th style="text-align: left;">What it tells you</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;"><strong>Lab Benchmark</strong></td>
-<td style="text-align: left;"><strong>SWE-bench / TaskCompletion</strong></td>
-<td style="text-align: left;">Did the agent produce a passing output <strong>in the lab</strong>?</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><strong>Derived Production Metric</strong></td>
-<td style="text-align: left;"><strong>Keep rate</strong></td>
-<td style="text-align: left;">Did the agent produce work the user actually <strong>shipped and kept</strong>?</td>
-</tr>
-</tbody>
-</table>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cardbox navy">
+<p><strong>🧪 Lab Benchmarks</strong><br>
+<em>e.g., SWE-bench / TaskCompletion</em></p>
+<p>Did the agent produce a passing output <strong>in the static lab environment</strong>?</p>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cardbox teal">
+<p><strong>🚀 Derived Production Metrics</strong><br>
+<em>e.g., Keep Rate</em></p>
+<p>Did the agent produce work the user actually <strong>shipped, kept, and built upon</strong>?</p>
+</div>
+</div></div>
+</div>
+</section>
+<section id="generalizing-find-your-keep-rate" class="slide level2">
+<h2>Generalizing: Find Your “Keep Rate”</h2>
+<p>The key to a production metric is measuring <strong>post-action retention or behavior</strong> instead of static outputs. What is your agent’s equivalent?</p>
+<div class="fragment">
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cardbox">
+<p><strong>💻 Coding &amp; Chat Agents</strong></p>
+<ul>
+<li><strong>Coding Agents:</strong> <strong>Keep rate</strong> (code edit retained in repo after <span class="math inline">\(N\)</span> days)</li>
+<li><strong>Chat Agents:</strong> <strong>Suggestion-followed rate</strong> / thumbs-up 👍 ratio</li>
+</ul>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cardbox purple">
+<p><strong>⚙️ Workflow &amp; Draft Agents</strong></p>
+<ul>
+<li><strong>Workflow Agents:</strong> <strong>Task-not-redone rate</strong> (does a human repeat/fix the step?)</li>
+<li><strong>Email / Draft Agents:</strong> <strong>Edit-distance</strong> from agent draft to final sent version</li>
+</ul>
+</div>
+</div></div>
 </div>
 <div class="fragment">
-<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<p><strong>Generalize: How to derive your own metric</strong></p>
+<p><strong>Crucial Agent Takeaway</strong></p>
 </div>
 <div class="callout-content">
-<p>The key is measuring <strong>post-action retention or behavior</strong> instead of static outputs. What is your agent’s equivalent of “Keep Rate”?</p>
-<ul>
-<li>Coding agents → <strong>keep rate</strong> (edit retained after N days)</li>
-<li>Chat agents → <strong>suggestion-followed rate</strong> / 👍 ratio</li>
-<li>Workflow agents → <strong>task-not-redone rate</strong></li>
-<li>Email / draft agents → <strong>edit-distance to sent version</strong></li>
-</ul>
+<p>This custom, product-specific metric is the agent analogue of standard quality alerts. Once defined, it becomes the north-star metric that your training, prompts, and orchestration/harness should continuously optimize toward.</p>
 </div>
 </div>
-</div>
-</div>
-<div class="fragment">
-<blockquote>
-<p>This custom, product-specific metric is the agent analogue of the <em>Helpfulness dropped 10% over 24h</em> quality alert above — and it’s what your analytics should optimize toward.</p>
-</blockquote>
-<div class="footer">
-<p>Source: <a href="https://cursor.com/blog/continually-improving-agent-harness">Cursor — <em>Continually Improving Agent Harness</em> — “Keep Rate” section</a></p>
 </div>
 </div>
 </section>
@@ -1692,7 +1669,7 @@ Step 6: "I need to search for more info..."</code></pre>
 <p></p><figure class=""><p></p>
 <div>
 <pre class="mermaid mermaid-js">graph LR
-    A["1️⃣ UAT Trace&lt;br/&gt;Review"] --&gt;|"Force SME&lt;br/&gt;justification"| B["2️⃣ Justification&lt;br/&gt;Clustering"]
+    A["1️⃣ User Acceptance Trace&lt;br/&gt;Review"] --&gt;|"Force SME&lt;br/&gt;justification"| B["2️⃣ Justification&lt;br/&gt;Clustering"]
     B --&gt;|"Failure&lt;br/&gt;vectors"| C["3️⃣ Rubric&lt;br/&gt;Co-Design"]
     C --&gt;|"Binary&lt;br/&gt;criteria"| D["4️⃣ Few-Shot&lt;br/&gt;Anchoring"]
     D --&gt; E["✅ SME-Anchored&lt;br/&gt;Judge Prompt"]
@@ -2072,43 +2049,6 @@ Average Step Efficiency: 0.79
 <li><strong>Flywheel + Human-in-the-Loop (HITL)</strong> turn every failure into a permanent regression test with LLM judges</li>
 </ol>
 </div></div>
-</section>
-<section id="lab-preview-observability-evaluation" class="slide level2">
-<h2>Lab Preview: Observability &amp; Evaluation</h2>
-<div class="columns">
-<div class="column" style="width:50%;">
-<p><strong>Step 1: Instrumentation</strong> 🔬</p>
-<ul>
-<li>Inject <code>AgentTracer</code> into ReactAgent</li>
-<li>Run a query that triggers a loop</li>
-</ul>
-<p><strong>Step 2: Diagnosis</strong> 🔎</p>
-<ul>
-<li>Read the trace JSON/logs</li>
-<li>Identify the repeating tool calls</li>
-</ul>
-</div><div class="column" style="width:50%;">
-<p><strong>Step 3: The Fix</strong> 🔧</p>
-<ul>
-<li>Implement a circuit breaker</li>
-<li>Add loop detection to the agent loop</li>
-</ul>
-<p><strong>Step 4: Verify with DeepEval</strong> ✅</p>
-<ul>
-<li>Build <code>LLMTestCase</code> objects inline</li>
-<li>Run <code>evaluate(...)</code> with <code>TaskCompletionMetric</code> + <code>ToolCorrectnessMetric</code></li>
-<li>Read the pass/fail report inline</li>
-</ul>
-</div></div>
-<div class="fragment">
-<p><strong>⏱️ Time:</strong> 75 minutes</p>
-</div>
-</section>
-<section id="questions" class="slide level2" data-background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)">
-<h2>Questions?</h2>
-<div class="r-fit-text">
-<p>Session 1 Complete</p>
-</div>
 
 </section></section>
     </div>

@@ -9,7 +9,7 @@
 <link href="optimization_production_architecture_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.9.38">
 
-  <meta name="dcterms.date" content="2026-06-02">
+  <meta name="dcterms.date" content="2026-06-03">
   <title>Production Optimization</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -98,7 +98,7 @@
     code span.vs { color: #20794d; } /* VerbatimString */
     code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="optimization_production_architecture_files/libs/revealjs/dist/theme/quarto-58ba9499846de55aa5593708634b0fe7.css">
+  <link rel="stylesheet" href="optimization_production_architecture_files/libs/revealjs/dist/theme/quarto-05b633aaffd58596cc6573a610a4b559.css">
   <link href="optimization_production_architecture_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="optimization_production_architecture_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="optimization_production_architecture_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -202,12 +202,12 @@
 
 <section id="title-slide" data-background-image="../../slides_template/assets/anim.svg" data-background-opacity="0.15" data-background-size="cover" class="quarto-title-block center">
   <h1 class="title">Production Optimization</h1>
-  <p class="subtitle">RAG Foundations &amp; Data Pipelines — Session 6</p>
+  <p class="subtitle">RAG Foundations &amp; Data Pipelines — Session 7</p>
 
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-06-02</p>
+  <p class="date">2026-06-03</p>
 </section>
 <section>
 <section id="a.-prototype-to-production" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
@@ -538,6 +538,39 @@
 </div>
 </div>
 </div>
+</section>
+<section id="dimensions-the-other-compression-axis" class="slide level2">
+<h2>Dimensions: The Other Compression Axis</h2>
+<p>Quantization shrinks <strong>bytes per dimension</strong>. You can also cut the <strong>number of dimensions</strong>.</p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><strong>Matryoshka embeddings (MRL)</strong></p>
+<ul>
+<li>Trained so the <em>first</em> N dims are already a usable embedding</li>
+<li>Truncate 3072 → 1536 → 512 with graceful, not catastrophic, recall loss</li>
+<li>OpenAI <code>text-embedding-3</code>: just pass <code>dimensions=512</code></li>
+</ul>
+</div><div class="column" style="width:50%;">
+<p><strong>Why it stacks with quantization</strong></p>
+<ul>
+<li>Fewer dims × fewer bytes/dim = <em>multiplicative</em> savings</li>
+<li>Smaller vectors → faster distance math, smaller HNSW graph</li>
+<li>A knob you set <strong>before</strong> indexing</li>
+</ul>
+</div></div>
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Tip</strong></p>
+</div>
+<div class="callout-content">
+<p>Like quantization, dimension truncation trades recall for size — validate the chosen dimension against your golden set.</p>
+</div>
+</div>
+</div>
 </section></section>
 <section>
 <section id="d.-caching-strategies" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
@@ -821,21 +854,26 @@
 <td>Small recall loss</td>
 </tr>
 <tr class="even">
+<td><strong>Lower embedding dims (MRL)</strong></td>
+<td style="text-align: center;">Proportional to dims cut</td>
+<td>Small recall loss</td>
+</tr>
+<tr class="odd">
 <td><strong>Larger chunks</strong></td>
 <td style="text-align: center;">Fewer vectors</td>
 <td>Less precision</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><strong>Metadata pruning</strong></td>
 <td style="text-align: center;">Up to 50% metadata storage</td>
 <td>Less filtering capability</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><strong>Tiered storage</strong></td>
 <td style="text-align: center;">50%+</td>
 <td>Cold data has higher latency</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><strong>Caching</strong></td>
 <td style="text-align: center;">Varies by query distribution</td>
 <td>Stale results for rare queries</td>
@@ -902,8 +940,8 @@
 <ul>
 <li>Query Understanding (<a href="../../rag_foundations_data_pipelines/slides/advanced_retrieval_query_processing.html">Beyond Basic Search</a>)</li>
 <li>Hybrid Retrieval &amp; Re-ranking (<a href="../../rag_foundations_data_pipelines/slides/advanced_retrieval_query_processing.html">Beyond Basic Search</a>)</li>
-<li>Context Optimization (<a href="../../rag_foundations_data_pipelines/slides/response_synthesis_evaluation.html">From Context to Answer</a>)</li>
-<li>Citation Generation (<a href="../../rag_foundations_data_pipelines/slides/response_synthesis_evaluation.html">From Context to Answer</a>)</li>
+<li>Context Optimization (<a href="../../rag_foundations_data_pipelines/slides/response_synthesis.html">From Context to Answer</a>)</li>
+<li>Citation Generation (<a href="../../rag_foundations_data_pipelines/slides/response_synthesis.html">From Context to Answer</a>)</li>
 </ul>
 </section>
 <section id="the-answer-method" class="slide level2">
@@ -1077,7 +1115,7 @@
 <p><strong>Up Next</strong></p>
 </div>
 <div class="callout-content">
-<p><strong>Lab 6</strong>: Production Readiness — benchmark your index, implement quantization, run the full evaluation suite, and finalize the Research Assistant.</p>
+<p><strong>Lab 7</strong>: Production Readiness — benchmark your index, implement quantization, run the full evaluation suite, and finalize the Research Assistant.</p>
 </div>
 </div>
 </div>

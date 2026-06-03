@@ -9,7 +9,7 @@
 <link href="vector_storage_retrieval_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.9.38">
 
-  <meta name="dcterms.date" content="2026-06-02">
+  <meta name="dcterms.date" content="2026-06-03">
   <title>Vector Storage &amp; Retrieval</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -98,7 +98,7 @@
     code span.vs { color: #20794d; } /* VerbatimString */
     code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="vector_storage_retrieval_files/libs/revealjs/dist/theme/quarto-58ba9499846de55aa5593708634b0fe7.css">
+  <link rel="stylesheet" href="vector_storage_retrieval_files/libs/revealjs/dist/theme/quarto-05b633aaffd58596cc6573a610a4b559.css">
   <link href="vector_storage_retrieval_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="vector_storage_retrieval_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="vector_storage_retrieval_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -207,7 +207,7 @@
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-06-02</p>
+  <p class="date">2026-06-03</p>
 </section>
 <section>
 <section id="a.-vector-store-landscape" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
@@ -327,35 +327,41 @@
 <h1>B. HNSW Indexing</h1>
 <p>The algorithm behind fast vector search</p>
 </section>
-<section id="how-hnsw-works" class="slide level2">
-<h2>How HNSW Works</h2>
-<div class="cell" data-reveal="true" data-fig-width="10" data-layout-align="default">
-<div class="cell-output-display">
-<div>
-<p></p><figure class=""><p></p>
-<div>
-<pre class="mermaid mermaid-js">graph LR
-    A["HNSW: Hierarchical&lt;br/&gt;Navigable Small World"] --&gt; B["Layer 2 (Top)&lt;br/&gt;Few nodes, long-range links"]
-    B --&gt; C["Layer 1&lt;br/&gt;More nodes, medium links"]
-    C --&gt; D["Layer 0 (Base)&lt;br/&gt;All nodes, short-range links"]
-
-    style A fill:#1C355E,stroke:#1C355E,color:#fff
-    style B fill:#9B8EC0,stroke:#1C355E,color:#fff
-    style C fill:#FF7A5C,stroke:#1C355E,color:#fff
-    style D fill:#00C9A7,stroke:#1C355E,color:#fff
-</pre>
+<section id="the-big-idea-a-skip-list-for-vectors" class="slide level2">
+<h2>The Big Idea: A Skip-List for Vectors</h2>
+<p>Brute force compares the query to <strong>every</strong> vector — fine for thousands, hopeless at millions. HNSW instead <strong>navigates a graph</strong> and visits only a tiny fraction of the nodes.</p>
+<div class="fragment">
+<div class="fragment fade-in-then-semi-out">
+<p><strong>1. Navigable Small World</strong> — each vector links to a few near neighbours. Greedily “hop to the neighbour closest to the query” and you reach the right region in just a handful of hops.</p>
 </div>
-<p></p></figure><p></p>
+<div class="fragment fade-in-then-semi-out">
+<p><strong>2. Hierarchy</strong> — stack sparse upper layers over the dense base. The top layer has few nodes and long-range links to cross the space fast; <strong>descend a layer</strong> whenever no neighbour is closer; the dense base layer does the fine-grained search.</p>
+</div>
+<div class="fragment fade-in">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>The Highway Analogy</strong></p>
+</div>
+<div class="callout-content">
+<p>Take the <strong>highway</strong> to cover distance fast (few exits, long jumps), then <strong>exit to local streets</strong> for the last mile (every address). HNSW’s layers are exactly that: upper layers are the highway, the base layer is the streets.</p>
 </div>
 </div>
 </div>
-<ul>
-<li>Start search at the top layer (coarse navigation)</li>
-<li>Descend through layers (progressively finer)</li>
-<li>At each layer, greedily move toward the query vector</li>
-<li>Base layer gives the final nearest neighbors</li>
-</ul>
+</div>
+</div>
 </section>
+<section id="how-hnsw-works" class="slide level2 smaller">
+<h2>How HNSW Works</h2>
+<p>Drag the <strong>✕</strong> query; press <strong>Step</strong> to walk the greedy descent (or <strong>Play</strong> it). Toggle between the <em>embedding space</em> and the stacked <em>HNSW layers</em> — same search, two views.</p>
+<iframe src="../assets/hnsw_demo.html" title="Interactive HNSW search demo" width="100%" height="500" style="border:0;border-radius:12px;" loading="lazy"></iframe>
+
+<aside><div>
+<p>Start at the <strong>top layer</strong> (coarse, long-range hops), greedily move toward the query, <strong>descend</strong> when no neighbour is closer; the <strong>base layer</strong> does the fine <code>ef_search</code> beam that returns the nearest neighbours.</p>
+</div></aside></section>
 <section id="key-parameters" class="slide level2">
 <h2>Key Parameters</h2>
 <table class="caption-top">
@@ -548,7 +554,7 @@
 <span id="cb4-2"><a href=""></a>    (doc[<span class="st">'text'</span>] <span class="op">+</span> doc.get(<span class="st">'source'</span>, <span class="st">''</span>)).encode()</span>
 <span id="cb4-3"><a href=""></a>).hexdigest()</span>
 <span id="cb4-4"><a href=""></a>doc_id <span class="op">=</span> <span class="ss">f"doc_</span><span class="sc">{</span>content_hash<span class="sc">}</span><span class="ss">"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Re-running ingestion on the same documents won’t create duplicates — ChromaDB treats <code>add</code> with existing IDs as a no-op.</p>
+<p>Re-running ingestion on the same documents won’t create duplicates — reuse the deterministic ID and <code>upsert</code> to overwrite in place. (Plain <code>add</code> on an existing ID is ignored with a warning rather than updated, so prefer <code>upsert</code> when content may change.)</p>
 </div>
 </div>
 </div>
@@ -596,12 +602,12 @@
 <span id="cb5-4"><a href=""></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</span>
 <span id="cb5-5"><a href=""></a>        <span class="va">self</span>.embedding_gen <span class="op">=</span> EmbeddingGenerator()</span>
 <span id="cb5-6"><a href=""></a>        <span class="va">self</span>.vector_store <span class="op">=</span> VectorStoreManager()</span>
-<span id="cb5-7"><a href=""></a>        <span class="va">self</span>.model <span class="op">=</span> <span class="st">"openrouter/openai/gpt-4-turbo-preview"</span></span>
+<span id="cb5-7"><a href=""></a>        <span class="va">self</span>.model <span class="op">=</span> <span class="st">"openrouter/deepseek/deepseek-v4-flash:free"</span></span>
 <span id="cb5-8"><a href=""></a></span>
 <span id="cb5-9"><a href=""></a>    <span class="cf">async</span> <span class="kw">def</span> answer_question(<span class="va">self</span>, query: <span class="bu">str</span>):</span>
 <span id="cb5-10"><a href=""></a>        <span class="co"># 1. RETRIEVE</span></span>
 <span id="cb5-11"><a href=""></a>        query_vector <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.embedding_gen.embed(query)</span>
-<span id="cb5-12"><a href=""></a>        results <span class="op">=</span> <span class="va">self</span>.vector_store.search(query_vector, n<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb5-12"><a href=""></a>        results <span class="op">=</span> <span class="va">self</span>.vector_store.search(query_vector, n_results<span class="op">=</span><span class="dv">5</span>)</span>
 <span id="cb5-13"><a href=""></a></span>
 <span id="cb5-14"><a href=""></a>        <span class="co"># 2. AUGMENT</span></span>
 <span id="cb5-15"><a href=""></a>        context <span class="op">=</span> <span class="va">self</span>._build_context(results)</span>

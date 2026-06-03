@@ -9,7 +9,7 @@
 <link href="patterns_of_collaboration_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.9.38">
 
-  <meta name="dcterms.date" content="2026-06-02">
+  <meta name="dcterms.date" content="2026-06-03">
   <title>Patterns of Collaboration</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -98,7 +98,7 @@
     code span.vs { color: #20794d; } /* VerbatimString */
     code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="patterns_of_collaboration_files/libs/revealjs/dist/theme/quarto-58ba9499846de55aa5593708634b0fe7.css">
+  <link rel="stylesheet" href="patterns_of_collaboration_files/libs/revealjs/dist/theme/quarto-05b633aaffd58596cc6573a610a4b559.css">
   <link href="patterns_of_collaboration_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="patterns_of_collaboration_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="patterns_of_collaboration_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -207,7 +207,7 @@
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-06-02</p>
+  <p class="date">2026-06-03</p>
 </section>
 <section>
 <section id="a.-why-multi-agent" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
@@ -217,16 +217,16 @@
 <section id="agenda" class="slide level2">
 <h2>Agenda</h2>
 <ul>
-<li><strong>A. Why Multi-Agent?</strong> — Bottlenecks and harness as a product (~15 min)</li>
-<li><strong>B. Specialist Roles</strong> — Researcher, Writer, Fact-Checker (~15 min)</li>
-<li><strong>C. Orchestration Patterns</strong> — Pipeline, Hub-and-Spoke, Workspace (~25 min)</li>
-<li><strong>D. Quality Gates</strong> — Fact-checking and revision loops (~15 min)</li>
-<li><strong>E. Wrap-up</strong> — Key takeaways &amp; lab preview (~5 min)</li>
+<li><strong>A. Why Multi-Agent?</strong> — Bottlenecks and harness as a product</li>
+<li><strong>B. Specialist Roles</strong> — Researcher, Writer, Fact-Checker</li>
+<li><strong>C. Orchestration Patterns</strong> — Pipeline, Hub-and-Spoke, Workspace</li>
+<li><strong>D. Quality Gates</strong> — Fact-checking and revision loops</li>
+<li><strong>E. Wrap-up</strong> — Key takeaways &amp; lab preview</li>
 </ul>
 </section>
 <section id="the-single-agent-bottleneck" class="slide level2">
 <h2>The Single-Agent Bottleneck</h2>
-<p>Your agent loop (<code>ReactAgent</code>) from the <a href="../../function_calling_tools/slides/structured_outputs_and_tool_use.html">tool-calling module</a> is powerful, but has limits:</p>
+<p>The <code>run_agent</code> loop from the <a href="../../function_calling_tools/slides/structured_outputs_and_tool_use.html">tool-calling module</a> is powerful, but a single agent doing everything has limits:</p>
 <ol type="1">
 <li class="fragment"><strong>Context window saturation</strong> — research + writing + self-review crams everything into one conversation</li>
 <li class="fragment"><strong>Role confusion</strong> — “research thoroughly AND write concisely” produces mediocre results at both</li>
@@ -322,16 +322,22 @@
 </section>
 <section id="the-specialization-pattern" class="slide level2">
 <h2>The Specialization Pattern</h2>
-<p>Each specialist is the same agent loop (<code>ReactAgent</code>) with:</p>
+<p>Every specialist runs the <strong>same call path</strong> — only two things change:</p>
 <ul>
 <li>A <strong>focused system prompt</strong> that constrains its role</li>
-<li>A <strong>curated tool set</strong> (researchers get search, writers get formatting)</li>
-<li><strong>Lower max_steps</strong> — specialists finish in a handful of iterations, not a long open-ended loop</li>
+<li>A <strong>curated tool set</strong> (only the researcher gets <code>search_web</code>; writer and analyst are pure generation)</li>
 </ul>
 <div class="fragment">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href=""></a><span class="co"># The code is identical — only the prompt and tools differ</span></span>
-<span id="cb1-2"><a href=""></a>researcher <span class="op">=</span> ReactAgent(model<span class="op">=</span><span class="st">"gpt-4o"</span>, max_steps<span class="op">=</span><span class="dv">8</span>, system_prompt<span class="op">=</span>RESEARCHER_PROMPT)</span>
-<span id="cb1-3"><a href=""></a>researcher.tools <span class="op">=</span> [search, web_reader, document_retrieval]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href=""></a><span class="co"># Same function for every specialist — only the prompt and tools differ</span></span>
+<span id="cb1-2"><a href=""></a>SPECIALIST_PROMPTS <span class="op">=</span> {<span class="st">"researcher"</span>: ..., <span class="st">"analyst"</span>: ..., <span class="st">"writer"</span>: ...}</span>
+<span id="cb1-3"><a href=""></a></span>
+<span id="cb1-4"><a href=""></a><span class="cf">async</span> <span class="kw">def</span> call_specialist(specialist, task):</span>
+<span id="cb1-5"><a href=""></a>    tools <span class="op">=</span> SEARCH_TOOL_SCHEMA <span class="cf">if</span> specialist <span class="op">==</span> <span class="st">"researcher"</span> <span class="cf">else</span> <span class="va">None</span></span>
+<span id="cb1-6"><a href=""></a>    resp <span class="op">=</span> <span class="cf">await</span> acompletion(model<span class="op">=</span>MODEL_NAME, messages<span class="op">=</span>[</span>
+<span id="cb1-7"><a href=""></a>        {<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: SPECIALIST_PROMPTS[specialist]},</span>
+<span id="cb1-8"><a href=""></a>        {<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: task},</span>
+<span id="cb1-9"><a href=""></a>    ], tools<span class="op">=</span>tools)</span>
+<span id="cb1-10"><a href=""></a>    ...   <span class="co"># researcher resolves any search_web tool call, then re-completes</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="the-specialization-recipe" class="slide level2 smaller">
@@ -384,18 +390,18 @@
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">Researcher</td>
-<td style="text-align: left;"><code>search</code>, <code>web_reader</code>, <code>document_retrieval</code></td>
+<td style="text-align: left;"><code>search_web</code> (fail-soft web search)</td>
 <td style="text-align: left;">Raw findings with citations</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Writer</td>
-<td style="text-align: left;">Formatting-only (pure generation)</td>
+<td style="text-align: left;">None — pure generation</td>
 <td style="text-align: left;">Polished document for target audience</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">Analyst (Fact-Checker)</td>
-<td style="text-align: left;"><code>document_retrieval</code> (read findings); optionally <code>search</code> to spot-check</td>
-<td style="text-align: left;">Verdict: <code>approved</code> or revision notes citing the unsupported claims</td>
+<td style="text-align: left;">Analyst</td>
+<td style="text-align: left;">None — reads findings + draft</td>
+<td style="text-align: left;">Evaluation of the research, then a fact-check <strong>verdict</strong>: <code>approved</code> or revision notes</td>
 </tr>
 </tbody>
 </table>
@@ -405,23 +411,10 @@
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<p><strong>Why “Fact-Checker,” not “Analyst-who-pre-processes-findings”?</strong></p>
+<p><strong>The Analyst wears two hats</strong></p>
 </div>
 <div class="callout-content">
-<p>A separate “analyze the findings” stage before the Writer often just adds a round-trip — modern models reason while drafting. The Analyst earns its keep <strong>after</strong> the Writer, re-reading the draft against the original research with fresh context. That’s the load-bearing review role.</p>
-</div>
-</div>
-</div>
-<div class="callout callout-tip callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Tip</strong></p>
-</div>
-<div class="callout-content">
-<p>You will write the actual prompts in Lab 2.</p>
+<p>In the lab the Analyst can run <strong>before</strong> the Writer (evaluate findings, flag contradictions) <em>and</em> <strong>after</strong> it as a fact-checker. The pre-Writer pass is optional — modern models reason while drafting. The load-bearing role is the <strong>post-Writer fact-check</strong>: re-reading the draft against the original research with fresh context. That’s the gate we build in Section D.</p>
 </div>
 </div>
 </div>
@@ -499,8 +492,8 @@
 </ul>
 </div>
 </section>
-<section id="parallel-dispatch-recap-from-structured-outputs-tool-calling" class="slide level2">
-<h2>Parallel Dispatch — Recap from <a href="../../function_calling_tools/slides/structured_outputs_and_tool_use.html">Structured Outputs &amp; Tool Calling</a></h2>
+<section id="parallel-dispatch-recap-from-tool-calling" class="slide level2">
+<h2>Parallel Dispatch — Recap from <a href="../../function_calling_tools/slides/structured_outputs_and_tool_use.html">Tool Calling</a></h2>
 <table class="caption-top">
 <colgroup>
 <col style="width: 34%">
@@ -564,11 +557,6 @@
 <li>Need a contract (A2A, agent-as-tool)</li>
 </ul>
 </div></div>
-<div class="fragment">
-<blockquote>
-<p><strong>Default in Lab 2:</strong> separate histories, orchestrator-mediated handoff — cheaper per call and easier to reason about per specialist.</p>
-</blockquote>
-</div>
 </section>
 <section id="pattern-3-shared-workspace" class="slide level2" data-auto-animate="true">
 <h2 data-id="quarto-animate-title">Pattern 3: Shared Workspace</h2>
@@ -603,9 +591,45 @@
 </ul>
 </div>
 </section>
+<section id="pattern-4-plan-and-execute" class="slide level2 smaller" data-auto-animate="true">
+<h2 data-id="quarto-animate-title">Pattern 4: Plan-and-Execute</h2>
+<p>The Orchestrator first writes an <strong>explicit, inspectable plan</strong>, then runs it.</p>
+<div class="cell" data-reveal="true" data-fig-width="10" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<pre class="mermaid mermaid-js">graph LR
+    Q["Query"] --&gt; P["Planner"]
+    P --&gt;|"typed Plan:&lt;br/&gt;ordered steps + depends_on"| E["Executor"]
+    E --&gt; R["Researcher"]
+    E --&gt; A["Analyst"]
+    E --&gt; W["Writer"]
+
+    style Q fill:#1C355E,stroke:#00C9A7,color:white
+    style P fill:#9B8EC0,stroke:#1C355E,color:#1C355E
+    style E fill:#1C355E,stroke:#00C9A7,color:white
+    style R fill:#00C9A7,stroke:#1C355E,color:#1C355E
+    style A fill:#9B8EC0,stroke:#1C355E,color:#1C355E
+    style W fill:#FF7A5C,stroke:#1C355E,color:#1C355E
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>A specialization of <strong>Hub-and-Spoke</strong>: the supervisor emits a typed <code>Plan</code> (a list of <code>PlanStep</code>s — <code>task</code>, <code>specialist</code>, <code>depends_on</code>) <em>before</em> dispatching. The plan is data you can log, validate, and replan.</p>
+<ul>
+<li><strong>Pros:</strong> Transparent and debuggable — you see the whole plan up front; dependencies are explicit</li>
+<li><strong>Cons:</strong> Planner quality gates everything downstream; a bad plan misroutes the work</li>
+<li><strong>Use when:</strong> Tasks decompose into a known set of specialist steps with clear dependencies</li>
+</ul>
+</div>
+</section>
 <section id="combining-patterns" class="slide level2" data-auto-animate="true">
 <h2 data-id="quarto-animate-title">Combining Patterns</h2>
-<p>The three patterns aren’t mutually exclusive — most real systems mix <strong>Hub-and-Spoke</strong> + <strong>Shared Workspace</strong>:</p>
+<p>Plan-and-Execute rarely stands alone — most real systems mix <strong>Hub-and-Spoke</strong> + <strong>Shared Workspace</strong> under a plan:</p>
 <div class="cell" data-reveal="true" data-fig-width="9" data-layout-align="default">
 <div class="cell-output-display">
 <div>
@@ -641,7 +665,16 @@
 </section>
 <section id="why-quality-gates-recall-the-cascade" class="slide level2">
 <h2>Why Quality Gates? Recall the Cascade</h2>
-<p>Remember the Pipeline failure mode: a Researcher misreads a source, the Writer confidently builds a polished narrative around the wrong numbers. Each step is <em>locally correct</em> — and the pipeline still ships a wrong answer.</p>
+<div class="columns">
+<div class="column" style="width:55%;">
+<p><strong>The Pipeline failure mode</strong></p>
+<ol type="1">
+<li class="fragment">Researcher <strong>misreads</strong> a source</li>
+<li class="fragment">Writer builds a polished narrative <strong>around wrong numbers</strong></li>
+<li class="fragment">Each step is <em>locally correct</em></li>
+<li class="fragment">Pipeline ships a <strong>wrong answer</strong></li>
+</ol>
+</div><div class="column" style="width:45%;">
 <div class="fragment">
 <div class="callout callout-important callout-titled callout-style-default">
 <div class="callout-body">
@@ -652,13 +685,14 @@
 <p><strong>The cheapest fix isn’t a smarter model — it’s a fact-checker.</strong></p>
 </div>
 <div class="callout-content">
-<p>A second specialist re-reading the draft against the original findings catches the misread before it ships. This is the canonical example of a <strong>harness-level mitigation</strong> (we’ll return to that framing in the wrap-up) — and it’s where the Analyst genuinely earns a seat at the table.</p>
+<p>A second specialist re-reads the draft against the original findings and catches the misread <strong>before it ships</strong>.</p>
 </div>
 </div>
 </div>
 </div>
+</div></div>
 </section>
-<section id="the-review-loop-enter-the-fact-checker" class="slide level2">
+<section id="the-review-loop-enter-the-fact-checker" class="slide level2 smaller">
 <h2>The Review Loop: Enter the Fact-Checker</h2>
 <p>After the Writer produces a draft, the <strong>Analyst</strong> (acting as fact-checker) re-reads it <strong>against the original research findings</strong> — with fresh context, no investment in the prose:</p>
 <div class="cell" data-reveal="true" data-fig-width="9" data-layout-align="default">
@@ -683,7 +717,7 @@
 </div>
 </div>
 <div class="fragment">
-<p>The Fact-Checker verifies, line by line:</p>
+<p>A thorough fact-check <em>could</em> watch for all of these:</p>
 <ol type="1">
 <li><strong>Every claim is supported</strong> by the research findings (citation traceability)</li>
 <li><strong>No fabricated specifics</strong> — numbers, names, dates, quotes the research didn’t contain</li>
@@ -694,16 +728,13 @@
 </section>
 <section id="implementing-the-quality-gate" class="slide level2">
 <h2>Implementing the Quality Gate</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href=""></a><span class="cf">async</span> <span class="kw">def</span> _quality_gate(draft, max_revisions):</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href=""></a><span class="cf">async</span> <span class="kw">def</span> _quality_gate(draft, findings, max_revisions<span class="op">=</span><span class="dv">2</span>):</span>
 <span id="cb2-2"><a href=""></a>    <span class="cf">for</span> revision <span class="kw">in</span> <span class="bu">range</span>(max_revisions):</span>
-<span id="cb2-3"><a href=""></a>        review <span class="op">=</span> analyst.review(draft)</span>
-<span id="cb2-4"><a href=""></a></span>
-<span id="cb2-5"><a href=""></a>        <span class="cf">if</span> review.approved:</span>
-<span id="cb2-6"><a href=""></a>            <span class="cf">return</span> draft                        <span class="co"># Done</span></span>
-<span id="cb2-7"><a href=""></a></span>
-<span id="cb2-8"><a href=""></a>        draft <span class="op">=</span> writer.revise(draft, feedback<span class="op">=</span>review)</span>
-<span id="cb2-9"><a href=""></a></span>
-<span id="cb2-10"><a href=""></a>    <span class="cf">return</span> draft                                <span class="co"># Ship after max revisions</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb2-3"><a href=""></a>        verdict <span class="op">=</span> <span class="cf">await</span> analyst_review(draft, findings)   <span class="co"># -&gt; ReviewVerdict</span></span>
+<span id="cb2-4"><a href=""></a>        <span class="cf">if</span> verdict.approved:</span>
+<span id="cb2-5"><a href=""></a>            <span class="cf">return</span> draft                                  <span class="co"># Done</span></span>
+<span id="cb2-6"><a href=""></a>        draft <span class="op">=</span> <span class="cf">await</span> writer_revise(draft, verdict.feedback, findings)</span>
+<span id="cb2-7"><a href=""></a>    <span class="cf">return</span> draft                                          <span class="co"># Ship after max revisions</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="fragment">
 <div class="callout callout-important callout-titled callout-style-default">
 <div class="callout-body">
@@ -902,45 +933,12 @@
 <h2>Key Takeaways</h2>
 <ol type="1">
 <li><strong>Multi-agent is not always better</strong> — start with single agent, split at bottlenecks</li>
-<li><strong>Specialization = prompt + tools</strong> — same ReactAgent code, different personality</li>
-<li><strong>Three patterns:</strong> Pipeline, Hub-and-Spoke, Shared Workspace</li>
+<li><strong>Specialization = prompt + tools</strong> — same <code>call_specialist</code> path, different role</li>
+<li><strong>Four patterns:</strong> Pipeline, Hub-and-Spoke, Shared Workspace, and <strong>Plan-and-Execute</strong></li>
+<li><strong>Parallelism of agents</strong></li>
 <li><strong>The harness is the product</strong> — mitigations live in the scaffolding, not the model</li>
-<li><strong>The Analyst’s load-bearing job is fact-checking, not pre-processing</strong> — placed <em>after</em> the Writer, with fresh context and access to the original findings</li>
-<li><strong>Quality gates stop cascades</strong> — Pipeline’s cheapest insurance; always cap <code>max_revisions</code></li>
+<li><strong>Quality gates stop cascades</strong> — one narrow grounded judge, stack judges not prompts, always cap <code>max_revisions</code></li>
 </ol>
-</section>
-<section id="lab-preview-the-newsroom" class="slide level2">
-<h2>Lab Preview: The Newsroom</h2>
-<div class="columns">
-<div class="column" style="width:50%;">
-<p><strong>Step 1: The Specialists</strong></p>
-<ul>
-<li>Build Researcher, Writer, and Analyst (as fact-checker)</li>
-<li>Write the specialist system prompts and wire up tools</li>
-</ul>
-<p><strong>Step 2: The Orchestrator</strong></p>
-<ul>
-<li>Implement <code>MultiAgentOrchestrator</code></li>
-<li>Parallel research with <code>asyncio.gather</code></li>
-<li>Pass research findings into both Writer and Analyst</li>
-</ul>
-</div><div class="column" style="width:50%;">
-<p><strong>Step 3: The Quality Gate</strong></p>
-<ul>
-<li>Add the review loop</li>
-<li>Set <code>max_revisions</code> limit</li>
-<li>Test with a comparison query</li>
-</ul>
-</div></div>
-<div class="fragment">
-<p><strong>Lab time:</strong> 75 minutes (after this 75-minute lecture)</p>
-</div>
-</section>
-<section id="questions" class="slide level2" data-background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)">
-<h2>Questions?</h2>
-<div class="r-fit-text">
-<p>Thank You!</p>
-</div>
 
 </section></section>
     </div>

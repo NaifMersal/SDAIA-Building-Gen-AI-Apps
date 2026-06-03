@@ -9,7 +9,7 @@
 <link href="genai_fundamentals_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.9.38">
 
-  <meta name="dcterms.date" content="2026-06-02">
+  <meta name="dcterms.date" content="2026-06-03">
   <title>Generative AI Fundamentals</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -98,7 +98,7 @@
     code span.vs { color: #20794d; } /* VerbatimString */
     code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="genai_fundamentals_files/libs/revealjs/dist/theme/quarto-58ba9499846de55aa5593708634b0fe7.css">
+  <link rel="stylesheet" href="genai_fundamentals_files/libs/revealjs/dist/theme/quarto-05b633aaffd58596cc6573a610a4b559.css">
   <link href="genai_fundamentals_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="genai_fundamentals_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="genai_fundamentals_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -207,7 +207,7 @@
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-06-02</p>
+  <p class="date">2026-06-03</p>
 </section>
 <section>
 <section id="what-is-generative-ai" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
@@ -939,19 +939,21 @@ A: 2 coffees × 3 riyals = 6.
 <pre class="mermaid mermaid-js">graph LR
     A["Chain of Thought&lt;br/&gt;(2022, prompt trick)"] --&gt; B["o1&lt;br/&gt;(2024, trained CoT)"]
     B --&gt; C["DeepSeek-R1&lt;br/&gt;(2025, open weights)"]
-    C --&gt; D["Claude Extended&lt;br/&gt;Thinking (2025)"]
+    C --&gt; D["Extended Thinking&lt;br/&gt;(2025, fixed budget)"]
+    D --&gt; E["Adaptive Thinking&lt;br/&gt;(2026, model decides)"]
 
     style A fill:#9B8EC0,stroke:#1C355E,color:#fff
     style B fill:#00C9A7,stroke:#1C355E,color:#fff
     style C fill:#FF7A5C,stroke:#1C355E,color:#fff
     style D fill:#1C355E,stroke:#1C355E,color:#fff
+    style E fill:#9B4DCA,stroke:#1C355E,color:#fff
 </pre>
 </div>
 <p></p></figure><p></p>
 </div>
 </div>
 </div>
-<p>The shift: from <em>prompting</em> a model to think step-by-step, to <em>training</em> a model that reasons internally before responding.</p>
+<p>The shift: from <em>prompting</em> a model to think step-by-step, to <em>training</em> a model that reasons internally — and now lets the model <strong>decide for itself</strong> how much to think.</p>
 </section>
 <section id="the-trade-off" class="slide level2">
 <h2>The Trade-off</h2>
@@ -1004,6 +1006,54 @@ A: 2 coffees × 3 riyals = 6.
 <p>Use them when <strong>correctness matters more than speed</strong> — audit tasks, code generation, structured data extraction. Don’t use them for real-time chat.</p>
 </div>
 </div>
+</div>
+</div>
+</section>
+<section id="controlling-the-reasoning-the-modes" class="slide level2 smaller">
+<h2>Controlling the Reasoning: The Modes</h2>
+<p>How we control test-time compute has evolved. Know the difference between the three modes:</p>
+<div class="columns">
+<div class="column" style="width:33%;">
+<p><strong>1. Native / Unconstrained</strong><br>
+<em>(e.g., DeepSeek-R1 Native)</em></p>
+<p>Model decides completely on its own when to stop by emitting <code>&lt;/think&gt;</code>.</p>
+<ul>
+<li><strong>Control:</strong> None.</li>
+<li><strong>Behavior:</strong> The model has full autonomy over its thinking path.</li>
+</ul>
+</div><div class="column" style="width:33%;">
+<p><strong>2. Extended Thinking</strong><br>
+<em>(e.g., Gemini 2.0 / 2.5)</em></p>
+<p>You set a fixed <strong>thinking budget</strong> — “you may use up to N tokens to reason.”</p>
+<ul>
+<li><strong>Control:</strong> Strict token budget.</li>
+<li><strong>Behavior:</strong> Hard limit; easy to underthink or waste tokens.</li>
+</ul>
+</div><div class="column" style="width:33%;">
+<p><strong>3. Adaptive Thinking</strong><br>
+<em>(e.g., OpenAI o1/o3-mini)</em></p>
+<p>You set an <strong>effort level</strong> — <code>low</code> / <code>medium</code> / <code>high</code> — and the model decides how much to think.</p>
+<ul>
+<li><strong>Control:</strong> Coarse tiering.</li>
+<li><strong>Behavior:</strong> Model scales compute dynamically within that tier.</li>
+</ul>
+</div></div>
+<div class="fragment">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Key Difference</strong></p>
+</div>
+<div class="callout-content">
+<p>In <strong>Native</strong> and <strong>Adaptive</strong>, the model decides how much to think. But <strong>Adaptive</strong> gives developers high-level control (<code>low</code>/<code>medium</code>/<code>high</code>) to manage latency and cost, while <strong>Extended</strong> forces the developer to manage the raw token count directly.</p>
+</div>
+</div>
+</div>
+<div style="text-align: center; margin-top: 0.6em;">
+<p><em>Next session you’ll set this with one parameter —</em> <a href="../../architecture_fundamentals/slides/api_and_provider_landscape.html">API &amp; Provider Landscape</a>.</p>
 </div>
 </div>
 </section>
