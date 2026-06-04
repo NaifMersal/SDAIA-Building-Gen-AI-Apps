@@ -9,7 +9,7 @@
 <link href="containerization_docker_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.9.38">
 
-  <meta name="dcterms.date" content="2026-06-03">
+  <meta name="dcterms.date" content="2026-06-04">
   <title>Containerization &amp; Packaging with Docker</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -207,7 +207,7 @@
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-06-03</p>
+  <p class="date">2026-06-04</p>
 </section>
 <section>
 <section id="a.-the-works-on-my-machine-problem" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
@@ -342,20 +342,24 @@
 </div>
 </div>
 </div>
-<pre><code>
-# B. Docker Fundamentals for AI {.sdaia-dark background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)"}
-
-Layers, base images, and multi-stage builds
-
-## Docker Layers &amp; Caching
-
-```{mermaid}
-%%| fig-width: 9
-graph LR
+</section></section>
+<section>
+<section id="b.-docker-fundamentals-for-ai" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)">
+<h1>B. Docker Fundamentals for AI</h1>
+<p>Layers, base images, and multi-stage builds</p>
+</section>
+<section id="docker-layers-caching" class="slide level2">
+<h2>Docker Layers &amp; Caching</h2>
+<div class="cell" data-reveal="true" data-fig-width="9" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<pre class="mermaid mermaid-js">graph LR
     L1["Layer 1: FROM python:3.11-slim&lt;br/&gt;~130 MB — cached after first pull"]
     L2["Layer 2: RUN apt-get install gcc&lt;br/&gt;~45 MB — cached if unchanged"]
-    L3["Layer 3: COPY requirements.txt&lt;br/&gt;~1 KB — invalidated when requirements change"]
-    L4["Layer 4: RUN pip install -r requirements.txt&lt;br/&gt;~800 MB — re-runs after layer 3 invalidates"]
+    L3["Layer 3: COPY requirements.txt&lt;br/&gt;~1 KB — busts cache on change"]
+    L4["Layer 4: RUN pip install&lt;br/&gt;~800 MB — re-runs after L3"]
     L5["Layer 5: COPY ./src&lt;br/&gt;~50 KB — changes every commit"]
 
     L1 --&gt; L2 --&gt; L3 --&gt; L4 --&gt; L5
@@ -364,7 +368,13 @@ graph LR
     style L2 fill:#9B8EC0,stroke:#1C355E,color:#1C355E
     style L3 fill:#FF7A5C,stroke:#1C355E,color:#1C355E
     style L4 fill:#FF7A5C,stroke:#1C355E,color:#1C355E
-    style L5 fill:#00C9A7,stroke:#1C355E,color:#1C355E</code></pre>
+    style L5 fill:#00C9A7,stroke:#1C355E,color:#1C355E
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
 <div class="callout callout-tip callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -430,25 +440,25 @@ graph LR
 <div class="columns">
 <div class="column" style="width:50%;">
 <p><strong>Single-stage build</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource dockerfile number-lines code-with-copy"><code class="sourceCode dockerfile"><span id="cb4-1"><a href=""></a><span class="kw">FROM</span> python:3.11</span>
-<span id="cb4-2"><a href=""></a><span class="kw">RUN</span> <span class="ex">apt-get</span> install <span class="at">-y</span> gcc g++ curl</span>
-<span id="cb4-3"><a href=""></a><span class="kw">COPY</span> requirements.txt .</span>
-<span id="cb4-4"><a href=""></a><span class="kw">RUN</span> <span class="ex">pip</span> install <span class="at">-r</span> requirements.txt</span>
-<span id="cb4-5"><a href=""></a><span class="kw">COPY</span> ./src ./src</span>
-<span id="cb4-6"><a href=""></a><span class="co"># Final image: ~2.3 GB</span></span>
-<span id="cb4-7"><a href=""></a><span class="co"># Includes: gcc, g++, build cache</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource dockerfile number-lines code-with-copy"><code class="sourceCode dockerfile"><span id="cb3-1"><a href=""></a><span class="kw">FROM</span> python:3.11</span>
+<span id="cb3-2"><a href=""></a><span class="kw">RUN</span> <span class="ex">apt-get</span> install <span class="at">-y</span> gcc g++ curl</span>
+<span id="cb3-3"><a href=""></a><span class="kw">COPY</span> requirements.txt .</span>
+<span id="cb3-4"><a href=""></a><span class="kw">RUN</span> <span class="ex">pip</span> install <span class="at">-r</span> requirements.txt</span>
+<span id="cb3-5"><a href=""></a><span class="kw">COPY</span> ./src ./src</span>
+<span id="cb3-6"><a href=""></a><span class="co"># Final image: ~2.3 GB</span></span>
+<span id="cb3-7"><a href=""></a><span class="co"># Includes: gcc, g++, build cache</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>❌ Ships build tools to production</p>
 </div><div class="column" style="width:50%;">
 <p><strong>Multi-stage build</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode numberSource dockerfile number-lines code-with-copy"><code class="sourceCode dockerfile"><span id="cb5-1"><a href=""></a><span class="kw">FROM</span> python:3.11-slim <span class="kw">AS</span> builder</span>
-<span id="cb5-2"><a href=""></a><span class="kw">RUN</span> <span class="ex">apt-get</span> install <span class="at">-y</span> gcc g++</span>
-<span id="cb5-3"><a href=""></a><span class="kw">RUN</span> <span class="ex">pip</span> install <span class="at">-r</span> requirements.txt</span>
-<span id="cb5-4"><a href=""></a></span>
-<span id="cb5-5"><a href=""></a><span class="kw">FROM</span> python:3.11-slim <span class="kw">AS</span> runtime</span>
-<span id="cb5-6"><a href=""></a><span class="kw">COPY</span> <span class="op">--from=builder</span> /opt/venv /opt/venv</span>
-<span id="cb5-7"><a href=""></a><span class="kw">COPY</span> ./src ./src</span>
-<span id="cb5-8"><a href=""></a><span class="co"># Final image: ~450 MB</span></span>
-<span id="cb5-9"><a href=""></a><span class="co"># No build tools!</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource dockerfile number-lines code-with-copy"><code class="sourceCode dockerfile"><span id="cb4-1"><a href=""></a><span class="kw">FROM</span> python:3.11-slim <span class="kw">AS</span> builder</span>
+<span id="cb4-2"><a href=""></a><span class="kw">RUN</span> <span class="ex">apt-get</span> install <span class="at">-y</span> gcc g++</span>
+<span id="cb4-3"><a href=""></a><span class="kw">RUN</span> <span class="ex">pip</span> install <span class="at">-r</span> requirements.txt</span>
+<span id="cb4-4"><a href=""></a></span>
+<span id="cb4-5"><a href=""></a><span class="kw">FROM</span> python:3.11-slim <span class="kw">AS</span> runtime</span>
+<span id="cb4-6"><a href=""></a><span class="kw">COPY</span> <span class="op">--from=builder</span> /opt/venv /opt/venv</span>
+<span id="cb4-7"><a href=""></a><span class="kw">COPY</span> ./src ./src</span>
+<span id="cb4-8"><a href=""></a><span class="co"># Final image: ~450 MB</span></span>
+<span id="cb4-9"><a href=""></a><span class="co"># No build tools!</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>✅ Lean, secure, fast to pull</p>
 </div></div>
 </section></section>
@@ -513,28 +523,28 @@ graph LR
 </div>
 </div>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode numberSource dockerignore number-lines code-with-copy"><code class="sourceCode"><span id="cb6-1"><a href=""></a># Python artifacts</span>
-<span id="cb6-2"><a href=""></a>__pycache__/</span>
-<span id="cb6-3"><a href=""></a>*.py[cod]</span>
-<span id="cb6-4"><a href=""></a>*.egg-info/</span>
-<span id="cb6-5"><a href=""></a>.venv/</span>
-<span id="cb6-6"><a href=""></a>venv/</span>
-<span id="cb6-7"><a href=""></a></span>
-<span id="cb6-8"><a href=""></a># Secrets — NEVER bake these in!</span>
-<span id="cb6-9"><a href=""></a>.env</span>
-<span id="cb6-10"><a href=""></a>*.pem</span>
-<span id="cb6-11"><a href=""></a>secrets/</span>
-<span id="cb6-12"><a href=""></a></span>
-<span id="cb6-13"><a href=""></a># Dev tools</span>
-<span id="cb6-14"><a href=""></a>.git/</span>
-<span id="cb6-15"><a href=""></a>.pytest_cache/</span>
-<span id="cb6-16"><a href=""></a>tests/</span>
-<span id="cb6-17"><a href=""></a>notebooks/</span>
-<span id="cb6-18"><a href=""></a>*.ipynb</span>
-<span id="cb6-19"><a href=""></a></span>
-<span id="cb6-20"><a href=""></a># Large model files (mount at runtime instead)</span>
-<span id="cb6-21"><a href=""></a>models/*.bin</span>
-<span id="cb6-22"><a href=""></a>models/*.safetensors</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode numberSource dockerignore number-lines code-with-copy"><code class="sourceCode"><span id="cb5-1"><a href=""></a># Python artifacts</span>
+<span id="cb5-2"><a href=""></a>__pycache__/</span>
+<span id="cb5-3"><a href=""></a>*.py[cod]</span>
+<span id="cb5-4"><a href=""></a>*.egg-info/</span>
+<span id="cb5-5"><a href=""></a>.venv/</span>
+<span id="cb5-6"><a href=""></a>venv/</span>
+<span id="cb5-7"><a href=""></a></span>
+<span id="cb5-8"><a href=""></a># Secrets — NEVER bake these in!</span>
+<span id="cb5-9"><a href=""></a>.env</span>
+<span id="cb5-10"><a href=""></a>*.pem</span>
+<span id="cb5-11"><a href=""></a>secrets/</span>
+<span id="cb5-12"><a href=""></a></span>
+<span id="cb5-13"><a href=""></a># Dev tools</span>
+<span id="cb5-14"><a href=""></a>.git/</span>
+<span id="cb5-15"><a href=""></a>.pytest_cache/</span>
+<span id="cb5-16"><a href=""></a>tests/</span>
+<span id="cb5-17"><a href=""></a>notebooks/</span>
+<span id="cb5-18"><a href=""></a>*.ipynb</span>
+<span id="cb5-19"><a href=""></a></span>
+<span id="cb5-20"><a href=""></a># Large model files (mount at runtime instead)</span>
+<span id="cb5-21"><a href=""></a>models/*.bin</span>
+<span id="cb5-22"><a href=""></a>models/*.safetensors</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="security-non-root-user" class="slide level2">
 <h2>Security: Non-Root User</h2>
@@ -549,19 +559,19 @@ graph LR
 </ul>
 <p>Running as <code>appuser</code> limits blast radius significantly.</p>
 </div><div class="column" style="width:45%;">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode numberSource dockerfile number-lines code-with-copy"><code class="sourceCode dockerfile"><span id="cb7-1"><a href=""></a><span class="co"># Create user before switching</span></span>
-<span id="cb7-2"><a href=""></a><span class="kw">RUN</span> <span class="ex">useradd</span> <span class="dt">\</span></span>
-<span id="cb7-3"><a href=""></a>    <span class="at">--create-home</span> <span class="dt">\</span></span>
-<span id="cb7-4"><a href=""></a>    <span class="at">--shell</span> /bin/bash <span class="dt">\</span></span>
-<span id="cb7-5"><a href=""></a>    appuser</span>
-<span id="cb7-6"><a href=""></a></span>
-<span id="cb7-7"><a href=""></a><span class="co"># Switch to non-root</span></span>
-<span id="cb7-8"><a href=""></a><span class="kw">USER</span> appuser</span>
-<span id="cb7-9"><a href=""></a><span class="kw">WORKDIR</span> /home/appuser/app</span>
-<span id="cb7-10"><a href=""></a></span>
-<span id="cb7-11"><a href=""></a><span class="co"># Chown copied files</span></span>
-<span id="cb7-12"><a href=""></a><span class="kw">COPY</span> <span class="op">--chown=appuser:appuser</span> \</span>
-<span id="cb7-13"><a href=""></a>    ./src ./src</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode numberSource dockerfile number-lines code-with-copy"><code class="sourceCode dockerfile"><span id="cb6-1"><a href=""></a><span class="co"># Create user before switching</span></span>
+<span id="cb6-2"><a href=""></a><span class="kw">RUN</span> <span class="ex">useradd</span> <span class="dt">\</span></span>
+<span id="cb6-3"><a href=""></a>    <span class="at">--create-home</span> <span class="dt">\</span></span>
+<span id="cb6-4"><a href=""></a>    <span class="at">--shell</span> /bin/bash <span class="dt">\</span></span>
+<span id="cb6-5"><a href=""></a>    appuser</span>
+<span id="cb6-6"><a href=""></a></span>
+<span id="cb6-7"><a href=""></a><span class="co"># Switch to non-root</span></span>
+<span id="cb6-8"><a href=""></a><span class="kw">USER</span> appuser</span>
+<span id="cb6-9"><a href=""></a><span class="kw">WORKDIR</span> /home/appuser/app</span>
+<span id="cb6-10"><a href=""></a></span>
+<span id="cb6-11"><a href=""></a><span class="co"># Chown copied files</span></span>
+<span id="cb6-12"><a href=""></a><span class="kw">COPY</span> <span class="op">--chown=appuser:appuser</span> \</span>
+<span id="cb6-13"><a href=""></a>    ./src ./src</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div></div>
 </section></section>
 <section>
@@ -651,9 +661,9 @@ graph LR
 <h2>Environment Variables in Compose</h2>
 <p>The <code>.env</code> / <code>.env.example</code> split and <code>.gitignore</code> hygiene were covered in <a href="../../architecture_fundamentals/slides/api_and_provider_landscape.html#never-hardcode-secrets">API &amp; Provider Landscape</a> — the same rules apply here.</p>
 <p><strong>Docker-specific:</strong> Compose reads <code>.env</code> automatically via <code>env_file:</code>, so secrets are injected at runtime instead of baked into the image:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode numberSource yaml number-lines code-with-copy"><code class="sourceCode yaml"><span id="cb8-1"><a href=""></a><span class="fu">services</span><span class="kw">:</span></span>
-<span id="cb8-2"><a href=""></a><span class="at">  </span><span class="fu">api</span><span class="kw">:</span></span>
-<span id="cb8-3"><a href=""></a><span class="at">    </span><span class="fu">env_file</span><span class="kw">:</span><span class="at"> .env</span><span class="co">          # injected at runtime, never in the image</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode numberSource yaml number-lines code-with-copy"><code class="sourceCode yaml"><span id="cb7-1"><a href=""></a><span class="fu">services</span><span class="kw">:</span></span>
+<span id="cb7-2"><a href=""></a><span class="at">  </span><span class="fu">api</span><span class="kw">:</span></span>
+<span id="cb7-3"><a href=""></a><span class="at">    </span><span class="fu">env_file</span><span class="kw">:</span><span class="at"> .env</span><span class="co">          # injected at runtime, never in the image</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="callout callout-warning callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -688,15 +698,15 @@ graph LR
 </div>
 </div>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode numberSource dockerfile number-lines code-with-copy"><code class="sourceCode dockerfile"><span id="cb9-1"><a href=""></a><span class="co"># ❌ ANTI-PATTERN 1: Hardcoded in Dockerfile</span></span>
-<span id="cb9-2"><a href=""></a><span class="kw">ENV</span> ANTHROPIC_API_KEY=sk-ant-api03-real-key-here</span>
-<span id="cb9-3"><a href=""></a></span>
-<span id="cb9-4"><a href=""></a><span class="co"># ❌ ANTI-PATTERN 2: Baked in during build</span></span>
-<span id="cb9-5"><a href=""></a><span class="kw">COPY</span> .env .env</span>
-<span id="cb9-6"><a href=""></a></span>
-<span id="cb9-7"><a href=""></a><span class="co"># ❌ ANTI-PATTERN 3: Passed as build arg (visible in image layers)</span></span>
-<span id="cb9-8"><a href=""></a><span class="kw">ARG</span> API_KEY</span>
-<span id="cb9-9"><a href=""></a><span class="kw">ENV</span> ANTHROPIC_API_KEY=$API_KEY</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode numberSource dockerfile number-lines code-with-copy"><code class="sourceCode dockerfile"><span id="cb8-1"><a href=""></a><span class="co"># ❌ ANTI-PATTERN 1: Hardcoded in Dockerfile</span></span>
+<span id="cb8-2"><a href=""></a><span class="kw">ENV</span> ANTHROPIC_API_KEY=sk-ant-api03-real-key-here</span>
+<span id="cb8-3"><a href=""></a></span>
+<span id="cb8-4"><a href=""></a><span class="co"># ❌ ANTI-PATTERN 2: Baked in during build</span></span>
+<span id="cb8-5"><a href=""></a><span class="kw">COPY</span> .env .env</span>
+<span id="cb8-6"><a href=""></a></span>
+<span id="cb8-7"><a href=""></a><span class="co"># ❌ ANTI-PATTERN 3: Passed as build arg (visible in image layers)</span></span>
+<span id="cb8-8"><a href=""></a><span class="kw">ARG</span> API_KEY</span>
+<span id="cb8-9"><a href=""></a><span class="kw">ENV</span> ANTHROPIC_API_KEY=$API_KEY</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="fragment">
 <div class="callout callout-tip callout-titled callout-style-default">
 <div class="callout-body">
@@ -711,12 +721,12 @@ graph LR
 </div>
 </div>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode numberSource yaml number-lines code-with-copy"><code class="sourceCode yaml"><span id="cb10-1"><a href=""></a><span class="co"># ✅ Runtime injection via env_file</span></span>
-<span id="cb10-2"><a href=""></a><span class="fu">services</span><span class="kw">:</span></span>
-<span id="cb10-3"><a href=""></a><span class="at">  </span><span class="fu">api</span><span class="kw">:</span></span>
-<span id="cb10-4"><a href=""></a><span class="at">    </span><span class="fu">env_file</span><span class="kw">:</span><span class="at"> .env</span><span class="co">          # only on your machine</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href=""></a><span class="co"># ✅ CI/CD: inject from secrets manager</span></span>
-<span id="cb11-2"><a href=""></a><span class="ex">docker</span> run <span class="at">-e</span> ANTHROPIC_API_KEY=<span class="va">$SECRET</span> api:latest</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode numberSource yaml number-lines code-with-copy"><code class="sourceCode yaml"><span id="cb9-1"><a href=""></a><span class="co"># ✅ Runtime injection via env_file</span></span>
+<span id="cb9-2"><a href=""></a><span class="fu">services</span><span class="kw">:</span></span>
+<span id="cb9-3"><a href=""></a><span class="at">  </span><span class="fu">api</span><span class="kw">:</span></span>
+<span id="cb9-4"><a href=""></a><span class="at">    </span><span class="fu">env_file</span><span class="kw">:</span><span class="at"> .env</span><span class="co">          # only on your machine</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href=""></a><span class="co"># ✅ CI/CD: inject from secrets manager</span></span>
+<span id="cb10-2"><a href=""></a><span class="ex">docker</span> run <span class="at">-e</span> ANTHROPIC_API_KEY=<span class="va">$SECRET</span> api:latest</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="cloud-secrets-management" class="slide level2">
@@ -773,19 +783,22 @@ graph LR
 </div>
 </div>
 </section>
-<section id="image-security-scanning" class="slide level2">
+<section id="image-security-scanning" class="slide level2 smaller">
 <h2>Image Security Scanning</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href=""></a><span class="co"># Scan your image for CVEs before pushing</span></span>
-<span id="cb12-2"><a href=""></a><span class="ex">docker</span> scout cves myapp:latest</span>
-<span id="cb12-3"><a href=""></a></span>
-<span id="cb12-4"><a href=""></a><span class="co"># Or use Trivy (open source)</span></span>
-<span id="cb12-5"><a href=""></a><span class="ex">trivy</span> image myapp:latest</span>
-<span id="cb12-6"><a href=""></a></span>
-<span id="cb12-7"><a href=""></a><span class="co"># Output example:</span></span>
-<span id="cb12-8"><a href=""></a><span class="co"># CRITICAL: 2 (openssl CVE-2024-xxxx)</span></span>
-<span id="cb12-9"><a href=""></a><span class="co"># HIGH: 5</span></span>
-<span id="cb12-10"><a href=""></a><span class="co"># MEDIUM: 12</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="fragment">
+<div class="columns">
+<div class="column" style="width:55%;">
+<p>Scan for CVEs <strong>before</strong> you push:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href=""></a><span class="co"># Docker's built-in scanner</span></span>
+<span id="cb11-2"><a href=""></a><span class="ex">docker</span> scout cves myapp:latest</span>
+<span id="cb11-3"><a href=""></a></span>
+<span id="cb11-4"><a href=""></a><span class="co"># Or Trivy (open source)</span></span>
+<span id="cb11-5"><a href=""></a><span class="ex">trivy</span> image myapp:latest</span>
+<span id="cb11-6"><a href=""></a></span>
+<span id="cb11-7"><a href=""></a><span class="co"># Output example:</span></span>
+<span id="cb11-8"><a href=""></a><span class="co"># CRITICAL: 2 (openssl CVE-2024-xxxx)</span></span>
+<span id="cb11-9"><a href=""></a><span class="co"># HIGH: 5</span></span>
+<span id="cb11-10"><a href=""></a><span class="co"># MEDIUM: 12</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div><div class="column" style="width:45%;">
 <p><strong>Security checklist:</strong></p>
 <ul class="task-list">
 <li><label><input type="checkbox">Non-root user</label></li>
@@ -795,7 +808,7 @@ graph LR
 <li><label><input type="checkbox">Base image pinned to digest</label></li>
 <li><label><input type="checkbox">Weekly CVE scan in CI</label></li>
 </ul>
-</div>
+</div></div>
 </section>
 <section id="references" class="slide level2">
 <h2>References</h2>

@@ -9,7 +9,7 @@
 <link href="local_deployment_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.9.38">
 
-  <meta name="dcterms.date" content="2026-06-03">
+  <meta name="dcterms.date" content="2026-06-04">
   <title>Local &amp; Self-Hosted Deployment</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -207,7 +207,7 @@
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-06-03</p>
+  <p class="date">2026-06-04</p>
 </section>
 <section>
 <section id="a.-why-self-host" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
@@ -229,7 +229,7 @@
 <h2>The Four Legitimate Reasons</h2>
 <ol type="1">
 <li class="fragment"><p><strong>Data sovereignty / privacy.</strong> Regulated data (healthcare, finance, government) can’t leave your VPC. Self-host isn’t optional — it’s a compliance requirement.</p></li>
-<li class="fragment"><p><strong>Cost predictability at scale.</strong> Hosted APIs are linear: 10× the traffic = 10× the bill. Self-hosted is step-function: same GPU serves 1 or 1,000 requests up to capacity. Crosses over around <strong>$5K-$10K/month</strong> in hosted spend.</p></li>
+<li class="fragment"><p><strong>Cost predictability at scale.</strong> Hosted APIs are linear: 10× the traffic = 10× the bill. Self-hosted is step-function: same GPU serves 1 or 1,000 requests up to capacity. As a rule of thumb, the crossover lands once <strong>hosted spend reaches the low-to-mid five figures per month</strong> — but run the numbers for your own traffic.</p></li>
 <li class="fragment"><p><strong>Latency floor.</strong> Network round-trip to a hosted API adds ~50-200ms. For voice agents, real-time copilots, or edge devices, self-hosting eliminates that hop.</p></li>
 <li class="fragment"><p><strong>Model lock / version stability.</strong> Hosted models deprecate. A self-hosted Llama 3.1 will keep behaving identically in five years; a hosted <code>gpt-4-0613</code> gets rotated out from under you.</p></li>
 </ol>
@@ -469,8 +469,11 @@
               + activation_buffer (small)
               + kv_cache(context_length, batch_size)
               + overhead (~10-15%)</code></pre>
+<p>The <code>kv_cache</code> term is the one that surprises people — it grows with context length and batch size. The next slide sizes it exactly.</p>
 </div>
-<div class="fragment">
+</section>
+<section id="kv-cache-the-hidden-cost" class="slide level2 smaller">
+<h2>KV Cache: The Hidden Cost</h2>
 <p><strong>KV cache per token</strong> — exact formula, FP16:</p>
 <p><code>bytes_per_token = 2 × n_layers × n_kv_heads × head_dim × 2</code></p>
 <table class="caption-top">
@@ -528,7 +531,6 @@
 </div>
 </div>
 <p>At 32K context per request: Llama-2-7B needs ~17 GB <em>just for KV cache</em>; Llama-3.1-8B needs ~4 GB. Always check <code>config.json</code> for <code>num_key_value_heads</code> before sizing.</p>
-</div>
 </section>
 <section id="picking-a-gpu" class="slide level2 smaller">
 <h2>Picking a GPU</h2>
@@ -728,7 +730,9 @@
 </section>
 <section id="a-minimum-viable-production-stack" class="slide level2 smaller">
 <h2>A Minimum-Viable Production Stack</h2>
-<div class="cell" data-reveal="true" data-fig-width="9" data-layout-align="default">
+<div class="columns">
+<div class="column" style="width:62%;">
+<div class="cell" data-reveal="true" data-fig-width="7" data-layout-align="default">
 <div class="cell-output-display">
 <div>
 <p></p><figure class=""><p></p>
@@ -753,6 +757,7 @@
 </div>
 </div>
 </div>
+</div><div class="column" style="width:38%;">
 <div class="callout callout-tip callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -766,6 +771,7 @@
 </div>
 </div>
 </div>
+</div></div>
 </section>
 <section id="updates-without-downtime" class="slide level2">
 <h2>Updates Without Downtime</h2>
@@ -785,8 +791,8 @@
 <div class="fragment">
 <p><strong>Two common patterns:</strong></p>
 <ol type="1">
-<li><strong>Blue/green</strong> — stand up new pods with the new model, switch traffic via the load balancer, drain old pods. Doubles GPU spend briefly.</li>
-<li><strong>Adapter hot-swap</strong> — keep the base model running, swap LoRA adapters in-process. Near-zero downtime, but only works for fine-tunes (see <a href="../../architecture_fundamentals/slides/fine_tuning_in_practice.html">Fine-Tuning in Practice</a>) — not full model upgrades.</li>
+<li><strong>Blue/green</strong> — the same strategy covered in <a href="../../production_deployment/slides/cicd_quality_gates.html#deployment-strategy-comparison">CI/CD &amp; Quality Gates §E</a>: stand up new pods with the new model, switch traffic at the load balancer, drain old pods. Doubles GPU spend briefly. For self-hosting, the catch is GPU cost — a spare 80 GB GPU per replica isn’t free.</li>
+<li><strong>Adapter hot-swap</strong> — self-host-specific: keep the base model running and swap LoRA adapters in-process. Near-zero downtime, but only works for fine-tunes (see <a href="../../architecture_fundamentals/slides/fine_tuning_in_practice.html">Fine-Tuning in Practice</a>) — not full model upgrades.</li>
 </ol>
 </div>
 </section></section>
@@ -818,6 +824,16 @@
 </div>
 </div>
 </div>
+</section>
+<section id="references" class="slide level2">
+<h2>References</h2>
+<ol type="1">
+<li><strong>Ollama</strong>: https://github.com/ollama/ollama</li>
+<li><strong>vLLM (PagedAttention)</strong>: https://docs.vllm.ai</li>
+<li><strong>Hugging Face TGI</strong>: https://huggingface.co/docs/text-generation-inference</li>
+<li><strong>llama.cpp</strong>: https://github.com/ggml-org/llama.cpp</li>
+<li><strong>GGUF format</strong>: https://huggingface.co/docs/hub/gguf</li>
+</ol>
 
 </section></section>
     </div>

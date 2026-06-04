@@ -9,7 +9,7 @@
 <link href="api_and_provider_landscape_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.9.38">
 
-  <meta name="dcterms.date" content="2026-06-03">
+  <meta name="dcterms.date" content="2026-06-04">
   <title>API &amp; Provider Landscape</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -207,7 +207,7 @@
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-06-03</p>
+  <p class="date">2026-06-04</p>
 </section>
 <section id="agenda" class="slide level2">
 <h2>Agenda</h2>
@@ -392,6 +392,34 @@
 </tr>
 </tbody>
 </table>
+</section>
+<section id="a-couple-of-clarifications" class="slide level2">
+<h2>A Couple of Clarifications</h2>
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Self-hosted vs Local</strong></p>
+</div>
+<div class="callout-content">
+<p>Self-hosted means you run the model on your own servers (e.g., AWS EC2 with GPUs or private data center) using open-source serving frameworks like vLLM, but it can also be run <strong>Locally</strong> on your laptop or desktop. We put them on different columns as they have different economic and operational characteristics.</p>
+</div>
+</div>
+</div>
+<div class="fragment">
+<div class="callout callout-note no-icon callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<p><strong>⚡ Why “Hyper-Fast” is different</strong></p>
+</div>
+<div class="callout-content">
+<p>Groq and Cerebras don’t run models on conventional GPUs. Groq uses custom <strong>LPUs (Language Processing Units)</strong> and Cerebras uses <strong>wafer-scale chips</strong> — silicon designed from scratch to eliminate the memory bottleneck that limits GPU token throughput. This is a hardware-level architectural difference, not just a software or batching optimization. The 500–2000+ tok/s speeds are only achievable on these specialized chips.</p>
+</div>
+</div>
+</div>
+</div>
 </section>
 <section id="operational-fit" class="slide level2">
 <h2>Operational Fit</h2>

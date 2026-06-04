@@ -9,7 +9,7 @@
 <link href="cicd_quality_gates_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.9.38">
 
-  <meta name="dcterms.date" content="2026-06-03">
+  <meta name="dcterms.date" content="2026-06-04">
   <title>CI/CD Pipelines &amp; Quality Gates</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -207,7 +207,7 @@
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-06-03</p>
+  <p class="date">2026-06-04</p>
 </section>
 <section>
 <section id="a.-ai-cicd-is-different" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
@@ -281,12 +281,12 @@
 </section>
 <section id="the-4-stage-ai-pipeline" class="slide level2">
 <h2>The 4-Stage AI Pipeline</h2>
-<div class="cell" data-fig-width="12" data-fig-height="5" data-layout-align="default">
+<div class="cell" data-fig-width="9.5" data-fig-height="4" data-layout-align="default">
 <div class="cell-output-display">
 <div>
 <p></p><figure class=""><p></p>
 <div>
-<svg width="1152" height="480" viewbox="0.00 0.00 1235.70 173.00" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none; display: block; margin: auto auto auto auto">
+<svg width="912" height="384" viewbox="0.00 0.00 1235.70 173.00" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none; display: block; margin: auto auto auto auto">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 169)">
 <title>G</title>
 <g id="clust4" class="cluster">
@@ -628,25 +628,25 @@
 <h1>C. Writing Quality Gates</h1>
 <p>Pass/fail thresholds and pytest integration</p>
 </section>
-<section id="quality-gate-decision-flow" class="slide level2">
+<section id="quality-gate-decision-flow" class="slide level2 smaller">
 <h2>Quality Gate Decision Flow</h2>
 <div class="cell" data-reveal="true" data-fig-width="10" data-layout-align="default">
 <div class="cell-output-display">
 <div>
 <p></p><figure class=""><p></p>
 <div>
-<pre class="mermaid mermaid-js">graph TD
-  R["evaluate(test_cases, metrics)"] --&gt; K{"KeywordCoverage&lt;br/&gt;success?"}
-  K --&gt;|No| FAIL["test_case&lt;br/&gt;FAILS"]
-  K --&gt;|Yes| L{"LatencyBudget&lt;br/&gt;success?"}
+<pre class="mermaid mermaid-js">graph LR
+  R["evaluate()"] --&gt; K{"Keyword?"}
+  K --&gt;|Yes| L{"Latency?"}
+  L --&gt;|Yes| S{"Safety?"}
+  S --&gt;|Yes| SR{"Semantic&lt;br/&gt;(cosine)?"}
+  SR --&gt;|Yes| C{"LLM judge&lt;br/&gt;(Part 3)?"}
+  C --&gt;|Yes| PASS["PASSES"]
+  K --&gt;|No| FAIL["FAILS"]
   L --&gt;|No| FAIL
-  L --&gt;|Yes| S{"SafetyPatterns&lt;br/&gt;success?"}
   S --&gt;|No| FAIL
-  S --&gt;|Yes| SR{"SemanticRelevance&lt;br/&gt;(cosine)&lt;br/&gt;success?"}
   SR --&gt;|No| FAIL
-  SR --&gt;|Yes| C{"ContextualRelevancy&lt;br/&gt;(LLM judge,&lt;br/&gt;Part 3)&lt;br/&gt;success?"}
   C --&gt;|No| FAIL
-  C --&gt;|Yes| PASS["test_case&lt;br/&gt;PASSES"]
 
   style R fill:#F0F4F8,stroke:#1C355E,color:#1C355E
   style K fill:#9B8EC0,stroke:#1C355E,color:#1C355E
@@ -662,7 +662,7 @@
 </div>
 </div>
 </div>
-<p>A test case <strong>passes</strong> only when every metric reports <code>success = True</code>. The four cheap deterministic metrics run first; the LLM-judge gate (Part 3) runs last so most regressions fail before any tokens are spent.</p>
+<p>Every metric must report <code>success = True</code>. The four cheap deterministic gates run first; any <code>No</code> short-circuits to <strong>FAILS</strong>, so most regressions fail before the paid LLM-judge gate (Part 3) ever runs.</p>
 <p><strong>Note on thresholds:</strong> Defaults (keyword ≥ 0.70, latency ≤ 5000ms, semantic ≥ 0.40, relevancy ≥ 0.70, pass_rate ≥ 90%) are starting points — adjust per your golden dataset and quality requirements.</p>
 <div class="callout callout-note callout-style-simple">
 <div class="callout-body">
@@ -910,7 +910,7 @@
 </div>
 </div>
 </section>
-<section id="ai-specific-rollback-triggers" class="slide level2">
+<section id="ai-specific-rollback-triggers" class="slide level2 smaller">
 <h2>AI-Specific Rollback Triggers</h2>
 <div class="callout callout-warning callout-titled callout-style-default">
 <div class="callout-body">
@@ -925,6 +925,8 @@
 </div>
 </div>
 </div>
+<div class="columns">
+<div class="column" style="width:48%;">
 <ul>
 <li><strong>Error rate</strong> &gt; 2% sustained for 5 minutes</li>
 <li><strong>p99 latency</strong> &gt; 8 s for 10 minutes</li>
@@ -932,8 +934,8 @@
 <li><strong>Relevance score</strong> drops &gt; 10% vs baseline (via shadow eval)</li>
 <li><strong>Cost per request</strong> &gt; 2× baseline (prompt regression)</li>
 </ul>
-<p><strong>Note:</strong> These are recommended starting thresholds — adjust based on your production traffic patterns and SLA requirements.</p>
-<div class="fragment">
+<p><strong>Note:</strong> Starting thresholds — tune to your traffic and SLA.</p>
+</div><div class="column" style="width:52%;">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode numberSource yaml number-lines code-with-copy"><code class="sourceCode yaml"><span id="cb8-1"><a href=""></a><span class="co"># CloudWatch alarm triggers rollback Lambda</span></span>
 <span id="cb8-2"><a href=""></a><span class="fu">MetricAlarm</span><span class="kw">:</span></span>
 <span id="cb8-3"><a href=""></a><span class="at">  </span><span class="fu">AlarmName</span><span class="kw">:</span><span class="at"> RAGQualityRegression</span></span>
@@ -944,7 +946,7 @@
 <span id="cb8-8"><a href=""></a><span class="at">  </span><span class="fu">Period</span><span class="kw">:</span><span class="at"> </span><span class="dv">300</span><span class="co">                # 5 minutes</span></span>
 <span id="cb8-9"><a href=""></a><span class="at">  </span><span class="fu">AlarmActions</span><span class="kw">:</span></span>
 <span id="cb8-10"><a href=""></a><span class="at">    </span><span class="kw">-</span><span class="at"> !Ref RollbackLambdaArn</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
+</div></div>
 </section></section>
 <section>
 <section id="pipeline-in-action" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
@@ -974,34 +976,51 @@
 </div>
 </div>
 </section>
-<section id="a-worked-example-31-hour-fix" class="slide level2">
+<section id="a-worked-example-31-hour-fix" class="slide level2 smaller">
 <h2>A Worked Example: 31-Hour Fix</h2>
-<div class="cell" data-reveal="true" data-fig-width="11" data-layout-align="default">
-<div class="cell-output-display">
-<div>
-<p></p><figure class=""><p></p>
-<div>
-<pre class="mermaid mermaid-js">graph TD
-    A["Mon 09:00 — Dashboard alert:&lt;br/&gt;'similar_products' query failure&lt;br/&gt;spikes from 3% → 15%"] --&gt; B["Mon 11:00 — Eng adds 5 failing&lt;br/&gt;production queries to golden dataset"]
-    B --&gt; C["Mon 14:00 — Prompt template refined;&lt;br/&gt;retrieval tool tightened. PR opened."]
-    C --&gt; D["Mon 16:00 — CI runs full eval&lt;br/&gt;(now includes the 5 new cases).&lt;br/&gt;Eval passes."]
-    D --&gt; E["Tue 09:00 — Canary deploys&lt;br/&gt;to 10% traffic. Metrics monitored."]
-    E --&gt; F["Tue 14:00 — Canary stable.&lt;br/&gt;Promoted to 100%."]
-    F --&gt; G["Tue 16:00 — Failure rate back to 3%.&lt;br/&gt;Issue closed. ~31 hours end to end."]
-
-    style A fill:#FF7A5C,stroke:#1C355E,color:#1C355E
-    style B fill:#9B8EC0,stroke:#1C355E,color:#1C355E
-    style C fill:#9B8EC0,stroke:#1C355E,color:#1C355E
-    style D fill:#9B8EC0,stroke:#1C355E,color:#1C355E
-    style E fill:#9B8EC0,stroke:#1C355E,color:#1C355E
-    style F fill:#9B8EC0,stroke:#1C355E,color:#1C355E
-    style G fill:#00C9A7,stroke:#1C355E,color:#1C355E
-</pre>
-</div>
-<p></p></figure><p></p>
-</div>
-</div>
-</div>
+<p>One rotation of the flywheel — a production regression caught and shipped in ~31 hours:</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Time</th>
+<th>What happened</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Mon 09:00</strong></td>
+<td>Dashboard alert: <code>similar_products</code> query failure spikes <strong>3% → 15%</strong></td>
+</tr>
+<tr class="even">
+<td>Mon 11:00</td>
+<td>Eng adds the 5 failing production queries to the golden dataset</td>
+</tr>
+<tr class="odd">
+<td>Mon 14:00</td>
+<td>Prompt template refined, retrieval tool tightened — PR opened</td>
+</tr>
+<tr class="even">
+<td>Mon 16:00</td>
+<td>CI runs the full eval (now including the 5 new cases) — <strong>eval passes</strong></td>
+</tr>
+<tr class="odd">
+<td>Tue 09:00</td>
+<td>Canary deploys to 10% traffic; metrics monitored</td>
+</tr>
+<tr class="even">
+<td>Tue 14:00</td>
+<td>Canary stable — promoted to 100%</td>
+</tr>
+<tr class="odd">
+<td><strong>Tue 16:00</strong></td>
+<td>Failure rate back to 3%; issue closed — <strong>~31 hours end to end</strong></td>
+</tr>
+</tbody>
+</table>
 <p>Without a pre-built pipeline, the same fix is weeks of manual eval, code review, and ad-hoc rollout.</p>
 </section>
 <section id="mature-operations-the-pipeline-is-the-asset" class="slide level2">
