@@ -4,11 +4,19 @@ This directory contains the labs for Module 05.
 
 ## Labs Overview
 
-- [01: Threat Modeling](threat_modeling.ipynb)
-- [02: Input Validation](input_validation.ipynb)
-- [03: Output Guardrails](output_guardrails.ipynb)
-- [04: Red Teaming](red_teaming.ipynb)
-- [05: Filesystem Tool Security — PathSanitizer & Intent-Based Permissions](tool_filesystem_security.ipynb)
+**Session 1 — Threat Modeling**
+
+- [Threat Modeling](threat_modeling.ipynb)
+
+**Session 2 — Guardrails: Input & Output Defense**
+
+- [Input Validation](input_validation.ipynb)
+- [Filesystem Tool Security — PathSanitizer & Intent-Based Permissions](tool_filesystem_security.ipynb)
+- [Output Guardrails](output_guardrails.ipynb)
+
+**Session 3 — Security Testing & Red-Teaming**
+
+- [Red Teaming](red_teaming.ipynb)
 
 ---
 
