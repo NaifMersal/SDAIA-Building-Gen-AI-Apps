@@ -9,7 +9,7 @@
 <link href="observability_and_evaluation_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.9.38">
 
-  <meta name="dcterms.date" content="2026-06-04">
+  <meta name="dcterms.date" content="2026-06-06">
   <title>Observability &amp; Evaluation</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -207,7 +207,7 @@
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-06-04</p>
+  <p class="date">2026-06-06</p>
 </section>
 <section>
 <section id="agent-quality-pillars" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
@@ -628,7 +628,41 @@ Answer: The population of Paris is approximately 2.1 million.
 </div>
 <div class="callout-content">
 <p>A looping agent can burn through hundreds of API calls at $0.01–0.05 each.</p>
-<p>A <strong>single bad query</strong> can cost $5+ before <code>max_steps</code> kicks in.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="idempotent-vs-polling-tools" class="slide level2">
+<h2>Idempotent vs Polling Tools</h2>
+<p>Two retry behaviors — same syntax, opposite meaning.</p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><strong>🔁 Idempotent</strong></p>
+<p><em>Same call → same result.</em> Calling twice is equivalent to calling once.</p>
+<ul>
+<li><code>search("python tutorial")</code></li>
+<li><code>read_file("/etc/hosts")</code></li>
+</ul>
+<p>→ Safe to retry on failure. Repeating with identical args is a <strong>red flag</strong> — the agent is likely stuck.</p>
+</div><div class="column" style="width:50%;">
+<p><strong>⏱️ Polling</strong></p>
+<p><em>Same call → different result over time.</em> Repetition is the <strong>whole point</strong>.</p>
+<ul>
+<li><code>get_job_status(job_id)</code></li>
+<li><code>check_payment_status("txn_42")</code></li>
+</ul>
+<p>→ The agent is expected to call this repeatedly until state changes.</p>
+</div></div>
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Schema Design Connection</strong></p>
+</div>
+<div class="callout-content">
+<p>We must hint this retry behavior in the tool’s schema description (<a href="../../function_calling_tools/slides/structured_outputs_and_tool_use.html#f-schema-design">Schema Design</a>) so the loop-detection logic can distinguish a stuck agent from a legitimate poll.</p>
 </div>
 </div>
 </div>
@@ -971,9 +1005,19 @@ Step 6: "I need to search for more info..."</code></pre>
 </div>
 </div>
 </section>
-<section id="derive-your-own-metric-cursors-keep-rate" class="slide level2">
+<section id="derive-your-own-metric-cursors-keep-rate" class="slide level2 smaller">
 <h2>Derive Your Own Metric: <a href="https://cursor.com/blog/continually-improving-agent-harness">Cursor’s Keep Rate</a></h2>
 <p>Benchmarks measure a frozen task set. <strong>Real production demands a metric tailored to your product’s actual value.</strong></p>
+<div class="callout callout-note callout-style-simple">
+<div class="callout-body">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-content">
+<p><strong>Goodhart’s Law</strong> — <em>“when a measure becomes a target, it ceases to be a good measure.”</em> Public benchmarks (MMLU, SWE-bench) saturate and get gamed once labs optimize for them — which is exactly why you need a product-specific metric they can’t train against.</p>
+</div>
+</div>
+</div>
 <div class="callout callout-tip callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -1131,7 +1175,7 @@ Step 6: "I need to search for more info..."</code></pre>
 </div>
 <div class="callout-content">
 <p>User inputs in traces often contain <strong>PII (Personally Identifiable Information)</strong>. Scrub <strong>before</strong> long-term storage — once it lands in a store, you’ve created a compliance problem.</p>
-<p>→ See <a href="../../security_guardrails/slides/output_guardrails_content_safety.html#pii-redaction">Output Guardrails — PII redaction</a> (Presidio + regex).</p>
+<p>→ See <a href="../../security_guardrails/slides/input_output_guardrails.html#pii-redaction">Guardrails — PII redaction</a> (Presidio + regex).</p>
 </div>
 </div>
 </div>
@@ -1176,7 +1220,7 @@ Step 6: "I need to search for more info..."</code></pre>
 <div class="fragment">
 <ul>
 <li><strong>Semantic deduplication</strong> — real users ask the same question thousands of times. Cosine similarity above ~0.9 between query embeddings collapses near-duplicates, so your eval set keeps <strong>boundary cases</strong>, not popularity. Treat the threshold as a starting heuristic, not a constant.</li>
-<li><strong>PII scrubbing</strong> — same constraint as tracing. Route mined traces through <a href="../../security_guardrails/slides/output_guardrails_content_safety.html#pii-redaction">Output Guardrails — PII redaction</a> (Presidio + regex) before they land in your committed dataset.</li>
+<li><strong>PII scrubbing</strong> — same constraint as tracing. Route mined traces through <a href="../../security_guardrails/slides/input_output_guardrails.html#pii-redaction">Guardrails — PII redaction</a> (Presidio + regex) before they land in your committed dataset.</li>
 </ul>
 </div>
 <div class="fragment">
@@ -1658,6 +1702,19 @@ Step 6: "I need to search for more info..."</code></pre>
 </div>
 </div>
 </div></div>
+<aside class="notes">
+<p>Aggregating these head-to-head wins into a ranking is <strong>Elo / arena-style</strong> scoring — the same approach LMSYS Chatbot Arena uses to rank frontier models.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section>
 <section id="the-sme-to-judge-pipeline" class="slide level2 smaller">
 <h2>The SME-to-Judge Pipeline</h2>

@@ -75,7 +75,7 @@ ul.task-list li input[type="checkbox"] {
 
 
 <p><strong>GitHub Repository:</strong> <a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps">NaifMersal/SDAIA-Building-Gen-AI-Apps</a></p>
-<p><em>10-day program · 5-6 hours/day · 27 sessions · ~53 h of content.</em></p>
+<p><em>10-day program · 5-6 hours/day · 26 sessions · ~52 h of content.</em></p>
 <p><a href="index.html">← Back to track catalog</a></p>
 <section id="prerequisites" class="level2">
 <h2 class="anchored" data-anchor-id="prerequisites">Prerequisites</h2>
@@ -116,27 +116,6 @@ ul.task-list li input[type="checkbox"] {
 <td>60 min</td>
 <td><a href="architecture_fundamentals/slides/api_and_provider_landscape.html">View Slides</a></td>
 </tr>
-<tr class="odd">
-<td>Session 3: When to Fine-Tune</td>
-<td>The adaptation ladder — prompting, RAG, and fine-tuning — and the decision framework for choosing the right tool.</td>
-<td><a href="architecture_fundamentals/slides/api_and_provider_landscape.html">API &amp; Provider Landscape</a></td>
-<td>50 min</td>
-<td><a href="architecture_fundamentals/slides/when_to_fine_tune.html">View Slides</a></td>
-</tr>
-<tr class="even">
-<td>Session 4: Fine-Tuning in Practice</td>
-<td>SFT, DPO, and PEFT/LoRA — the methods, the tooling, and the data pipeline behind a real fine-tuning project.</td>
-<td><a href="architecture_fundamentals/slides/when_to_fine_tune.html">When to Fine-Tune</a></td>
-<td>65 min</td>
-<td><a href="architecture_fundamentals/slides/fine_tuning_in_practice.html">View Slides</a></td>
-</tr>
-<tr class="odd">
-<td>Session 5: Model Weight Quantization</td>
-<td>Compressing model weights for inference — precision levels, methods (GGUF/AWQ/GPTQ/BitsAndBytes), and how QLoRA stitches it all together.</td>
-<td><a href="architecture_fundamentals/slides/fine_tuning_in_practice.html">Fine-Tuning in Practice</a></td>
-<td>50 min</td>
-<td><a href="architecture_fundamentals/slides/model_quantization.html">View Slides</a></td>
-</tr>
 </tbody>
 </table>
 </section>
@@ -166,19 +145,9 @@ ul.task-list li input[type="checkbox"] {
 <td>60 min</td>
 <td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/architecture_fundamentals/labs/api_client.ipynb">Open Notebook</a></td>
 </tr>
-<tr class="even">
-<td>Lab 3: Adaptation Decisions</td>
-<td>60 min</td>
-<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/architecture_fundamentals/labs/adaptation_decisions.ipynb">Open Notebook</a></td>
-</tr>
-<tr class="odd">
-<td>Lab 4: Qlora Finetuning</td>
-<td>90 min</td>
-<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/architecture_fundamentals/labs/qlora_finetuning.ipynb">Open Notebook</a></td>
-</tr>
 </tbody>
 </table>
-<p><strong>Module total:</strong> ~585 min (315 min slides + 270 min labs)</p>
+<p><strong>Module total:</strong> ~270 min (150 min slides + 120 min labs)</p>
 <hr>
 </section>
 </section>
@@ -510,23 +479,16 @@ ul.task-list li input[type="checkbox"] {
 <td><a href="security_guardrails/slides/security_threat_modeling.html">View Slides</a></td>
 </tr>
 <tr class="even">
-<td>Session 2: Input Validation &amp; Prompt Injection Defense</td>
-<td>Prompt injection, the 4-layer Castle Defense (sanitization, detection, hardening, sandboxing), guardrail libraries.</td>
+<td>Session 2: Guardrails: Input &amp; Output Defense</td>
+<td>One guardrail pattern — a tiered detection ladder inside an I/O sandwich — applied to both input (sanitization, injection detection, hardening, sandboxing) and output (toxicity, PII, hallucination).</td>
 <td><a href="security_guardrails/slides/security_threat_modeling.html">Security Threat Modeling</a></td>
-<td>47 min</td>
-<td><a href="security_guardrails/slides/input_validation_injection_defense.html">View Slides</a></td>
+<td>90 min</td>
+<td><a href="security_guardrails/slides/input_output_guardrails.html">View Slides</a></td>
 </tr>
 <tr class="odd">
-<td>Session 3: Output Guardrails &amp; Content Safety</td>
-<td>Toxicity filtering, PII redaction, hallucination detection, and the OutputGuard sandwich pattern.</td>
-<td><a href="security_guardrails/slides/input_validation_injection_defense.html">Input Validation &amp; Prompt Injection Defense</a></td>
-<td>50 min</td>
-<td><a href="security_guardrails/slides/output_guardrails_content_safety.html">View Slides</a></td>
-</tr>
-<tr class="even">
-<td>Session 4: Security Testing &amp; Red-Teaming</td>
-<td>Adversarial mindset, static scanning, red-teaming, fairness/parity testing, and a CTF activity.</td>
-<td><a href="security_guardrails/slides/input_validation_injection_defense.html">Input Validation &amp; Prompt Injection Defense</a>; <a href="security_guardrails/slides/output_guardrails_content_safety.html">Output Guardrails &amp; Content Safety</a></td>
+<td>Session 3: Security Testing &amp; Red-Teaming</td>
+<td>Adversarial mindset, static scanning, red-teaming, incident response, fairness/parity testing, and a CTF activity.</td>
+<td><a href="security_guardrails/slides/input_output_guardrails.html">Guardrails: Input &amp; Output Defense</a></td>
 <td>90 min</td>
 <td><a href="security_guardrails/slides/security_testing_red_teaming.html">View Slides</a></td>
 </tr>
@@ -551,18 +513,18 @@ ul.task-list li input[type="checkbox"] {
 </tr>
 <tr class="even">
 <td>Lab 2: Input Validation</td>
-<td>90 min</td>
+<td>120 min</td>
 <td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/security_guardrails/labs/input_validation.ipynb">Open Notebook</a></td>
 </tr>
 <tr class="odd">
-<td>Lab 3: Tool Filesystem Security</td>
+<td>Lab 3: Output Guardrails</td>
 <td>—</td>
-<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/security_guardrails/labs/tool_filesystem_security.ipynb">Open Notebook</a></td>
+<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/security_guardrails/labs/output_guardrails.ipynb">Open Notebook</a></td>
 </tr>
 <tr class="even">
-<td>Lab 4: Output Guardrails</td>
-<td>60 min</td>
-<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/security_guardrails/labs/output_guardrails.ipynb">Open Notebook</a></td>
+<td>Lab 4: Tool Filesystem Security</td>
+<td>—</td>
+<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/security_guardrails/labs/tool_filesystem_security.ipynb">Open Notebook</a></td>
 </tr>
 <tr class="odd">
 <td>Lab 5: Red Teaming</td>
@@ -571,7 +533,7 @@ ul.task-list li input[type="checkbox"] {
 </tr>
 </tbody>
 </table>
-<p><strong>Module total:</strong> ~547 min (277 min slides + 270 min labs)</p>
+<p><strong>Module total:</strong> ~510 min (270 min slides + 240 min labs)</p>
 <hr>
 </section>
 </section>
@@ -605,9 +567,16 @@ ul.task-list li input[type="checkbox"] {
 <td><a href="production_deployment/slides/cicd_quality_gates.html">View Slides</a></td>
 </tr>
 <tr class="odd">
-<td>Session 3: Local &amp; Self-Hosted Deployment</td>
+<td>Session 3: Model Weight Quantization</td>
+<td>Compressing model weights for inference — precision levels, methods (GGUF/AWQ/GPTQ/BitsAndBytes), and how QLoRA stitches it all together.</td>
+<td><a href="model_adaptation/slides/fine_tuning_in_practice.html">Fine-Tuning in Practice</a></td>
+<td>50 min</td>
+<td><a href="production_deployment/slides/model_quantization.html">View Slides</a></td>
+</tr>
+<tr class="even">
+<td>Session 4: Local &amp; Self-Hosted Deployment</td>
 <td>Running LLMs on your own hardware — when to self-host, inference servers (Ollama / vLLM / TGI / llama.cpp), hardware sizing, and operational concerns.</td>
-<td><a href="production_deployment/slides/containerization_docker.html">Containerization &amp; Packaging with Docker</a>; <a href="architecture_fundamentals/slides/model_quantization.html">Model Weight Quantization</a></td>
+<td><a href="production_deployment/slides/containerization_docker.html">Containerization &amp; Packaging with Docker</a>; <a href="production_deployment/slides/model_quantization.html">Model Weight Quantization</a></td>
 <td>50 min</td>
 <td><a href="production_deployment/slides/local_deployment.html">View Slides</a></td>
 </tr>
@@ -637,10 +606,69 @@ ul.task-list li input[type="checkbox"] {
 </tr>
 </tbody>
 </table>
+<p><strong>Module total:</strong> ~347 min (197 min slides + 150 min labs)</p>
+<hr>
 </section>
 </section>
-<section id="module-total-297-min-147-min-slides-150-min-labs" class="level2">
-<h2 class="anchored" data-anchor-id="module-total-297-min-147-min-slides-150-min-labs"><strong>Module total:</strong> ~297 min (147 min slides + 150 min labs)</h2>
+<section id="module-08-model-adaptation" class="level2">
+<h2 class="anchored" data-anchor-id="module-08-model-adaptation">Module 08: Model Adaptation</h2>
+<section id="slides-7" class="level3">
+<h3 class="anchored" data-anchor-id="slides-7">Slides</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Session</th>
+<th>Covers</th>
+<th>Builds on</th>
+<th>Duration</th>
+<th>Link</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Session 1: When to Fine-Tune</td>
+<td>The adaptation ladder — prompting, RAG, and fine-tuning — and the decision framework for choosing the right tool.</td>
+<td><a href="architecture_fundamentals/slides/api_and_provider_landscape.html">API &amp; Provider Landscape</a></td>
+<td>50 min</td>
+<td><a href="model_adaptation/slides/when_to_fine_tune.html">View Slides</a></td>
+</tr>
+<tr class="even">
+<td>Session 2: Fine-Tuning in Practice</td>
+<td>SFT, DPO, and PEFT/LoRA — the methods, the tooling, and the data pipeline behind a real fine-tuning project.</td>
+<td><a href="model_adaptation/slides/when_to_fine_tune.html">When to Fine-Tune</a></td>
+<td>65 min</td>
+<td><a href="model_adaptation/slides/fine_tuning_in_practice.html">View Slides</a></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="labs-7" class="level3">
+<h3 class="anchored" data-anchor-id="labs-7">Labs</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Lab</th>
+<th>Duration</th>
+<th>GitHub</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Lab 1: Adaptation Decisions</td>
+<td>60 min</td>
+<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/model_adaptation/labs/adaptation_decisions.ipynb">Open Notebook</a></td>
+</tr>
+<tr class="even">
+<td>Lab 2: Qlora Finetuning</td>
+<td>90 min</td>
+<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/model_adaptation/labs/qlora_finetuning.ipynb">Open Notebook</a></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="module-total-265-min-115-min-slides-150-min-labs" class="level2">
+<h2 class="anchored" data-anchor-id="module-total-265-min-115-min-slides-150-min-labs"><strong>Module total:</strong> ~265 min (115 min slides + 150 min labs)</h2>
 </section>
 <section id="capstone-project" class="level2">
 <h2 class="anchored" data-anchor-id="capstone-project">Capstone Project</h2>

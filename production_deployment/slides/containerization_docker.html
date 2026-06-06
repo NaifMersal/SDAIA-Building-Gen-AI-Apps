@@ -9,7 +9,7 @@
 <link href="containerization_docker_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.9.38">
 
-  <meta name="dcterms.date" content="2026-06-04">
+  <meta name="dcterms.date" content="2026-06-06">
   <title>Containerization &amp; Packaging with Docker</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -207,7 +207,7 @@
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-06-04</p>
+  <p class="date">2026-06-06</p>
 </section>
 <section>
 <section id="a.-the-works-on-my-machine-problem" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
@@ -435,7 +435,7 @@
 </blockquote>
 </div>
 </section>
-<section id="simple-vs-multi-stage-size-comparison" class="slide level2">
+<section id="simple-vs-multi-stage-size-comparison" class="slide level2 smaller">
 <h2>Simple vs Multi-Stage: Size Comparison</h2>
 <div class="columns">
 <div class="column" style="width:50%;">
@@ -476,17 +476,17 @@
 <div>
 <pre class="mermaid mermaid-js">graph LR
   subgraph "Stage 1: builder"
-    B1["apt-get install gcc g++ curl&lt;br/&gt;(compile-time only)"]
-    B2["python -m venv /opt/venv"]
-    B3["pip install -r requirements.txt&lt;br/&gt;(wheels compiled here)"]
+    B1["apt-get install&lt;br/&gt;gcc g++ curl"]
+    B2["python -m venv&lt;br/&gt;/opt/venv"]
+    B3["pip install&lt;br/&gt;requirements.txt"]
     B1 --&gt; B2 --&gt; B3
   end
   subgraph "Stage 2: runtime"
-    R1["apt-get install curl libglib2.0-0&lt;br/&gt;(no gcc)"]
-    R2["COPY --from=builder /opt/venv /opt/venv"]
-    R3["useradd appuser → USER appuser"]
-    R4["COPY --chown=appuser ./src ./src"]
-    R5["HEALTHCHECK + CMD uvicorn"]
+    R1["apt-get curl&lt;br/&gt;libglib2.0-0"]
+    R2["COPY venv&lt;br/&gt;--from=builder"]
+    R3["useradd →&lt;br/&gt;USER appuser"]
+    R4["COPY --chown&lt;br/&gt;./src"]
+    R5["HEALTHCHECK&lt;br/&gt;+ CMD uvicorn"]
     R1 --&gt; R2 --&gt; R3 --&gt; R4 --&gt; R5
   end
   B3 --&gt;|"cross-stage copy"| R2
@@ -546,7 +546,7 @@
 <span id="cb5-21"><a href=""></a>models/*.bin</span>
 <span id="cb5-22"><a href=""></a>models/*.safetensors</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="security-non-root-user" class="slide level2">
+<section id="security-non-root-user" class="slide level2 smaller">
 <h2>Security: Non-Root User</h2>
 <div class="columns">
 <div class="column" style="width:55%;">
@@ -683,7 +683,7 @@
 <h1>E. Secrets &amp; Security Best Practices</h1>
 <p>Never bake secrets — runtime injection patterns</p>
 </section>
-<section id="the-secret-anti-patterns" class="slide level2">
+<section id="the-secret-anti-patterns" class="slide level2 smaller">
 <h2>The Secret Anti-Patterns</h2>
 <div class="callout callout-important callout-titled callout-style-default">
 <div class="callout-body">

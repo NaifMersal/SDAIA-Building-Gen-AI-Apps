@@ -9,7 +9,7 @@
 <link href="fine_tuning_in_practice_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.9.38">
 
-  <meta name="dcterms.date" content="2026-06-04">
+  <meta name="dcterms.date" content="2026-06-06">
   <title>Fine-Tuning in Practice</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -207,7 +207,7 @@
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-06-04</p>
+  <p class="date">2026-06-06</p>
 </section>
 <section>
 <section id="a.-the-fine-tuning-family" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
@@ -221,7 +221,7 @@
 <li><strong>B. Dataset Preparation</strong> — The 90% of the work</li>
 <li><strong>C. Tooling Tour</strong> — OpenAI FT API, HuggingFace TRL, Together AI</li>
 <li><strong>D. Evaluation &amp; Overfitting</strong> — Knowing when to stop</li>
-<li><strong>E. QLoRA Preview</strong> — Bridge to <a href="../../architecture_fundamentals/slides/model_quantization.html">Model Weight Quantization</a></li>
+<li><strong>E. QLoRA Preview</strong> — Bridge to <a href="../../production_deployment/slides/model_quantization.html">Model Weight Quantization</a></li>
 <li><strong>F. Wrap-up</strong> — A minimum-viable training run</li>
 </ul>
 </section>
@@ -899,7 +899,7 @@
 <p><strong>Why this matters for the curriculum</strong></p>
 </div>
 <div class="callout-content">
-<p>QLoRA = LoRA + quantized base model. <strong><a href="../../architecture_fundamentals/slides/model_quantization.html">Model Weight Quantization</a></strong> unpacks the quantization side: what 4-bit precision means, when accuracy suffers, and why this technique unlocks local fine-tuning on a laptop GPU.</p>
+<p>QLoRA = LoRA + quantized base model. <strong><a href="../../production_deployment/slides/model_quantization.html">Model Weight Quantization</a></strong> unpacks the quantization side: what 4-bit precision means, when accuracy suffers, and why this technique unlocks local fine-tuning on a laptop GPU.</p>
 </div>
 </div>
 </div>
@@ -918,7 +918,7 @@
 <li><strong>Build the eval first.</strong> Without a held-out test set, you have no idea if training helped.</li>
 <li><strong>Hosted FT API</strong> is the fastest on-ramp; <strong>TRL + LoRA</strong> is the production sweet spot for open models.</li>
 <li><strong>Overfitting is the default failure mode.</strong> Watch the val-loss gap, not training loss alone.</li>
-<li><strong>QLoRA = LoRA + 4-bit base model.</strong> Makes fine-tuning runnable on a single consumer GPU — and is the bridge to <a href="../../architecture_fundamentals/slides/model_quantization.html">Model Weight Quantization</a>.</li>
+<li><strong>QLoRA = LoRA + 4-bit base model.</strong> Makes fine-tuning runnable on a single consumer GPU — and is the bridge to <a href="../../production_deployment/slides/model_quantization.html">Model Weight Quantization</a>.</li>
 </ol>
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
@@ -948,7 +948,7 @@
 <p><strong>Up Next</strong></p>
 </div>
 <div class="callout-content">
-<p><strong><a href="../../architecture_fundamentals/slides/model_quantization.html">Model Weight Quantization</a></strong> — the precision spectrum, the methods (GGUF/AWQ/GPTQ/BitsAndBytes), and how QLoRA wires it all together.</p>
+<p><strong><a href="../../production_deployment/slides/model_quantization.html">Model Weight Quantization</a></strong> — the precision spectrum, the methods (GGUF/AWQ/GPTQ/BitsAndBytes), and how QLoRA wires it all together.</p>
 </div>
 </div>
 </div>

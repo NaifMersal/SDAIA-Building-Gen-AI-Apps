@@ -9,7 +9,7 @@
 <link href="cicd_quality_gates_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.9.38">
 
-  <meta name="dcterms.date" content="2026-06-04">
+  <meta name="dcterms.date" content="2026-06-06">
   <title>CI/CD Pipelines &amp; Quality Gates</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -207,7 +207,7 @@
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-06-04</p>
+  <p class="date">2026-06-06</p>
 </section>
 <section>
 <section id="a.-ai-cicd-is-different" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
@@ -275,7 +275,7 @@
 <li>Embedding model version bump → retrieval degrades</li>
 <li>New documents in vector store → topic drift</li>
 <li>Model API update → subtle tone/format changes</li>
-<li><strong>Security regressions</strong> gate releases the same way — see <a href="../../security_guardrails/slides/output_guardrails_content_safety.html#guardrail-failure">Output Guardrails §F</a> for the production-incident → test-case capture loop, and <a href="../../security_guardrails/slides/security_testing_red_teaming.html#adversarial-test-suite">Red-Teaming §D</a> for adversarial pytest gating</li>
+<li><strong>Security regressions</strong> gate releases the same way — see <a href="../../security_guardrails/slides/security_testing_red_teaming.html#guardrail-failure">Red-Teaming §E</a> for the production-incident → test-case capture loop, and <a href="../../security_guardrails/slides/security_testing_red_teaming.html#adversarial-test-suite">Red-Teaming §D</a> for adversarial pytest gating</li>
 </ul>
 </div>
 </section>
@@ -454,6 +454,7 @@
 </div>
 </div>
 </div>
+<p>Each stage gates the next: a failed lint never reaches test, a failed eval never reaches deploy. <strong>Stage 3 — the AI eval gate — is the new piece</strong>; the rest is standard CI.</p>
 </section></section>
 <section>
 <section id="b.-the-ai-evaluation-suite" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)">
@@ -479,9 +480,9 @@
 <span id="cb3-10"><a href=""></a>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>expected_keywords</code> and <code>max_latency_ms</code> are passed through <code>LLMTestCase.additional_metadata</code> to the custom metrics on the next slides.</p>
 </section>
-<section id="reusing-deepeval-not-reinventing-it" class="slide level2">
+<section id="reusing-deepeval-not-reinventing-it" class="slide level2 smaller">
 <h2>Reusing DeepEval, Not Reinventing It</h2>
-<p>In <strong><a href="../../ai_agents/slides/observability_and_evaluation.html#evaluating-with-deepeval">Observability &amp; Evaluation §F</a></strong> you used DeepEval’s built-in <strong>LLM-judge</strong> metrics — <code>ContextualPrecision</code>, <code>ContextualRecall</code>, <code>ContextualRelevancy</code>. The CI gate adds several requirements those don’t cover <em>cheaply enough to run on every commit</em>:</p>
+<p>In <strong><a href="../../ai_agents/slides/observability_and_evaluation.html#evaluating-with-deepeval">Observability &amp; Evaluation §F</a></strong> you used DeepEval’s built-in <strong>LLM-judge</strong> metrics. The CI gate adds several requirements those don’t cover <em>cheaply enough to run on every commit</em>:</p>
 <table class="caption-top">
 <colgroup>
 <col style="width: 33%">
@@ -520,7 +521,7 @@
 </table>
 <p>The answer: <strong>extend DeepEval’s <code>BaseMetric</code></strong> — your custom metrics plug into the same <code>evaluate(test_cases, metrics=[...])</code> call as the built-in ones.</p>
 </section>
-<section id="custom-deepeval-metric-the-contract" class="slide level2">
+<section id="custom-deepeval-metric-the-contract" class="slide level2 smaller">
 <h2>Custom DeepEval Metric — The Contract</h2>
 <p>Every DeepEval metric (built-in or custom) implements the same surface:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href=""></a><span class="im">from</span> deepeval.metrics <span class="im">import</span> BaseMetric</span>
@@ -686,7 +687,7 @@
 </ul>
 <p>You will wire this into <code>tests/evaluation/test_rag_quality.py</code> in <strong>Lab 02</strong>.</p>
 </section>
-<section id="from-evaluate-output-to-the-gate-decision" class="slide level2">
+<section id="from-evaluate-output-to-the-gate-decision" class="slide level2 smaller">
 <h2>From <code>evaluate()</code> Output to the Gate Decision</h2>
 <p><code>evaluate()</code> returns one <code>TestResult</code> per case, each with a <code>metrics_data</code> list. Aggregate them into the release gate:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href=""></a><span class="kw">def</span> gate_decision(eval_results, pass_threshold: <span class="bu">float</span> <span class="op">=</span> <span class="fl">0.90</span>) <span class="op">-&gt;</span> <span class="bu">dict</span>:</span>
@@ -940,10 +941,10 @@
 <span id="cb8-2"><a href=""></a><span class="fu">MetricAlarm</span><span class="kw">:</span></span>
 <span id="cb8-3"><a href=""></a><span class="at">  </span><span class="fu">AlarmName</span><span class="kw">:</span><span class="at"> RAGQualityRegression</span></span>
 <span id="cb8-4"><a href=""></a><span class="at">  </span><span class="fu">MetricName</span><span class="kw">:</span><span class="at"> RelevanceScore</span></span>
-<span id="cb8-5"><a href=""></a><span class="at">  </span><span class="fu">Threshold</span><span class="kw">:</span><span class="at"> </span><span class="fl">0.72</span><span class="co">            # 10% below 0.80 baseline</span></span>
+<span id="cb8-5"><a href=""></a><span class="at">  </span><span class="fu">Threshold</span><span class="kw">:</span><span class="at"> </span><span class="fl">0.72</span><span class="co">      # 10% below 0.80 baseline</span></span>
 <span id="cb8-6"><a href=""></a><span class="at">  </span><span class="fu">ComparisonOperator</span><span class="kw">:</span><span class="at"> LessThanThreshold</span></span>
 <span id="cb8-7"><a href=""></a><span class="at">  </span><span class="fu">EvaluationPeriods</span><span class="kw">:</span><span class="at"> </span><span class="dv">3</span></span>
-<span id="cb8-8"><a href=""></a><span class="at">  </span><span class="fu">Period</span><span class="kw">:</span><span class="at"> </span><span class="dv">300</span><span class="co">                # 5 minutes</span></span>
+<span id="cb8-8"><a href=""></a><span class="at">  </span><span class="fu">Period</span><span class="kw">:</span><span class="at"> </span><span class="dv">300</span><span class="co">          # 5 minutes</span></span>
 <span id="cb8-9"><a href=""></a><span class="at">  </span><span class="fu">AlarmActions</span><span class="kw">:</span></span>
 <span id="cb8-10"><a href=""></a><span class="at">    </span><span class="kw">-</span><span class="at"> !Ref RollbackLambdaArn</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div></div>
@@ -958,7 +959,7 @@
 <p>The pipeline from §C–E is not the finish line — it is the <strong>Evolve</strong> step of the Quality Flywheel introduced in <strong><a href="../../ai_agents/slides/observability_and_evaluation.html#quality-flywheel">Observability &amp; Evaluation §G</a></strong>:</p>
 <ul>
 <li><strong>Observe</strong> failures in production (<a href="../../ai_agents/slides/observability_and_evaluation.html#structured-tracing">Observability &amp; Evaluation §B–E</a> — traces, metrics, LLM-judge regressions)</li>
-<li><strong>Act</strong> to contain incidents (<a href="../../security_guardrails/slides/output_guardrails_content_safety.html#guardrail-failure">Output Guardrails §F</a> — circuit breakers, feature flags)</li>
+<li><strong>Act</strong> to contain incidents (<a href="../../security_guardrails/slides/security_testing_red_teaming.html#guardrail-failure">Red-Teaming §E</a> — circuit breakers, feature flags)</li>
 <li><strong>Evolve</strong> the system — <em>this is where the pipeline runs</em> (§C–E above)</li>
 <li><strong>Deploy</strong> safely with canary rollout (§E)</li>
 </ul>
@@ -1044,7 +1045,7 @@
 <li>✅ A pipeline that gates quality on every change (§C–D)</li>
 <li>✅ Safe rollout with automatic rollback (§E)</li>
 <li>✅ Observability feeding the next iteration (<a href="../../ai_agents/slides/observability_and_evaluation.html">Observability &amp; Evaluation</a>)</li>
-<li>✅ Security incidents that become test cases (<a href="../../security_guardrails/slides/output_guardrails_content_safety.html">Output Guardrails &amp; Content Safety</a>)</li>
+<li>✅ Security incidents that become test cases (<a href="../../security_guardrails/slides/security_testing_red_teaming.html#guardrail-failure">Security Testing &amp; Red-Teaming</a>)</li>
 </ul>
 <p>The <strong>same machinery</strong> handles every future change — bug fixes, prompt improvements, new tools, new guardrails. That is what <em>production-ready</em> means.</p>
 </div>

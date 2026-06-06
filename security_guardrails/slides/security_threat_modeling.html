@@ -9,7 +9,7 @@
 <link href="security_threat_modeling_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.9.38">
 
-  <meta name="dcterms.date" content="2026-06-04">
+  <meta name="dcterms.date" content="2026-06-06">
   <title>Security Threat Modeling</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -207,7 +207,7 @@
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-06-04</p>
+  <p class="date">2026-06-06</p>
 </section>
 <section>
 <section id="a.-the-changing-security-landscape" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
@@ -446,25 +446,25 @@
 </section>
 <section id="llm05-llm02-unsafe-io" class="slide level2 smaller">
 <h2>LLM05 &amp; LLM02: Unsafe I/O</h2>
-<p><strong>LLM05 (Improper Output Handling)</strong> — Passing LLM outputs to other systems without validation.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href=""></a><span class="co"># VULNERABLE</span></span>
-<span id="cb2-2"><a href=""></a><span class="kw">def</span> run_research(query):</span>
-<span id="cb2-3"><a href=""></a>    result <span class="op">=</span> llm.generate(query)</span>
-<span id="cb2-4"><a href=""></a>    os.system(result[<span class="st">"recommended_command"</span>])  <span class="co"># 💀</span></span>
-<span id="cb2-5"><a href=""></a></span>
-<span id="cb2-6"><a href=""></a><span class="co"># SECURE: validate command against allowlist and run without shell</span></span>
-<span id="cb2-7"><a href=""></a>ALLOWED_CMDS <span class="op">=</span> [<span class="st">"pip install"</span>, <span class="st">"python"</span>]</span>
-<span id="cb2-8"><a href=""></a>cmd <span class="op">=</span> result[<span class="st">"recommended_command"</span>]</span>
-<span id="cb2-9"><a href=""></a></span>
-<span id="cb2-10"><a href=""></a><span class="cf">if</span> <span class="bu">any</span>(cmd.startswith(allowed) <span class="cf">for</span> allowed <span class="kw">in</span> ALLOWED_CMDS):</span>
-<span id="cb2-11"><a href=""></a>    <span class="co"># Split the command safely and execute without shell interpretation</span></span>
-<span id="cb2-12"><a href=""></a>    subprocess.run(cmd.split(), shell<span class="op">=</span><span class="va">False</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>LLM05 (Improper Output Handling)</strong> — passing LLM output to other systems without validation:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href=""></a>result <span class="op">=</span> llm.generate(query)</span>
+<span id="cb2-2"><a href=""></a>os.system(result[<span class="st">"recommended_command"</span>])  <span class="co"># 💀 RCE if output is attacker-influenced</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>LLM02 (Sensitive Information Disclosure)</strong> — leaking system prompts, training data, or credentials (closely related to <strong>LLM07 System Prompt Leakage</strong>):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href=""></a><span class="cf">return</span> <span class="ss">f"Error with system prompt: </span><span class="sc">{</span>SYSTEM_PROMPT<span class="sc">}</span><span class="ss">. Details: </span><span class="sc">{</span>e<span class="sc">}</span><span class="ss">"</span>  <span class="co"># 💀 exposes internals</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="fragment">
-<p><strong>LLM02 (Sensitive Information Disclosure)</strong> — Leaking system prompts, training data, or credentials. Closely related to <strong>LLM07 System Prompt Leakage</strong>, which singles out the prompt-extraction case.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href=""></a><span class="co"># VULNERABLE: exposes internals</span></span>
-<span id="cb3-2"><a href=""></a><span class="cf">return</span> <span class="ss">f"Error with system prompt: </span><span class="sc">{</span>SYSTEM_PROMPT<span class="sc">}</span><span class="ss">. Details: </span><span class="sc">{</span>e<span class="sc">}</span><span class="ss">"</span></span>
-<span id="cb3-3"><a href=""></a><span class="co"># SECURE: log internally, return opaque ID</span></span>
-<span id="cb3-4"><a href=""></a><span class="cf">return</span> <span class="ss">f"An error occurred. Reference: </span><span class="sc">{</span>log_error_securely(e)<span class="sc">}</span><span class="ss">"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Defenses come in Lesson 2</strong></p>
+</div>
+<div class="callout-content">
+<p>Allowlisted command execution, opaque error IDs, and the full output pipeline are implemented in <strong><a href="../../security_guardrails/slides/input_output_guardrails.html">Guardrails: Input &amp; Output Defense</a></strong> (§C). Here we only need to <em>name</em> the risk.</p>
+</div>
+</div>
+</div>
 </div>
 </section>
 <section id="scope-note-what-this-module-covers" class="slide level2">
@@ -718,9 +718,9 @@
 <li><strong>SR1</strong> — Validate &amp; sanitize all user input <em>(→ Lesson 2)</em></li>
 <li><strong>SR2</strong> — Authorize every function call <em>(→ Lesson 2)</em></li>
 <li><strong>SR3</strong> — Rate-limit by cost &amp; complexity <em>(→ Lesson 2)</em></li>
-<li><strong>SR4</strong> — Validate outputs before returning <em>(→ Lesson 3)</em></li>
-<li><strong>SR5</strong> — Redact PII in all responses <em>(→ Lesson 3)</em></li>
-<li><strong>SR6</strong> — Regular red-teaming <em>(→ Lesson 4)</em></li>
+<li><strong>SR4</strong> — Validate outputs before returning <em>(→ Lesson 2)</em></li>
+<li><strong>SR5</strong> — Redact PII in all responses <em>(→ Lesson 2)</em></li>
+<li><strong>SR6</strong> — Regular red-teaming <em>(→ Lesson 3)</em></li>
 </ol>
 </section></section>
 <section>
@@ -788,7 +788,7 @@
 <section id="questions" class="slide level2" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
 <h2>Questions?</h2>
 <div class="r-fit-text">
-<p>Next: <strong>Lesson 2 — Input Validation &amp; Prompt Injection Defense</strong></p>
+<p>Next: <strong>Lesson 2 — Guardrails: Input &amp; Output Defense</strong></p>
 </div>
 
 </section></section>

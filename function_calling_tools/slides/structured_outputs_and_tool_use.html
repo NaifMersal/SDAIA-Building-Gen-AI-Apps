@@ -9,7 +9,7 @@
 <link href="structured_outputs_and_tool_use_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.9.38">
 
-  <meta name="dcterms.date" content="2026-06-04">
+  <meta name="dcterms.date" content="2026-06-06">
   <title>Structured Outputs &amp; Tool Calling</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -207,7 +207,7 @@
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-06-04</p>
+  <p class="date">2026-06-06</p>
 </section>
 <section>
 <section id="a.-the-problem-free-text-is-unparseable" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
@@ -943,7 +943,7 @@ in early 2024…</code></pre>
 <span id="cb17-19"><a href=""></a>    <span class="cf">return</span> <span class="st">"Max steps reached"</span>               <span class="co"># Safety limit</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section></section>
 <section>
-<section id="f.-schema-design" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #FF7A5C)">
+<section id="f-schema-design" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #FF7A5C)">
 <h1>F. Schema Design</h1>
 <p>Practical rules for making tools fire reliably</p>
 </section>
@@ -1100,41 +1100,6 @@ in early 2024…</code></pre>
 <p>The LLM receives the structured error as a <code>tool</code> message and <strong>explains it naturally</strong> to the user — no stack traces exposed, conversation continues.</p>
 </div>
 </section>
-<section id="idempotent-vs-polling-tools" class="slide level2">
-<h2>Idempotent vs Polling Tools</h2>
-<p>Two retry behaviors — same syntax, opposite meaning.</p>
-<div class="columns">
-<div class="column" style="width:50%;">
-<p><strong>🔁 Idempotent</strong></p>
-<p><em>Same call → same result.</em> Calling twice is equivalent to calling once.</p>
-<ul>
-<li><code>search("python tutorial")</code></li>
-<li><code>read_file("/etc/hosts")</code></li>
-</ul>
-<p>→ Safe to retry on failure. Repeating with identical args is a <strong>red flag</strong> — the agent is likely stuck.</p>
-</div><div class="column" style="width:50%;">
-<p><strong>⏱️ Polling</strong></p>
-<p><em>Same call → different result over time.</em> Repetition is the <strong>whole point</strong>.</p>
-<ul>
-<li><code>get_job_status(job_id)</code></li>
-<li><code>check_payment_status("txn_42")</code></li>
-</ul>
-<p>→ The agent is expected to call this repeatedly until state changes.</p>
-</div></div>
-<div class="callout callout-tip callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Why this matters</strong></p>
-</div>
-<div class="callout-content">
-<p>Loop-detection logic (<a href="../../ai_agents/slides/observability_and_evaluation.html">Observability &amp; Evaluation</a>) uses this hint to distinguish a stuck agent from a legitimate poll — without it, every polling tool looks like an infinite loop.</p>
-</div>
-</div>
-</div>
-</section>
 <section id="schema-design-checklist" class="slide level2 smaller">
 <h2>Schema Design Checklist</h2>
 <table class="caption-top">
@@ -1176,10 +1141,6 @@ in early 2024…</code></pre>
 <tr class="odd">
 <td><strong>Low temperature</strong></td>
 <td><code>temperature=0.1</code> for tool-calling calls</td>
-</tr>
-<tr class="even">
-<td><strong>Idempotent vs polling</strong></td>
-<td>Document retry semantics in the description (see previous slide) — idempotent = safe to retry; polling = expected to repeat</td>
 </tr>
 </tbody>
 </table>

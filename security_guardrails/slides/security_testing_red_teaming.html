@@ -9,7 +9,7 @@
 <link href="security_testing_red_teaming_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.9.38">
 
-  <meta name="dcterms.date" content="2026-06-04">
+  <meta name="dcterms.date" content="2026-06-06">
   <title>Security Testing &amp; Red-Teaming</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -202,12 +202,12 @@
 
 <section id="title-slide" data-background-image="../../slides_template/assets/anim.svg" data-background-opacity="0.15" data-background-size="cover" class="quarto-title-block center">
   <h1 class="title">Security Testing &amp; Red-Teaming</h1>
-  <p class="subtitle">AI Security, Guardrails &amp; Content Safety — Session 4</p>
+  <p class="subtitle">AI Security, Guardrails &amp; Content Safety — Session 3</p>
 
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-06-04</p>
+  <p class="date">2026-06-06</p>
 </section>
 <section>
 <section id="a.-thinking-like-an-attacker" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
@@ -221,8 +221,9 @@
 <li><strong>B. Static Scanning</strong> — Secrets, dangerous patterns</li>
 <li><strong>C. Red-Teaming Framework</strong> — <code>RedTeamFramework</code> + automated attacks</li>
 <li><strong>D. Adversarial Test Suite</strong> — pytest structure + scoring defenses</li>
-<li><strong>E. Fairness &amp; Parity Testing</strong> — NPOV, group parity, silent bias</li>
-<li><strong>F. CTF Review Activity</strong> — Analyze, learn, harden</li>
+<li><strong>E. When a Guardrail Fails</strong> — Contain → triage → resolve; incident-to-test loop</li>
+<li><strong>F. Fairness &amp; Parity Testing</strong> — NPOV, group parity, silent bias</li>
+<li><strong>G. CTF Review Activity</strong> — Analyze, learn, harden</li>
 </ul>
 </section>
 <section id="the-red-team-mindset" class="slide level2">
@@ -480,8 +481,191 @@
 </div>
 </section></section>
 <section>
-<section id="e.-fairness-parity-testing" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #FF7A5C)">
-<h1>E. Fairness &amp; Parity Testing</h1>
+<section id="guardrail-failure" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
+<h1>E. When a Guardrail Fails</h1>
+<p>Detection is half the job — response is the other half</p>
+</section>
+<section id="contain-triage-resolve" class="slide level2">
+<h2>Contain → Triage → Resolve</h2>
+<p>A guardrail catching an attack tells you <em>something happened</em>. The response playbook tells you <em>what to do next</em> — fast.</p>
+<div class="cell" data-reveal="true" data-fig-width="11" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<pre class="mermaid mermaid-js">graph LR
+    DETECT["Guardrail catches it&lt;br/&gt;(injection, toxic, PII)"] --&gt; CONTAIN["Contain&lt;br/&gt;circuit-breaker flag&lt;br/&gt;disables affected route&lt;br/&gt;in seconds"]
+    CONTAIN --&gt; TRIAGE["Triage&lt;br/&gt;route requests to&lt;br/&gt;HITL review queue,&lt;br/&gt;scope the impact"]
+    TRIAGE --&gt; RESOLVE["Resolve&lt;br/&gt;patch input filter&lt;br/&gt;or system prompt;&lt;br/&gt;ship via CI/CD"]
+
+    style DETECT fill:#FF7A5C,stroke:#1C355E,color:#1C355E
+    style CONTAIN fill:#9B8EC0,stroke:#1C355E,color:#1C355E
+    style TRIAGE fill:#9B8EC0,stroke:#1C355E,color:#1C355E
+    style RESOLVE fill:#00C9A7,stroke:#1C355E,color:#1C355E
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Why a circuit breaker, not a hotfix?</strong></p>
+</div>
+<div class="callout-content">
+<p>A novel attack may exploit your agent <strong>continuously</strong> while you debug. Circuit breakers buy you time — disable first, investigate second.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="the-three-steps" class="slide level2">
+<h2>The Three Steps</h2>
+<table class="caption-top">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Step</th>
+<th>Goal</th>
+<th>Tool</th>
+<th>Owner</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Contain</strong></td>
+<td>Stop the harm in seconds</td>
+<td>Feature flag / kill switch on the affected tool or route</td>
+<td>On-call engineer</td>
+</tr>
+<tr class="even">
+<td><strong>Triage</strong></td>
+<td>Scope the impact</td>
+<td>HITL review queue + log analysis</td>
+<td>Security + Eng</td>
+</tr>
+<tr class="odd">
+<td><strong>Resolve</strong></td>
+<td>Permanent patch</td>
+<td>Update guardrail config; ship through CI/CD eval gate</td>
+<td>Eng</td>
+</tr>
+</tbody>
+</table>
+<div class="fragment">
+<p><strong>Don’t skip Triage.</strong> Containing without triaging means you fix the symptom and miss the root cause.</p>
+</div>
+</section>
+<section id="incidents-test-cases-the-feedback-loop" class="slide level2">
+<h2>Incidents → Test Cases: The Feedback Loop</h2>
+<p>Every breach a guardrail catches is <strong>a free test case</strong>.</p>
+<div class="cell" data-reveal="true" data-fig-width="10" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<pre class="mermaid mermaid-js">graph LR
+    INC["Production incident&lt;br/&gt;(novel jailbreak,&lt;br/&gt;PII leak, etc.)"] --&gt; EXTRACT["Extract the&lt;br/&gt;exact prompt"]
+    EXTRACT --&gt; ADD["Add to adversarial&lt;br/&gt;test suite&lt;br/&gt;(§D)"]
+    ADD --&gt; CI["Next CI run&lt;br/&gt;verifies the fix&lt;br/&gt;and blocks regressions"]
+    CI --&gt; SHIP["Patched guardrail&lt;br/&gt;ships via canary&lt;br/&gt;(Module 06 S2)"]
+
+    style INC fill:#FF7A5C,stroke:#1C355E,color:#1C355E
+    style SHIP fill:#00C9A7,stroke:#1C355E,color:#1C355E
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<div class="fragment">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Production is your richest test data</strong></p>
+</div>
+<div class="callout-content">
+<p>Real users find attack vectors no internal red-team would predict. <strong>Capture every one.</strong></p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="a-worked-example-novel-prompt-injection" class="slide level2 smaller">
+<h2>A Worked Example: Novel Prompt Injection</h2>
+<table class="caption-top">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Time</th>
+<th>Event</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>T+0</strong></td>
+<td>Output guard flags a response leaking system-prompt fragments</td>
+</tr>
+<tr class="even">
+<td><strong>+5 min</strong></td>
+<td>On-call disables the affected tool via feature flag — <em>contained</em></td>
+</tr>
+<tr class="odd">
+<td><strong>+30 min</strong></td>
+<td>HITL review reveals 12 affected sessions, all from one user — <em>triaged</em></td>
+</tr>
+<tr class="even">
+<td><strong>+2 h</strong></td>
+<td>Engineer extracts the exploit prompt; adds it to the adversarial test suite (§D)</td>
+</tr>
+<tr class="odd">
+<td><strong>+3 h</strong></td>
+<td>Input guard updated to block the new pattern; PR opened</td>
+</tr>
+<tr class="even">
+<td><strong>+5 h</strong></td>
+<td>CI eval suite (now including the new case) passes</td>
+</tr>
+<tr class="odd">
+<td><strong>+8 h</strong></td>
+<td>Canary rollout to 10% confirms no regression — promoted to 100%</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Cross-references</strong></p>
+</div>
+<div class="callout-content">
+<ul>
+<li><strong><a href="../../ai_agents/slides/observability_and_evaluation.html#quality-flywheel">Observability &amp; Evaluation §G</a></strong> — the Quality Flywheel that makes this loop rigorous</li>
+<li><strong><a href="../../production_deployment/slides/cicd_quality_gates.html#pipeline-in-action">CI/CD &amp; Quality Gates §F</a></strong> — the same pipeline, framed as the operations loop</li>
+</ul>
+</div>
+</div>
+</div>
+</section></section>
+<section>
+<section id="f.-fairness-parity-testing" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #FF7A5C)">
+<h1>F. Fairness &amp; Parity Testing</h1>
 <p>A different threat model: silent quality bias</p>
 </section>
 <section id="why-fairness-belongs-in-security-testing" class="slide level2">
@@ -620,8 +804,8 @@
 <p>Both are required. Adversarial finds <em>what attackers will do</em>; fairness finds <em>what your model is already doing</em>.</p>
 </section></section>
 <section>
-<section id="f.-ctf-review-activity" class="title-slide slide level1 sdaia-dark center" data-background-color="#00C9A7">
-<h1>F. CTF Review Activity</h1>
+<section id="g.-ctf-review-activity" class="title-slide slide level1 sdaia-dark center" data-background-color="#00C9A7">
+<h1>G. CTF Review Activity</h1>
 <p>Analyze, learn, harden (45 min)</p>
 </section>
 <section id="activity-red-team-your-securitylayer" class="slide level2">
@@ -682,9 +866,8 @@
 <p>In this module, you built a <strong>complete AI security system:</strong></p>
 <ul>
 <li><strong>Lesson 1:</strong> Threat modeling with STRIDE + risk scoring</li>
-<li><strong>Lesson 2:</strong> Input security — sanitization, injection detection, prompt hardening</li>
-<li><strong>Lesson 3:</strong> Output security — toxicity, PII, hallucination guardrails</li>
-<li><strong>Lesson 4:</strong> Testing — static scanning, red-teaming, adversarial test suites, fairness &amp; parity</li>
+<li><strong>Lesson 2:</strong> Guardrails — one detection ladder applied to input (sanitization, injection detection, hardening) and output (toxicity, PII, hallucination)</li>
+<li><strong>Lesson 3:</strong> Testing — static scanning, red-teaming, incident response, adversarial test suites, fairness &amp; parity</li>
 </ul>
 </section>
 <section id="questions" class="slide level2" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">

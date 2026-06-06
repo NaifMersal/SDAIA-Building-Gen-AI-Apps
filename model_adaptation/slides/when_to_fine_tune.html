@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-<script src="output_guardrails_content_safety_files/libs/clipboard/clipboard.min.js"></script>
-<script src="output_guardrails_content_safety_files/libs/quarto-html/tabby.min.js"></script>
-<script src="output_guardrails_content_safety_files/libs/quarto-html/popper.min.js"></script>
-<script src="output_guardrails_content_safety_files/libs/quarto-html/tippy.umd.min.js"></script>
-<link href="output_guardrails_content_safety_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="output_guardrails_content_safety_files/libs/quarto-html/light-border.css" rel="stylesheet">
-<link href="output_guardrails_content_safety_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+<script src="when_to_fine_tune_files/libs/clipboard/clipboard.min.js"></script>
+<script src="when_to_fine_tune_files/libs/quarto-html/tabby.min.js"></script>
+<script src="when_to_fine_tune_files/libs/quarto-html/popper.min.js"></script>
+<script src="when_to_fine_tune_files/libs/quarto-html/tippy.umd.min.js"></script>
+<link href="when_to_fine_tune_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="when_to_fine_tune_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="when_to_fine_tune_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.9.38">
 
-  <meta name="dcterms.date" content="2026-06-04">
-  <title>Output Guardrails &amp; Content Safety</title>
+  <meta name="dcterms.date" content="2026-06-06">
+  <title>When to Fine-Tune</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
-  <link rel="stylesheet" href="output_guardrails_content_safety_files/libs/revealjs/dist/reset.css">
-  <link rel="stylesheet" href="output_guardrails_content_safety_files/libs/revealjs/dist/reveal.css">
+  <link rel="stylesheet" href="when_to_fine_tune_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="when_to_fine_tune_files/libs/revealjs/dist/reveal.css">
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -98,11 +98,11 @@
     code span.vs { color: #20794d; } /* VerbatimString */
     code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="output_guardrails_content_safety_files/libs/revealjs/dist/theme/quarto-05b633aaffd58596cc6573a610a4b559.css">
-  <link href="output_guardrails_content_safety_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
-  <link href="output_guardrails_content_safety_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
-  <link href="output_guardrails_content_safety_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
-  <link href="output_guardrails_content_safety_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <link rel="stylesheet" href="when_to_fine_tune_files/libs/revealjs/dist/theme/quarto-05b633aaffd58596cc6573a610a4b559.css">
+  <link href="when_to_fine_tune_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="when_to_fine_tune_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="when_to_fine_tune_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="when_to_fine_tune_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
   <style type="text/css">
     .reveal div.sourceCode {
       margin: 0;
@@ -190,9 +190,9 @@
       margin-right: 0; 
     }
   </style>
-  <script src="output_guardrails_content_safety_files/libs/quarto-diagram/mermaid.min.js"></script>
-  <script src="output_guardrails_content_safety_files/libs/quarto-diagram/mermaid-init.js"></script>
-  <link href="output_guardrails_content_safety_files/libs/quarto-diagram/mermaid.css" rel="stylesheet">
+  <script src="when_to_fine_tune_files/libs/quarto-diagram/mermaid.min.js"></script>
+  <script src="when_to_fine_tune_files/libs/quarto-diagram/mermaid-init.js"></script>
+  <link href="when_to_fine_tune_files/libs/quarto-diagram/mermaid.css" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MCA4MCI+DQogIDxkZWZzPg0KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYSIgeDE9Ii0xLjkxMSIgeDI9IjIuOTg1IiB5MT0iLS44NDEiIHkyPSIxLjQxNCIgZ3JhZGllbnRVbml0cz0ib2JqZWN0Qm91bmRpbmdCb3giPg0KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjOTlkNjMzIi8+DQogICAgICA8c3RvcCBvZmZzZXQ9Ii41IiBzdG9wLWNvbG9yPSIjM2M5Ii8+DQogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMyNzM0NzAiLz4NCiAgICA8L2xpbmVhckdyYWRpZW50Pg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYSIgaWQ9ImQiIHgxPSItMy41NjkiIHgyPSIxLjMyOCIgeTE9Ii0xLjYwNSIgeTI9Ii42NTEiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2EiIGlkPSJlIiB4MT0iLTMuMDQ3IiB4Mj0iMS44NDkiIHkxPSItLjkwNCIgeTI9IjEuMzUyIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0iZiIgeDE9Ii0yLjg5IiB4Mj0iMi4wMDciIHkxPSItMS4yOTIiIHkyPSIuOTY0Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0iZyIgeDE9Ii0yLjQiIHgyPSIyLjQ5NyIgeTE9Ii0xLjA2NiIgeTI9IjEuMTg5Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0iaCIgeDE9Ii0uOTkyIiB4Mj0iMi42NzkiIHkxPSItLjQxOCIgeTI9IjEuMjczIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0iaSIgeDE9Ii0xLjUxMiIgeDI9IjIuMTU5IiB5MT0iLS4xOTciIHkyPSIxLjQ5NSIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYSIgaWQ9ImoiIHgxPSItLjkxNCIgeDI9IjIuNzU4IiB5MT0iLjA3OSIgeTI9IjEuNzcxIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0iayIgeDE9Ii0zLjQwNSIgeDI9IjEuNDkzIiB5MT0iLTEuMDY4IiB5Mj0iMS4xODciLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2EiIGlkPSJsIiB4MT0iLjM0NyIgeDI9IjMuMjg1IiB5MT0iLjE5OSIgeTI9IjEuNTUyIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0ibSIgeDE9Ii0uOTA1IiB4Mj0iMi43NjciIHkxPSIuMDgzIiB5Mj0iMS43NzUiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2EiIGlkPSJuIiB4MT0iLTIuMTE5IiB4Mj0iMi43NzgiIHkxPSItLjQ3NiIgeTI9IjEuNzc5Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0ibyIgeDE9Ii01LjY0NCIgeDI9Ii40ODYiIHkxPSItMi45OTgiIHkyPSIuNzQxIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0icCIgeDE9Ii0zLjQ5NSIgeDI9IjIuNjM2IiB5MT0iLTEuNjg3IiB5Mj0iMi4wNTMiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2EiIGlkPSJxIiB4MT0iLTEuNDIyIiB4Mj0iMy4xNzUiIHkxPSItLjkyMyIgeTI9IjEuODgyIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0iciIgeDE9Ii0zLjMwNiIgeDI9IjIuODI1IiB5MT0iLTIuMDcyIiB5Mj0iMS42NjgiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2EiIGlkPSJzIiB4MT0iLTEuNjgzIiB4Mj0iMi45MTQiIHkxPSItMS4wODEiIHkyPSIxLjcyMyIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYSIgaWQ9InQiIHgxPSItMS4xNTgiIHgyPSIyLjUyMSIgeTE9Ii0uMjYxIiB5Mj0iMS45ODMiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImIiIHgxPSIuMjYxIiB4Mj0iLjYyNCIgeTE9IjMuNTYiIHkyPSItMS40NjkiIGdyYWRpZW50VW5pdHM9Im9iamVjdEJvdW5kaW5nQm94Ij4NCiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzZjZiIvPg0KICAgICAgPHN0b3Agb2Zmc2V0PSIuNSIgc3RvcC1jb2xvcj0iIzYyNThhNiIvPg0KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMjczNDcwIi8+DQogICAgPC9saW5lYXJHcmFkaWVudD4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJ1IiB4MT0iLjE2MyIgeDI9Ii41MjYiIHkxPSI0LjkyNCIgeTI9Ii0uMTAzIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNiIiBpZD0idiIgeDE9Ii4zODYiIHgyPSIuNjU4IiB5MT0iMS44MjUiIHkyPSItMS45NDUiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJ3IiB4MT0iLjI1MiIgeDI9Ii42MTUiIHkxPSI0LjE4MiIgeTI9Ii0uODQ1Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNiIiBpZD0ieCIgeDE9Ii40MTciIHgyPSIuNjg5IiB5MT0iMS45IiB5Mj0iLTEuODciLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJ5IiB4MT0iLjQ4NSIgeDI9Ii43MDMiIHkxPSIuOTU2IiB5Mj0iLTIuMDYiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJ6IiB4MT0iLjM3NyIgeDI9Ii42NDkiIHkxPSIyLjQ1NSIgeTI9Ii0xLjMxNCIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYiIgaWQ9IkEiIHgxPSIuMTk5IiB4Mj0iLjU2MiIgeTE9IjQuOTIyIiB5Mj0iLS4xMDUiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJCIiB4MT0iLjQzNyIgeDI9Ii43MDkiIHkxPSIxLjYyNSIgeTI9Ii0yLjE0NSIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYiIgaWQ9IkMiIHgxPSIuMjYxIiB4Mj0iLjYyNCIgeTE9IjQuMDU1IiB5Mj0iLS45NzIiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJEIiB4MT0iLjUiIHgyPSIuNSIgeTE9IjMuMDQ1IiB5Mj0iLTEuOTI3Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNiIiBpZD0iRSIgeDE9Ii41IiB4Mj0iLjUiIHkxPSI0LjkwMSIgeTI9Ii0uMDcyIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNiIiBpZD0iRiIgeDE9Ii41IiB4Mj0iLjUiIHkxPSIyLjQzNSIgeTI9Ii0xLjI5NiIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYiIgaWQ9IkciIHgxPSIuNSIgeDI9Ii41IiB5MT0iLjkzNCIgeTI9Ii0yLjA1Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNiIiBpZD0iSCIgeDE9Ii41IiB4Mj0iLjUiIHkxPSIzLjc4NSIgeTI9Ii0xLjE4NyIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYiIgaWQ9IkkiIHgxPSIuNSIgeDI9Ii41IiB5MT0iMS44MDkiIHkyPSItMS45MjEiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJKIiB4MT0iLjUiIHgyPSIuNSIgeTE9IjMuMDQ2IiB5Mj0iLTEuOTI4Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNiIiBpZD0iSyIgeDE9Ii41IiB4Mj0iLjUiIHkxPSIyLjc5NCIgeTI9Ii0yLjE3NyIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYyIgeDE9IjUuMDEiIHgyPSItMi4yNzciIHkxPSItMS4zODMiIHkyPSIyLjAzOSIgZ3JhZGllbnRVbml0cz0ib2JqZWN0Qm91bmRpbmdCb3giPg0KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmRiZDRkIi8+DQogICAgICA8c3RvcCBvZmZzZXQ9Ii41IiBzdG9wLWNvbG9yPSIjZjYzIi8+DQogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMyNzM0NzAiLz4NCiAgICA8L2xpbmVhckdyYWRpZW50Pg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYyIgaWQ9IkwiIHgxPSIyLjIzOSIgeDI9Ii0yLjEzNCIgeTE9Ii0uMDgyIiB5Mj0iMS45NzEiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2MiIGlkPSJNIiB4MT0iNi4wOTgiIHgyPSItMS4xOTEiIHkxPSItMS44OTMiIHkyPSIxLjUyOCIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYyIgaWQ9Ik4iIHgxPSIzLjM4NCIgeDI9Ii0yLjA4MSIgeTE9Ii0xLjA4OCIgeTI9IjEuNDc3Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iTyIgeDE9IjIuNzgiIHgyPSItMi42ODYiIHkxPSItLjgwNSIgeTI9IjEuNzYxIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iUCIgeDE9IjcuMDc0IiB4Mj0iLS4yMTIiIHkxPSItMi4zNTMiIHkyPSIxLjA2OSIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYyIgaWQ9IlEiIHgxPSI1LjA3NSIgeDI9Ii0yLjIxMSIgeTE9Ii0xLjQxNCIgeTI9IjIuMDA4Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iUiIgeDE9IjUuNzM2IiB4Mj0iLTEuNTUiIHkxPSItMi4xOTQiIHkyPSIxLjIyOCIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYyIgaWQ9IlMiIHgxPSIyLjA4MSIgeDI9Ii0xLjc4MSIgeTE9Ii0uMDQ3IiB5Mj0iMS45Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iVCIgeDE9Ii43MjkiIHgyPSItMi4zNjEiIHkxPSIuMTM1IiB5Mj0iMS42OTIiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2MiIGlkPSJVIiB4MT0iMi43MTciIHgyPSItMi40MzMiIHkxPSItLjg2OCIgeTI9IjEuNzI4Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iViIgeDE9IjEuNTE3IiB4Mj0iLTIuMzQ3IiB5MT0iLS4yNjIiIHkyPSIxLjY4NCIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYyIgaWQ9IlciIHgxPSIzLjU0NCIgeDI9Ii0xLjYwNiIgeTE9Ii0xLjI4NCIgeTI9IjEuMzEyIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iWCIgeDE9IjIuNjMxIiB4Mj0iLTEuMjMzIiB5MT0iLS4zMjQiIHkyPSIxLjYyMyIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYyIgaWQ9IlkiIHgxPSIyLjAwMyIgeDI9Ii0xLjg2IiB5MT0iLS4wMDciIHkyPSIxLjk0Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iWiIgeDE9IjQuMTI1IiB4Mj0iLTEuMDI1IiB5MT0iLTEuMDc3IiB5Mj0iMS41MTgiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2MiIGlkPSJhYSIgeDE9IjMuMDIyIiB4Mj0iLTIuMTI3IiB5MT0iLTEuMDIxIiB5Mj0iMS41NzQiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2MiIGlkPSJhYiIgeDE9IjQuNjgxIiB4Mj0iLS40NjkiIHkxPSItMS44NTciIHkyPSIuNzM4Ii8+DQogIDwvZGVmcz4NCiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMy44IDEpIj4NCiAgPHBhdGggZmlsbD0iIzNjOSIgZD0ibTM2LjA0MSAyNi41My0xMS40NDggNi42MTF2MTMuMjJsMTEuNDQ4IDYuNjEyIDExLjQ0Ni02LjYwOFYzMy4xNDFaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjYSkiIGQ9Ik03MS40NjQgMjAuOTF2Ny45MzJsLTYuODctMy45NjVaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjZCkiIGQ9Ik02NC4yNDkgNTIuOTdsNi44NjkgMy45NjV2LTcuOTNaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjZSkiIGQ9Im02OC4xIDQ2LjM1OSAtNi44NjkgMy45Njd2LTcuOTMyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI2YpIiBkPSJNNzIuMzkyIDM1LjM3djcuOTMybC02Ljg2OSAtMy45NjVaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjZykiIGQ9Ik01Ni42NTEgNTYuODQ3djcuOTMybC02Ljg2OSAtMy45NjVaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjaCkiIGQ9Im01Ny43OTQgNTEuNjQzIC05LjE2IC01LjI4NiA5LjE2IC01LjI5WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI2kpIiBkPSJtNTcuNzk1IDUyLjk3IC05LjE2IDUuMjlWNDcuNjg0WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI2opIiBkPSJtNTcuNzkyIDM5Ljc0OSAtOS4xNTggNS4yODZ2LTEwLjU3MloiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNrKSIgZD0ibTU4LjUgNzAuMzE4IC02Ljg2OCAzLjk2N3YtNy45MzJaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjbCkiIGQ9Im00Ny40ODcgNDYuMzYxIC0xMS40NDYgLTYuNjEyIDExLjQ0NiAtNi42MTFaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjbSkiIGQ9Im00Ni4zNDQgNjEuMDc3IC05LjE1OCA1LjI4NnYtMTAuNTcyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI24pIiBkPSJtNDUuMTk5IDc0LjAzNSAtNi44NjggMy45NjV2LTcuOTMyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI28pIiBkPSJtNzAuMDIxIDYxLjc3NSAtNi44NjkgMy45Njd2LTcuOTMyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3ApIiBkPSJtNjguMSAzMy4xNDIgLTYuODY5IDMuOTY3di03LjkzMloiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNxKSIgZD0iTTU3Ljc5NCAyNy44NTJ2MTAuNTc2bC05LjE2IC01LjI5WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3IpIiBkPSJNNDUuMjAyIDYyLjg5MXY3LjkzMmwtNi44NjkgLTMuOTY3WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3MpIiBkPSJtNDYuMzQzIDU5Ljc1NiAtOS4xNTcgLTUuMjg2IDkuMTU3IC01LjI5WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3QpIiBkPSJtMzYuMDQxIDM5Ljc1IDExLjQ0NiA2LjYxMiAtMTEuNDQ2IDYuNjA4WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI2IpIiBkPSJtNjkuMzM0IDE3LjAzMSAtNi44NjkgMy45NjV2LTcuOTNaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjdSkiIGQ9Im01OC4wODIgNS40NiAtNi44NzEgMy45Njd2LTcuOTMyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3YpIiBkPSJtNTcuNzk2IDI2LjUyOSAtOS4xNjIgNS4yODZWMjEuMjQxWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3cpIiBkPSJtNDUuMiAxNC41NDUgLTYuODY5IC0zLjk2NSA2Ljg2OSAtMy45NjdaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjeCkiIGQ9Ik00Ni4zNDQgMTkuNzQ0VjMwLjMxOWwtOS4xNTggLTUuMjg2WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3kpIiBkPSJNMzYuMDQxIDI2LjUzdjEzLjIyTDI0LjU5MyAzMy4xNDFaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjeikiIGQ9Im0zNC44OTcgMjMuNzA5IC05LjE1OCAtNS4yODYgOS4xNTggLTUuMjlaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjQSkiIGQ9Im0zMy43NSA3LjkzMiAtNi44NyAtMy45NjUgNi44NyAtMy45NjdaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjQikiIGQ9Im0yMy40NDkgMzEuODE2IC05LjE1OCAtNS4yOSA5LjE1OCAtNS4yODVaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjQykiIGQ9Ik0xOS43NiA2LjAzOXY3LjkzMmwtNi44NjkgLTMuOTY1WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI0QpIiBkPSJtNTYuNjQ3IDIyLjY1MSAtNi44NzEgLTMuOTY3IDYuODcxIC0zLjk2N1oiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNFKSIgZD0ibTQ1LjIgMy45NjcgLTYuODY5IDMuOTY1di03LjkzMloiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNGKSIgZD0ibTQ2LjM0NCAxOC40MTcgLTkuMTU4IDUuMjg2di0xMC41NjhaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjRykiIGQ9Im00Ny40ODcgMzMuMTQxIC0xMS40NDYgNi42MTF2LTEzLjIyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI0gpIiBkPSJtMzMuNzUzIDEyLjgxNCAtNi44NzEgMy45Njd2LTcuOTMyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI0kpIiBkPSJtMzQuODk2IDI1LjAzMyAtOS4xNTggNS4yODZ2LTEwLjU3NVoiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNKKSIgZD0ibTIyLjMgMTguNjg0IC02Ljg3IDMuOTY1di03LjkzWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI0spIiBkPSJtNy41NTYgMjQuNjM3IC02Ljg3IC0zLjk2NSA2Ljg3IC0zLjk2N1oiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNjKSIgZD0ibTMzLjc1MSA3OC4wMDEgLTYuODcxIC0zLjk2NSA2Ljg3MSAtMy45NjdaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjTCkiIGQ9Ik0zNi4wNDEgMzkuNzV2MTMuMjJsLTExLjQ0OCAtNi42MTJaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjTSkiIGQ9Ik0yMi4zIDY2Ljc2M3Y3LjkzMmwtNi44NyAtMy45NjZaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjTikiIGQ9Im0yMy40NDkgNDYuMzYyIC05LjE1OCA1LjI4NnYtMTAuNTc2WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI08pIiBkPSJtMjMuNDQ5IDMzLjE0MiAtOS4xNTggNS4yOXYtMTAuNThaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjUCkiIGQ9Ik05LjYxNiA1OS40MDF2Ny45M2wtNi44NzEgLTMuOTY1WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI1EpIiBkPSJNMTAuODUxIDI4Ljg5OXY3LjkzMmwtNi44NzEgLTMuOTY1WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI1IpIiBkPSJtNi44NzEgNDAuMDkzIC02Ljg3MSAzLjk2NXYtNy45M1oiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNTKSIgZD0ibTM0Ljg5NCA2Ni4zNjcgLTkuMTYgLTUuMjg2IDkuMTYgLTUuMjlaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjVCkiIGQ9Im0zNi4wNDEgMzkuNzUgLTExLjQ0OCA2LjYwOHYtMTMuMjJaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjVSkiIGQ9Im0zMy43NSA2Ny40MjUgLTYuODcxIDMuOTY3di03LjkzMloiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNWKSIgZD0ibTM0Ljg5MiA1NC40NjcgLTkuMTU3IDUuMjl2LTEwLjU4MloiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNXKSIgZD0ibTIyLjI5OSA2MC44MTQgLTYuODY5IDMuOTY1di03LjkzWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI1gpIiBkPSJNMjMuNDQ5IDQ3LjY4M3YxMC41NzNsLTkuMTU4IC01LjI4NloiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNZKSIgZD0iTTIzLjQ0OSAzNC40NTl2MTAuNTczbC05LjE1OCAtNS4yODNaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjWikiIGQ9Im0xMC44NSA1MC4zMjYgLTYuODcxIC0zLjk2NyA2Ljg3MSAtMy45NjVaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjYWEpIiBkPSJtNy4xNDUgMjYuNTMxIC02Ljg2OSAzLjk2NXYtNy45MzJaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjYWIpIiBkPSJtNy41NTYgNTMuNDUyIC02Ljg3MSAzLjk2NXYtNy45MzVaIi8+DQogIDwvZz4NCjwvc3ZnPg0K">
 
 </head>
@@ -201,628 +201,485 @@
     <div class="slides">
 
 <section id="title-slide" data-background-image="../../slides_template/assets/anim.svg" data-background-opacity="0.15" data-background-size="cover" class="quarto-title-block center">
-  <h1 class="title">Output Guardrails &amp; Content Safety</h1>
-  <p class="subtitle">AI Security, Guardrails &amp; Content Safety — Session 3</p>
+  <h1 class="title">When to Fine-Tune</h1>
+  <p class="subtitle">Architecture Fundamentals — Session 3</p>
 
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-06-04</p>
+  <p class="date">2026-06-06</p>
 </section>
 <section>
-<section id="a.-the-output-problem" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
-<h1>A. The Output Problem</h1>
-<p>Output is as dangerous as input</p>
+<section id="a.-the-adaptation-ladder" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
+<h1>A. The Adaptation Ladder</h1>
+<p>Three ways to bend a model to your task</p>
 </section>
 <section id="agenda" class="slide level2">
 <h2>Agenda</h2>
 <ul>
-<li><strong>A. The Output Problem</strong> — Hallucinations, toxicity, PII leaks</li>
-<li><strong>B. Toxicity Filtering</strong> — Multi-layered moderation pipeline</li>
-<li><strong>C. PII Redaction</strong> — Presidio + regex; redaction strategies</li>
-<li><strong>D. Hallucination Detection</strong> — Semantic similarity + self-consistency</li>
-<li><strong>E. OutputGuard</strong> — Unified pipeline + SecurityLayer sandwich</li>
-<li><strong>F. When a Guardrail Fails</strong> — Contain → triage → resolve; incident-to-test loop</li>
+<li><strong>A. Adaptation Ladder</strong> — Prompting → RAG → Fine-Tuning</li>
+<li><strong>B. What Fine-Tuning Actually Changes</strong> — Weights vs context</li>
+<li><strong>C. When It Pays Off</strong> — The four legitimate reasons</li>
+<li><strong>D. When It Doesn’t</strong> — Anti-patterns and false economies</li>
+<li><strong>E. Cost Reality Check</strong> — Tokens, GPU hours, ongoing maintenance</li>
+<li><strong>F. Wrap-up</strong> — The decision rule</li>
 </ul>
 </section>
-<section id="why-output-guardrails-are-non-negotiable" class="slide level2">
-<h2>Why Output Guardrails Are Non-Negotiable</h2>
+<section id="climb-the-ladder-in-order" class="slide level2">
+<h2>Climb the Ladder in Order</h2>
+<div class="cell" data-reveal="true" data-fig-width="9" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<pre class="mermaid mermaid-js">graph LR
+    A["New Capability Needed"] --&gt; B{"Prompt&lt;br/&gt;Engineering&lt;br/&gt;(hours)"}
+    B --&gt;|"Insufficient"| C{"Retrieval&lt;br/&gt;Augmentation&lt;br/&gt;(days)"}
+    C --&gt;|"Insufficient"| D{"Fine-Tuning&lt;br/&gt;(weeks)"}
+    D --&gt;|"Insufficient"| E["Train from&lt;br/&gt;scratch&lt;br/&gt;(months / $$$)"]
+
+    B --&gt;|"Sufficient"| F["Ship it"]
+    C --&gt;|"Sufficient"| F
+    D --&gt;|"Sufficient"| F
+
+    style B fill:#00C9A7,stroke:#1C355E,color:#1C355E
+    style C fill:#9B8EC0,stroke:#1C355E,color:#fff
+    style D fill:#FF7A5C,stroke:#1C355E,color:#fff
+    style E fill:#1C355E,stroke:#1C355E,color:#fff
+    style F fill:#F0F4F8,stroke:#1C355E,color:#1C355E
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
 <div class="callout callout-important callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<p><strong>The Security Sandwich</strong></p>
+<p><strong>Cost-effort gradient</strong></p>
 </div>
 <div class="callout-content">
-<p>Input guardrails protect what goes <strong>in</strong>. Output guardrails protect what comes <strong>out</strong>. Without both, you have a half-sandwich.</p>
-<p><em>See “The Complete SecurityLayer Sandwich” below for the full architecture.</em></p>
+<p>Each rung is roughly <strong>10× more expensive</strong> in time, money, and maintenance burden than the one above it. Climb only when forced to.</p>
 </div>
 </div>
 </div>
-<div class="fragment">
-<p><strong>What can go wrong in LLM output?</strong></p>
+</section>
+<section id="what-each-rung-touches" class="slide level2">
+<h2>What Each Rung Touches</h2>
 <table class="caption-top">
 <colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
 </colgroup>
 <thead>
 <tr class="header">
-<th>Problem</th>
-<th>Business Risk</th>
-<th>Example</th>
+<th>Layer</th>
+<th>Prompting</th>
+<th>RAG</th>
+<th>Fine-Tuning</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td><strong>Toxicity</strong></td>
-<td>Legal liability, reputational harm</td>
-<td>Hate speech in response</td>
+<td><strong>Model weights</strong></td>
+<td>unchanged</td>
+<td>unchanged</td>
+<td><strong>adjusted</strong></td>
 </tr>
 <tr class="even">
-<td><strong>PII Leaks</strong></td>
-<td>Privacy law violations (GDPR, CCPA)</td>
-<td>SSN in a summary</td>
+<td><strong>Context</strong></td>
+<td>hand-written</td>
+<td>retrieved at runtime</td>
+<td>absorbed into weights</td>
 </tr>
 <tr class="odd">
-<td><strong>Hallucinations</strong></td>
-<td>User harm, liability</td>
-<td>Wrong medication dosage</td>
+<td><strong>Iteration cycle</strong></td>
+<td>seconds</td>
+<td>minutes</td>
+<td>hours to days</td>
 </tr>
 <tr class="even">
-<td><strong>Prompt Echo</strong></td>
-<td>System architecture exposure</td>
-<td>Repeating system prompt</td>
+<td><strong>Cost to update</strong></td>
+<td>edit a string</td>
+<td>re-index</td>
+<td>retrain</td>
 </tr>
 <tr class="odd">
-<td><strong>Code Execution</strong></td>
-<td>RCE if output piped to shell</td>
-<td><code>os.system()</code> call</td>
+<td><strong>Failure to debug</strong></td>
+<td>reread prompt</td>
+<td>inspect retrieval</td>
+<td>inspect dataset + run eval</td>
 </tr>
 </tbody>
 </table>
-</div>
-</section>
-<section id="real-cases-of-output-failures" class="slide level2">
-<h2>Real Cases of Output Failures</h2>
-<ul>
-<li><strong>Air Canada (2024):</strong> Chatbot invented a bereavement discount policy. Court ruled Air Canada <strong>liable</strong> (<em>Moffatt v. Air Canada</em>, 2024 BCCRT 149).</li>
-<li><strong>Samsung leak (2023):</strong> Employees pasted confidential code into ChatGPT; model included it in training context (<em>The Economist Korea</em>, April 2023).</li>
-<li><strong>Lawyer fined (2023):</strong> Used ChatGPT to write legal brief; model invented case citations (<em>Mata v. Avianca, Inc.</em>, 678 F. Supp. 3d 443).</li>
-</ul>
-<div class="fragment">
-<blockquote>
-<p>“You are responsible for <strong>everything</strong> your AI system outputs.”</p>
-</blockquote>
-</div>
-</section>
-<section id="the-outputguard-pipeline" class="slide level2">
-<h2>The OutputGuard Pipeline</h2>
-<div class="cell" data-reveal="true" data-fig-width="10" data-layout-align="default">
-<div class="cell-output-display">
-<div>
-<p></p><figure class=""><p></p>
-<div>
-<pre class="mermaid mermaid-js">graph LR
-    In["LLM Output"] --&gt; TF["ToxicityFilter"]
-    TF --&gt;|"Clean"| PR["PIIRedactor"]
-    PR --&gt;|"Sanitized"| HD["HallucinationDetector"]
-    HD --&gt;|"Grounded"| Out["Safe Response"]
-
-    style TF fill:#1C355E,stroke:#00C9A7,color:white
-    style PR fill:#1C355E,stroke:#00C9A7,color:white
-    style HD fill:#1C355E,stroke:#00C9A7,color:white
-</pre>
-</div>
-<p></p></figure><p></p>
-</div>
-</div>
-</div>
-</section></section>
-<section>
-<section id="b.-toxicity-filtering" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #FF7A5C)">
-<h1>B. Toxicity Filtering</h1>
-<p>Multi-layered content moderation</p>
-</section>
-<section id="the-toxicity-spectrum" class="slide level2">
-<h2>The Toxicity Spectrum</h2>
-<p>Not all harmful content carries the same risk — calibrate sensitivity to match your application:</p>
-<table class="caption-top">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Category</th>
-<th>Examples</th>
-<th>Sensitivity Level</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>Hate Speech</strong></td>
-<td>Slurs, ethnic attacks</td>
-<td>High</td>
-</tr>
-<tr class="even">
-<td><strong>Harassment</strong></td>
-<td>Personal threats, stalking</td>
-<td>High</td>
-</tr>
-<tr class="odd">
-<td><strong>Violence</strong></td>
-<td>Explicit harm instructions</td>
-<td>High</td>
-</tr>
-<tr class="even">
-<td><strong>Sexual</strong></td>
-<td>Explicit adult content</td>
-<td>Medium → High (context-dependent)</td>
-</tr>
-<tr class="odd">
-<td><strong>Self-Harm</strong></td>
-<td>Suicide methods</td>
-<td>Critical (most conservative)</td>
-</tr>
-</tbody>
-</table>
-<div class="fragment">
 <div class="callout callout-tip callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<p><strong>Tip</strong></p>
+<p><strong>Rule of thumb</strong></p>
 </div>
 <div class="callout-content">
-<p><strong>Thresholds vary by provider.</strong> <a href="https://platform.openai.com/docs/guides/moderation">OpenAI Moderation API</a> returns 0–1 confidence scores; <a href="https://learn.microsoft.com/en-us/azure/ai-services/content-safety/concepts/harm-categories">Azure AI Content Safety</a> uses severity levels 0–7; <a href="https://ai.google.dev/gemini-api/docs/safety-settings">Google Gemini</a> uses categorical block thresholds (e.g., <code>BLOCK_LOW_AND_ABOVE</code>). Always calibrate against your own data — no universal default exists.</p>
-</div>
-</div>
-</div>
-</div>
-</section>
-<section id="three-phase-toxicity-architecture" class="slide level2">
-<h2>Three-Phase Toxicity Architecture</h2>
-<div class="cell" data-reveal="true" data-fig-width="10" data-layout-align="default">
-<div class="cell-output-display">
-<div>
-<p></p><figure class=""><p></p>
-<div>
-<pre class="mermaid mermaid-js">graph LR
-    R["LLM Response"] --&gt; API["Phase 1: LLM-as-Moderator&lt;br/&gt;(OpenAI Moderation API / Claude Haiku)&lt;br/&gt;Fast, accurate, free/usage-based"]
-    API --&gt;|"Toxic"| BLOCK["🚫 Block + Fallback"]
-    API --&gt;|"Uncertain"| LOCAL["Phase 2: Local Model&lt;br/&gt;(toxic-bert / detoxify)&lt;br/&gt;Private, free, slower"]
-    API --&gt;|"Clean"| PASS["✅ Pass"]
-    LOCAL --&gt;|"Toxic"| BLOCK
-    LOCAL --&gt;|"Uncertain"| KW["Phase 3: Keyword List&lt;br/&gt;(Emergency fallback)&lt;br/&gt;Zero latency, low accuracy"]
-    LOCAL --&gt;|"Clean"| PASS
-    KW --&gt;|"Match"| BLOCK
-    KW --&gt;|"No match"| PASS
-
-    style BLOCK fill:#FF7A5C,stroke:#1C355E,color:#1C355E
-    style PASS fill:#00C9A7,stroke:#1C355E,color:#1C355E
-</pre>
-</div>
-<p></p></figure><p></p>
+<p>A behavior that needs <strong>3+ rounds of prompt iteration to nail</strong> <em>might</em> be a fine-tuning candidate. A behavior that needs <strong>30+ rounds</strong> almost certainly is — <em>if</em> the four conditions in section C also hold.</p>
 </div>
 </div>
 </div>
 </section></section>
 <section>
-<section id="pii-redaction" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)">
-<h1>C. PII Redaction</h1>
-<p>Privacy by design</p>
+<section id="b.-what-fine-tuning-actually-changes" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
+<h1>B. What Fine-Tuning Actually Changes</h1>
+<p>Weights vs context — the mental model that prevents 90% of mistakes</p>
 </section>
-<section id="pii-entity-types-to-detect" class="slide level2">
-<h2>PII Entity Types to Detect</h2>
-<div class="columns">
-<div class="column" style="width:50%;">
-<p><strong>Structured PII</strong> (regex reliable)</p>
-<ul>
-<li>Social Security Numbers: <code>\d{3}-\d{2}-\d{4}</code></li>
-<li>Credit cards: <code>\d{4}[\s-]\d{4}[\s-]\d{4}[\s-]\d{4}</code></li>
-<li>Email: <code>[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}</code></li>
-<li>Phone: <code>(\+?\d{1,3}[\s.-])?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}</code></li>
-<li>IP address: <code>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}</code></li>
-</ul>
-</div><div class="column" style="width:50%;">
-<p><strong>Unstructured PII</strong> (NER required)</p>
-<ul>
-<li>Person names</li>
-<li>Organization names</li>
-<li>Addresses</li>
-<li>Medical record numbers</li>
-<li>Passport / ID numbers</li>
-</ul>
-<p><em>Use Presidio or spaCy NER</em></p>
-</div></div>
-</section>
-<section id="redaction-strategies" class="slide level2">
-<h2>Redaction Strategies</h2>
-<p>Three approaches — choose based on downstream use:</p>
-<div class="columns">
-<div class="column" style="width:33%;">
-<p><strong>Replace</strong></p>
-<pre><code>"John Smith called"
-→
-"[PERSON] called"</code></pre>
-<p>Preserves structure, loses data</p>
-</div><div class="column" style="width:33%;">
-<p><strong>Mask</strong></p>
-<pre><code>"SSN: 123-45-6789"
-→
-"SSN: XXX-XX-6789"</code></pre>
-<p>Partial visibility for debugging</p>
-</div><div class="column" style="width:33%;">
-<p><strong>Hash</strong></p>
-<pre><code>"alice@example.com"
-→
-"a3f4b... @[DOMAIN]"</code></pre>
-<p>Reproducible — can join on hash</p>
-</div></div>
-</section>
-<section id="beyond-outputs-persisted-data" class="slide level2">
-<h2>Beyond Outputs: Persisted Data</h2>
-<p>Output redaction protects what the user <em>sees</em>. It doesn’t protect what your system <em>stores</em>.</p>
-<div class="callout callout-important callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Two extra surfaces for memory-enabled agents</strong></p>
-</div>
-<div class="callout-content">
-<ul>
-<li><strong>Pre-persistence redaction</strong> — redact PII <em>before</em> writing to session stores or memory stores, not just before display. A breached log re-exposes everything.</li>
-<li><strong>Memory poisoning</strong> — a malicious user input can be extracted as a “fact” into long-term memory, then injected into future turns as trusted context. Sanitize at write time, attach provenance, and weight low-trust sources lower.</li>
-<li><strong>Procedural memory exfiltration</strong> — when “playbooks” are shared across users (application scope), one user’s PII can leak into another’s prompt unless the playbook is anonymized.</li>
-</ul>
-</div>
-</div>
-</div>
-<blockquote>
-<p>See <a href="../../context_engineering/slides/sessions_and_memory.html">Sessions &amp; Memory</a> for sessions and memory architecture.</p>
-</blockquote>
-</section></section>
-<section>
-<section id="d.-hallucination-detection" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #FF7A5C)">
-<h1>D. Hallucination Detection</h1>
-<p>Catching confident lies</p>
-</section>
-<section id="the-hallucination-problem" class="slide level2">
-<h2>The Hallucination Problem</h2>
-<p>LLMs <strong>generate plausible text</strong> — they don’t retrieve facts. Without grounding, they fabricate:</p>
-<ul>
-<li><strong>Factual hallucinations:</strong> Invented statistics, wrong dates, fake citations</li>
-<li><strong>Entity hallucinations:</strong> People, places, or products that don’t exist</li>
-<li><strong>Reasoning hallucinations:</strong> Logically coherent but factually wrong chains</li>
-</ul>
-<div class="fragment">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href=""></a><span class="co"># Hallucination example</span></span>
-<span id="cb4-2"><a href=""></a>query <span class="op">=</span> <span class="st">"What is the capital of Australia?"</span></span>
-<span id="cb4-3"><a href=""></a>response <span class="op">=</span> <span class="st">"The capital of Australia is Sydney."</span>  <span class="co"># WRONG (it's Canberra)</span></span>
-<span id="cb4-4"><a href=""></a><span class="co"># High confidence, plausible, completely incorrect</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-</section>
-<section id="four-detection-techniques" class="slide level2">
-<h2>Four Detection Techniques</h2>
-<table class="caption-top">
-<colgroup>
-<col style="width: 20%">
-<col style="width: 20%">
-<col style="width: 20%">
-<col style="width: 20%">
-<col style="width: 20%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Technique</th>
-<th>How</th>
-<th>Cost</th>
-<th>Accuracy</th>
-<th>When to Use</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>Semantic similarity</strong></td>
-<td>Embed + cosine vs.&nbsp;source docs</td>
-<td>Low</td>
-<td>Medium</td>
-<td>Fast first pass; threshold ≈ 0.75</td>
-</tr>
-<tr class="even">
-<td><strong>Claim extraction</strong></td>
-<td>Parse claims + fact-check each</td>
-<td>Medium–High</td>
-<td>High</td>
-<td>Structured content, citations</td>
-</tr>
-<tr class="odd">
-<td><strong>Self-consistency</strong></td>
-<td>Sample N responses, check overlap</td>
-<td>High</td>
-<td>High</td>
-<td>Critical decisions</td>
-</tr>
-<tr class="even">
-<td><strong>LLM-as-Judge</strong></td>
-<td>Ask another LLM to critique</td>
-<td>Medium–High</td>
-<td>Very High</td>
-<td>Medical, legal (high stakes)</td>
-</tr>
-</tbody>
-</table>
-</section></section>
-<section>
-<section id="e.-outputguard-the-securitylayer-sandwich" class="title-slide slide level1 sdaia-dark center" data-background-color="#1C355E">
-<h1>E. OutputGuard &amp; The SecurityLayer Sandwich</h1>
-<p>Completing the full pipeline</p>
-</section>
-<section id="outputguard-unified-api" class="slide level2">
-<h2>OutputGuard: Unified API</h2>
-<p>The <code>OutputGuard</code> component wraps all 3 checks into a single step:</p>
-<ol type="1">
-<li><strong>Toxicity Check (Blocking):</strong> If toxic, stop immediately and return a fallback message.</li>
-<li><strong>PII Redaction (Non-blocking):</strong> Redact any detected sensitive info in-place.</li>
-<li><strong>Hallucination Check (Warning):</strong> If ungrounded, append a visible disclaimer to the text (“Note: Some claims lack support”) or flag for human review.</li>
-</ol>
-<p><em>The application code only ever deals with the clean <code>OutputGuard</code> result, abstracting away the complexity of the three different checks.</em></p>
-</section>
-<section id="the-complete-securitylayer-sandwich" class="slide level2">
-<h2>The Complete SecurityLayer Sandwich</h2>
-<div class="cell" data-reveal="true" data-fig-width="10" data-layout-align="default">
-<div class="cell-output-display">
-<div>
-<p></p><figure class=""><p></p>
-<div>
-<pre class="mermaid mermaid-js">graph LR
-    U["User Query"] --&gt; ISL["InputSecurityLayer&lt;br/&gt;(Sanitize + Detect + Harden)"]
-    ISL --&gt;|"BLOCKED"| R1["Rejection Message"]
-    ISL --&gt;|"PASS"| LLM["LLM&lt;br/&gt;(claude-sonnet-4-6)"]
-    LLM --&gt; OG["OutputGuard&lt;br/&gt;(Toxicity + PII + Hallucination)"]
-    OG --&gt;|"BLOCKED"| R2["Fallback Message"]
-    OG --&gt;|"PASS"| Resp["Safe Response"]
-
-    style ISL fill:#1C355E,stroke:#00C9A7,color:white
-    style OG fill:#1C355E,stroke:#00C9A7,color:white
-    style R1 fill:#FF7A5C,stroke:#1C355E,color:#1C355E
-    style R2 fill:#FF7A5C,stroke:#1C355E,color:#1C355E
-    style Resp fill:#00C9A7,stroke:#1C355E,color:#1C355E
-</pre>
-</div>
-<p></p></figure><p></p>
-</div>
-</div>
-</div>
-</section></section>
-<section>
-<section id="guardrail-failure" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
-<h1>F. When a Guardrail Fails</h1>
-<p>Detection is half the job — response is the other half</p>
-</section>
-<section id="contain-triage-resolve" class="slide level2">
-<h2>Contain → Triage → Resolve</h2>
-<p>Detection tells you <em>something happened</em>. The response playbook tells you <em>what to do next</em> — fast.</p>
-<div class="cell" data-reveal="true" data-fig-width="11" data-layout-align="default">
-<div class="cell-output-display">
-<div>
-<p></p><figure class=""><p></p>
-<div>
-<pre class="mermaid mermaid-js">graph LR
-    DETECT["OutputGuard catches it&lt;br/&gt;(toxic, PII, hallucination)"] --&gt; CONTAIN["Contain&lt;br/&gt;circuit-breaker flag&lt;br/&gt;disables affected route&lt;br/&gt;in seconds"]
-    CONTAIN --&gt; TRIAGE["Triage&lt;br/&gt;route requests to&lt;br/&gt;HITL review queue,&lt;br/&gt;scope the impact"]
-    TRIAGE --&gt; RESOLVE["Resolve&lt;br/&gt;patch input filter&lt;br/&gt;or system prompt;&lt;br/&gt;ship via CI/CD"]
-
-    style DETECT fill:#FF7A5C,stroke:#1C355E,color:#1C355E
-    style CONTAIN fill:#9B8EC0,stroke:#1C355E,color:#1C355E
-    style TRIAGE fill:#9B8EC0,stroke:#1C355E,color:#1C355E
-    style RESOLVE fill:#00C9A7,stroke:#1C355E,color:#1C355E
-</pre>
-</div>
-<p></p></figure><p></p>
-</div>
-</div>
-</div>
-<div class="callout callout-warning callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Why a circuit breaker, not a hotfix?</strong></p>
-</div>
-<div class="callout-content">
-<p>A novel attack may exploit your agent <strong>continuously</strong> while you debug. Circuit breakers buy you time — disable first, investigate second.</p>
-</div>
-</div>
-</div>
-</section>
-<section id="the-three-steps" class="slide level2">
-<h2>The Three Steps</h2>
-<table class="caption-top">
-<colgroup>
-<col style="width: 25%">
-<col style="width: 25%">
-<col style="width: 25%">
-<col style="width: 25%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Step</th>
-<th>Goal</th>
-<th>Tool</th>
-<th>Owner</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>Contain</strong></td>
-<td>Stop the harm in seconds</td>
-<td>Feature flag / kill switch on the affected tool or route</td>
-<td>On-call engineer</td>
-</tr>
-<tr class="even">
-<td><strong>Triage</strong></td>
-<td>Scope the impact</td>
-<td>HITL review queue + log analysis</td>
-<td>Security + Eng</td>
-</tr>
-<tr class="odd">
-<td><strong>Resolve</strong></td>
-<td>Permanent patch</td>
-<td>Update guardrail config; ship through CI/CD eval gate</td>
-<td>Eng</td>
-</tr>
-</tbody>
-</table>
-<div class="fragment">
-<p><strong>Don’t skip Triage.</strong> Containing without triaging means you fix the symptom and miss the root cause.</p>
-</div>
-</section>
-<section id="incidents-test-cases-the-feedback-loop" class="slide level2">
-<h2>Incidents → Test Cases: The Feedback Loop</h2>
-<p>Every breach the <code>SecurityLayer</code> catches is <strong>a free test case</strong>.</p>
-<div class="cell" data-reveal="true" data-fig-width="10" data-layout-align="default">
-<div class="cell-output-display">
-<div>
-<p></p><figure class=""><p></p>
-<div>
-<pre class="mermaid mermaid-js">graph LR
-    INC["Production incident&lt;br/&gt;(novel jailbreak,&lt;br/&gt;PII leak, etc.)"] --&gt; EXTRACT["Extract the&lt;br/&gt;exact prompt"]
-    EXTRACT --&gt; ADD["Add to adversarial&lt;br/&gt;test suite&lt;br/&gt;(Lesson 4)"]
-    ADD --&gt; CI["Next CI run&lt;br/&gt;verifies the fix&lt;br/&gt;and blocks regressions"]
-    CI --&gt; SHIP["Patched guardrail&lt;br/&gt;ships via canary&lt;br/&gt;(Module 06 S2)"]
-
-    style INC fill:#FF7A5C,stroke:#1C355E,color:#1C355E
-    style SHIP fill:#00C9A7,stroke:#1C355E,color:#1C355E
-</pre>
-</div>
-<p></p></figure><p></p>
-</div>
-</div>
-</div>
-<div class="fragment">
-<div class="callout callout-tip callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Production is your richest test data</strong></p>
-</div>
-<div class="callout-content">
-<p>Real users find attack vectors no internal red-team would predict. <strong>Capture every one.</strong></p>
-</div>
-</div>
-</div>
-</div>
-</section>
-<section id="a-worked-example-novel-prompt-injection" class="slide level2 smaller">
-<h2>A Worked Example: Novel Prompt Injection</h2>
-<table class="caption-top">
-<colgroup>
-<col style="width: 50%">
-<col style="width: 50%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Time</th>
-<th>Event</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>T+0</strong></td>
-<td>OutputGuard flags a response leaking system-prompt fragments</td>
-</tr>
-<tr class="even">
-<td><strong>+5 min</strong></td>
-<td>On-call disables the affected tool via feature flag — <em>contained</em></td>
-</tr>
-<tr class="odd">
-<td><strong>+30 min</strong></td>
-<td>HITL review reveals 12 affected sessions, all from one user — <em>triaged</em></td>
-</tr>
-<tr class="even">
-<td><strong>+2 h</strong></td>
-<td>Engineer extracts the exploit prompt; adds it to the adversarial test suite</td>
-</tr>
-<tr class="odd">
-<td><strong>+3 h</strong></td>
-<td><code>InputSecurityLayer</code> updated to block the new pattern; PR opened</td>
-</tr>
-<tr class="even">
-<td><strong>+5 h</strong></td>
-<td>CI eval suite (now including the new case) passes</td>
-</tr>
-<tr class="odd">
-<td><strong>+8 h</strong></td>
-<td>Canary rollout to 10% confirms no regression — promoted to 100%</td>
-</tr>
-</tbody>
-</table>
+<section id="a-base-model-is-a-frozen-distribution" class="slide level2">
+<h2>A Base Model is a Frozen Distribution</h2>
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<p><strong>Cross-references</strong></p>
+<p><strong>From <a href="../../architecture_fundamentals/slides/genai_fundamentals.html">Generative AI Fundamentals</a></strong></p>
 </div>
 <div class="callout-content">
+<p>An LLM is a function <code>next_token = f(context; weights)</code>. Prompting moves <code>context</code>; fine-tuning moves <code>weights</code>.</p>
+</div>
+</div>
+</div>
+<div class="fragment">
 <ul>
-<li><strong><a href="../../ai_agents/slides/observability_and_evaluation.html#quality-flywheel">Observability &amp; Evaluation §G</a></strong> — the Quality Flywheel that makes this loop rigorous</li>
-<li><strong><a href="../../production_deployment/slides/cicd_quality_gates.html#pipeline-in-action">CI/CD &amp; Quality Gates §F</a></strong> — the same pipeline, framed as the operations loop</li>
-<li><strong><a href="../../security_guardrails/slides/security_testing_red_teaming.html#adversarial-test-suite">Security Testing &amp; Red-Teaming</a> (next)</strong> — building the adversarial test suite that captures these cases</li>
+<li><strong>Prompting</strong> = picking which slice of the model’s existing distribution to sample from.</li>
+<li><strong>RAG</strong> = same, but the slice now contains facts the model never saw during pre-training.</li>
+<li><strong>Fine-tuning</strong> = reshaping the distribution itself. The model’s <em>defaults</em> change.</li>
 </ul>
 </div>
+<div class="fragment">
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
 </div>
+<p><strong>The implication</strong></p>
+</div>
+<div class="callout-content">
+<p>Fine-tuning is the right tool when you need a behavior to be the model’s <strong>default response</strong>, not a per-call instruction.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="what-this-looks-like-in-practice" class="slide level2">
+<h2>What This Looks Like in Practice</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><strong>Prompting fix</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb1-1"><a href=""></a>System: Respond in formal Modern Standard</span>
+<span id="cb1-2"><a href=""></a>Arabic. Use no English loan-words.</span>
+<span id="cb1-3"><a href=""></a>Cite sources as [Author, year].</span>
+<span id="cb1-4"><a href=""></a>User: ...</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Works, but the rules sit in every request — burning tokens and drifting on long conversations.</p>
+</div><div class="column" style="width:50%;">
+<p><strong>Fine-tuning fix</strong></p>
+<p>Train on 2K examples of <code>(question, formal-MSA-with-citations-answer)</code>.</p>
+<p>The model now produces formal MSA with citations <em>by default</em> — no system prompt needed.</p>
+<p>Cheaper per call. Harder to change.</p>
+</div></div>
+<div class="fragment">
+<p><strong>Key trade:</strong> you pay an upfront training cost in exchange for a permanent reduction in per-call prompt size — and a loss of flexibility.</p>
 </div>
 </section></section>
 <section>
-<section id="wrap-up" class="title-slide slide level1 sdaia-dark center" data-background-color="#1C355E">
-<h1>Wrap-Up</h1>
-
+<section id="c.-when-fine-tuning-pays-off" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
+<h1>C. When Fine-Tuning Pays Off</h1>
+<p>The four legitimate reasons</p>
 </section>
-<section id="key-takeaways" class="slide level2">
-<h2>Key Takeaways</h2>
-<ul>
-<li class="fragment">Output guardrails are <strong>not optional</strong> — you’re legally responsible for LLM output</li>
-<li class="fragment"><strong>Toxicity filtering</strong> requires multi-phase fallback (API → local → rules)</li>
-<li class="fragment"><strong>PII redaction</strong> should be <strong>always on</strong> — it’s a privacy law requirement</li>
-<li class="fragment"><strong>Hallucination detection</strong> needs <strong>source documents</strong> to check grounding</li>
-<li class="fragment">The <strong>SecurityLayer sandwich</strong> (Input → LLM → Output) is the production pattern</li>
-<li class="fragment"><strong>Detection is not response</strong> — every incident becomes a test case (contain → triage → resolve)</li>
-</ul>
-<div class="fragment">
+<section id="the-four-legitimate-reasons" class="slide level2">
+<h2>The Four Legitimate Reasons</h2>
+<ol type="1">
+<li class="fragment"><p><strong>Format/style consistency at scale.</strong> You need every output to follow a strict template — legal disclaimers, SQL dialect, JSON schema with quirks — and prompting + retries still drifts. Fine-tuning <em>bakes the format in</em> (<a href="https://www.anyscale.com/blog/fine-tuning-is-for-form-not-facts">Anyscale, 2023</a> • <a href="https://arxiv.org/abs/2502.14905">arXiv:2502.14905</a>).</p></li>
+<li class="fragment"><p><strong>Domain jargon and dialect.</strong> Medical coding, Saudi legal language, your company’s product taxonomy. Pre-training saw a little of it; you need the model to think in it natively (<a href="https://arxiv.org/abs/2309.12053">AceGPT, 2023</a> • <a href="https://www.nature.com/articles/s41586-023-06291-2">Singhal et al., Nature 2023</a>).</p></li>
+<li class="fragment"><p><strong>Implicit reasoning patterns.</strong> A workflow with non-obvious decision rules that’s tedious to describe in a prompt but trivially demonstrated with 500 worked examples (<a href="https://arxiv.org/abs/2305.11206">LIMA, 2023</a>).</p></li>
+<li class="fragment"><p><strong>Latency / cost compression.</strong> A 1.5B fine-tuned model can match a 70B prompted model on a narrow task — at 10–50× lower inference cost and latency (<a href="https://arxiv.org/abs/2305.02301">Distilling Step-by-Step, 2023</a>).</p></li>
+</ol>
+</section>
+<section id="format-locking-example" class="slide level2 smaller">
+<h2>Format-Locking Example</h2>
 <div class="callout callout-tip callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<p><strong>Interview Talking Point</strong></p>
+<p><strong>The pattern</strong></p>
 </div>
 <div class="callout-content">
-<p>“I implement output guardrails as a separate service: toxicity filter, PII redactor, and hallucination detector each run independently, with results aggregated by OutputGuard before anything reaches the user.”</p>
+<p>You can prompt a frontier model into your format. Distill into a small fine-tuned model when the call volume justifies it.</p>
 </div>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href=""></a><span class="co"># Pipeline:</span></span>
+<span id="cb2-2"><a href=""></a><span class="co"># 1. Use Claude/GPT-4 to generate 5K (input, perfect-format-output) pairs.</span></span>
+<span id="cb2-3"><a href=""></a><span class="co"># 2. Fine-tune a 7B open model on those pairs.</span></span>
+<span id="cb2-4"><a href=""></a><span class="co"># 3. Serve the 7B model in production.</span></span>
+<span id="cb2-5"><a href=""></a></span>
+<span id="cb2-6"><a href=""></a><span class="co"># Outcome: same output quality on this narrow task, ~30× cheaper per call.</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Sometimes called <strong>knowledge distillation</strong>. The frontier model is the teacher; the fine-tuned small model is the student.</p>
+</section></section>
+<section>
+<section id="d.-when-fine-tuning-does-not-help" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
+<h1>D. When Fine-Tuning Does Not Help</h1>
+<p>The common anti-patterns</p>
+</section>
+<section id="anti-patterns" class="slide level2">
+<h2>Anti-Patterns</h2>
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>“I want the model to know my company’s docs”</strong></p>
+</div>
+<div class="callout-content">
+<p>This is a <strong>RAG problem</strong>, not a fine-tuning problem.</p>
+</div>
+</div>
+</div>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Symptom</th>
+<th>Real solution</th>
+<th>Why not fine-tuning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>“It doesn’t know our 2026 product catalog”</td>
+<td>RAG</td>
+<td>Facts change weekly; retraining cadence can’t keep up</td>
+</tr>
+<tr class="even">
+<td>“It hallucinates internal API names”</td>
+<td>RAG with API reference</td>
+<td>New endpoints ship daily</td>
+</tr>
+<tr class="odd">
+<td>“It’s not safe enough”</td>
+<td><a href="../../security_guardrails/slides/input_output_guardrails.html">Guardrails layer</a></td>
+<td>Fine-tuning safety is fragile under prompt injection</td>
+</tr>
+<tr class="even">
+<td>“It’s wrong about basic facts”</td>
+<td>Switch to a stronger base model</td>
+<td>Fine-tuning a weak model rarely closes the gap</td>
+</tr>
+<tr class="odd">
+<td>“I have 50 examples”</td>
+<td>Few-shot prompting</td>
+<td>Too few to train; you’ll overfit catastrophically</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="the-stale-knowledge-trap" class="slide level2">
+<h2>The Stale Knowledge Trap</h2>
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Fine-tuning ≠ knowledge injection</strong></p>
+</div>
+<div class="callout-content">
+<p>Facts encoded in weights become <strong>stale the moment they enter training</strong>. A fine-tuned model that “knows” your Q1 catalog is wrong about Q2.</p>
+</div>
+</div>
+</div>
+<div class="fragment">
+<p><strong>Test:</strong> if the answer would be different next quarter, the right channel is <strong>retrieval at runtime</strong>, not weights.</p>
+</div>
+<div class="fragment">
+<p>Fine-tuning teaches the model <em>how to behave</em> — not <em>what is currently true</em>.</p>
+</div>
+</section>
+<section id="case-study-galactica-2022" class="slide level2">
+<h2>Case Study: Galactica (2022)</h2>
+<p>Meta released <strong>Galactica</strong>, a 120B model fine-tuned on scientific papers. The pitch: a “scientific assistant” that could generate research literature, equations, and citations.</p>
+<ul>
+<li class="fragment"><strong>What was wrong:</strong> the model produced <em>plausible-looking</em> but fabricated citations, equations, and biographies — at scale.</li>
+<li class="fragment"><strong>Why fine-tuning didn’t save it:</strong> training on papers taught Galactica <em>the style of scholarly writing</em>. It learned to <em>sound</em> authoritative. It did <strong>not</strong> learn which facts were true.</li>
+<li class="fragment"><strong>The withdrawal:</strong> demo pulled in 3 days after public outcry.</li>
+</ul>
+<div class="fragment">
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>The lesson</strong></p>
+</div>
+<div class="callout-content">
+<p>Fine-tuning teaches <strong>form</strong>, not <strong>truth</strong>. A model that confidently fabricates in the right register is more dangerous than one that obviously fails. <strong>Eval first, ship second</strong> — and never assume domain data inoculates a model against hallucination.</p>
+</div>
+</div>
+</div>
+</div>
+</section></section>
+<section>
+<section id="e.-cost-reality-check" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
+<h1>E. Cost Reality Check</h1>
+<p>The numbers nobody mentions in the demo</p>
+</section>
+<section id="where-the-money-actually-goes" class="slide level2">
+<h2>Where the Money Actually Goes</h2>
+<table class="caption-top">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Phase</th>
+<th>Effort</th>
+<th>Typical cost</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Dataset curation</strong></td>
+<td>70-90% of total project time</td>
+<td>Mostly human-hours</td>
+</tr>
+<tr class="even">
+<td><strong>Training compute</strong></td>
+<td>One-shot per run</td>
+<td>$0–$10K depending on size / method</td>
+</tr>
+<tr class="odd">
+<td><strong>Evaluation harness</strong></td>
+<td>Built once, runs forever</td>
+<td>Engineering time</td>
+</tr>
+<tr class="even">
+<td><strong>Re-training cadence</strong></td>
+<td>Every base-model upgrade, every distribution shift</td>
+<td>Recurring cost most teams forget</td>
+</tr>
+<tr class="odd">
+<td><strong>Inference serving</strong></td>
+<td>Per-request, forever</td>
+<td>Higher than calling a hosted API if volume is low</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>The 90/10 rule</strong></p>
+</div>
+<div class="callout-content">
+<p><strong>90% of fine-tuning project value comes from the dataset.</strong> Spend your time on data quality, not on training-script tweaking.</p>
 </div>
 </div>
 </div>
 </section>
-<section id="questions" class="slide level2" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
-<h2>Questions?</h2>
-<div class="r-fit-text">
-<p>Next: <strong>Lesson 4 — Security Testing &amp; Red-Teaming</strong></p>
+<section id="when-the-math-works" class="slide level2">
+<h2>When the Math Works</h2>
+<ul>
+<li class="fragment"><strong>Volume threshold:</strong> roughly when monthly hosted-API spend on a narrow task exceeds ~$2K/month, in-house fine-tuned models start to win on <strong>Total Cost of Ownership (TCO)</strong>.</li>
+<li class="fragment"><strong>Stability threshold:</strong> the task definition must be stable, for example, for more than 6 months. Otherwise retraining costs erase the savings.</li>
+<li class="fragment"><strong>Eval threshold:</strong> you can articulate “the model is better at X” with a measurable score, not a vibes-check.</li>
+</ul>
+<div class="fragment">
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>If you can’t measure it, you can’t fine-tune for it.</strong></p>
+</div>
+<div class="callout-content">
+<p>This is the most common project-killer. Build the eval <strong>before</strong> the training pipeline.</p>
+</div>
+</div>
+</div>
+</div>
+</section></section>
+<section>
+<section id="f.-wrap-up" class="title-slide slide level1 sdaia-dark center" data-background-color="#1C355E">
+<h1>F. Wrap-up</h1>
+
+</section>
+<section id="the-decision-rule" class="slide level2 sdaia-dark smaller" data-background-color="#1C355E">
+<h2>The Decision Rule</h2>
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Default to prompting. Earn your way down the ladder.</strong></p>
+</div>
+<div class="callout-content">
+
+</div>
+</div>
+</div>
+<ol type="1">
+<li><strong>Try prompting first.</strong> Always. Hours of iteration beat weeks of training.</li>
+<li><strong>Reach for RAG</strong> when the gap is <em>knowledge</em> — things the model doesn’t know.</li>
+<li><strong>Reach for fine-tuning</strong> when the gap is <em>behavior</em> — style, format, dialect, distilled patterns.</li>
+<li><strong>Never fine-tune to inject facts.</strong> That’s a retrieval problem in disguise.</li>
+<li><strong>Build the eval first.</strong> No measurable metric → no fine-tuning project.</li>
+<li><strong>Budget for the dataset, not the GPU.</strong> Data quality dominates outcomes.</li>
+</ol>
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Further reading</strong></p>
+</div>
+<div class="callout-content">
+<ul>
+<li><strong>Galactica retrospective</strong> — Heaven, <em>Why Meta’s Galactica AI was a flop</em> (MIT Tech Review, Nov 2022).</li>
+<li><strong>Form vs Facts</strong> — Kadous, <em>Fine-Tuning Is For Form, Not Facts</em> (Anyscale, July 2023). <a href="https://www.anyscale.com/blog/fine-tuning-is-for-form-not-facts">anyscale.com/blog/fine-tuning-is-for-form-not-facts</a></li>
+<li><strong>JSON Adherence</strong> — Sreedhar et al., <em>Think Inside the JSON: Schema Adherence in LLMs</em> (2025). <a href="https://arxiv.org/abs/2502.14905">arxiv.org/abs/2502.14905</a></li>
+<li><strong>AceGPT</strong> — Huang et al., <em>AceGPT: Localizing Large Language Models in Arabic</em> (2023). <a href="https://arxiv.org/abs/2309.12053">arxiv.org/abs/2309.12053</a></li>
+<li><strong>Med-PaLM</strong> — Singhal et al., <em>Large Language Models Encode Clinical Knowledge</em> (Nature, 2023). <a href="https://www.nature.com/articles/s41586-023-06291-2">nature.com/articles/s41586-023-06291-2</a></li>
+<li><strong>LIMA</strong> — Zhou et al., <em>LIMA: Less Is More for Alignment</em> (2023). <a href="https://arxiv.org/abs/2305.11206">arxiv.org/abs/2305.11206</a></li>
+<li><strong>Distilling Step-by-Step</strong> — Hsieh et al., <em>Distilling Step-by-Step: Outperforming Larger Language Models with Less Training Data and Smaller Model Sizes</em> (2023). <a href="https://arxiv.org/abs/2305.02301">arxiv.org/abs/2305.02301</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Up Next</strong></p>
+</div>
+<div class="callout-content">
+<p><strong><a href="../../model_adaptation/slides/fine_tuning_in_practice.html">Fine-Tuning in Practice</a></strong> — SFT, DPO, LoRA, and the tooling stack to actually run a training job.</p>
+</div>
+</div>
 </div>
 
 </section></section>
@@ -835,19 +692,19 @@
 </div></div>
 
   <script>window.backupDefine = window.define; window.define = undefined;</script>
-  <script src="output_guardrails_content_safety_files/libs/revealjs/dist/reveal.js"></script>
+  <script src="when_to_fine_tune_files/libs/revealjs/dist/reveal.js"></script>
   <!-- reveal.js plugins -->
-  <script src="output_guardrails_content_safety_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
-  <script src="output_guardrails_content_safety_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
-  <script src="output_guardrails_content_safety_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
-  <script src="output_guardrails_content_safety_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
-  <script src="output_guardrails_content_safety_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  <script src="when_to_fine_tune_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="when_to_fine_tune_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="when_to_fine_tune_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="when_to_fine_tune_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="when_to_fine_tune_files/libs/revealjs/plugin/quarto-support/support.js"></script>
   
 
-  <script src="output_guardrails_content_safety_files/libs/revealjs/plugin/notes/notes.js"></script>
-  <script src="output_guardrails_content_safety_files/libs/revealjs/plugin/search/search.js"></script>
-  <script src="output_guardrails_content_safety_files/libs/revealjs/plugin/zoom/zoom.js"></script>
-  <script src="output_guardrails_content_safety_files/libs/revealjs/plugin/math/math.js"></script>
+  <script src="when_to_fine_tune_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="when_to_fine_tune_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="when_to_fine_tune_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="when_to_fine_tune_files/libs/revealjs/plugin/math/math.js"></script>
   <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
 
   <script>
