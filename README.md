@@ -59,7 +59,6 @@ Design and implement your own multi-agent pipeline. You will instantiate multipl
 | Strategy | Description |
 |---|---|
 | Sequential chain | Researcher → Analyst → Writer |
-| Parallel + synthesize | Researcher ∥ Fact-checker → Writer |
 | Retry loop | Re-research if confidence is low |
 | Planner-first | Planner breaks query → specialists execute |
 | Your own idea | Surprise us! |
