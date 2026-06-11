@@ -6,9 +6,9 @@ This directory contains the labs for Module 04.
 
 - [01: Document Ingestion Pipeline](ingestion_pipeline.ipynb)
 - [02: Embedding Pipeline](embedding_pipeline.ipynb)
-- [03: RAG Service](rag_service.ipynb)
-- [04: Advanced Retrieval](advanced_retrieval.ipynb)
-- [05: Evaluation Framework](evaluation_framework.ipynb)
+- [03: RAG Evaluation](rag_evaluation.ipynb)
+- [04: RAG Service](rag_service.ipynb)
+- [05: Advanced Retrieval](advanced_retrieval.ipynb)
 - [06: Production Readiness](production_readiness.ipynb)
 
 ---

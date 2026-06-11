@@ -35,6 +35,18 @@ def check_lab_2_5(result):
     assert abs(result["cost_usd"] - 0.03) < 0.001, "Check your cost calculation"
     print("✅ Cost calculator working!")
 
+def check_lab_2_6(summary):
+    # Deterministic fixed example so the check is independent of the embedding model:
+    #   retrieved = ["d3", "d1", "d7", "d2", "d9"]  (best-first),  relevant = {"d1", "d2"}
+    assert summary is not None, "Build the summary dict from your metric functions"
+    assert abs(summary["recall_at_2"] - 0.5) < 1e-9, \
+        "recall@2 should be 0.5 — only 1 of the 2 relevant ids is in the top 2"
+    assert abs(summary["recall_at_5"] - 1.0) < 1e-9, \
+        "recall@5 should be 1.0 — both relevant ids are in the top 5"
+    assert abs(summary["hit_rate_at_3"] - 1.0) < 1e-9, "hit_rate@3 should be 1.0"
+    assert abs(summary["mrr"] - 0.5) < 1e-9, "MRR should be 0.5 — first relevant id is at rank 2"
+    print("✅ Recall@K / Hit Rate / MRR working!")
+
 # Lab 3
 def check_lab_3_3(filtered_results):
     assert filtered_results is not None, "Call store.search with filter_conditions"
