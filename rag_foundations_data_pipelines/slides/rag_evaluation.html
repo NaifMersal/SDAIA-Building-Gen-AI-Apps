@@ -9,8 +9,8 @@
 <link href="rag_evaluation_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.9.38">
 
-  <meta name="dcterms.date" content="2026-06-06">
-  <title>Measuring RAG Quality</title>
+  <meta name="dcterms.date" content="2026-06-11">
+  <title>Measuring Retrieval Quality</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -201,13 +201,13 @@
     <div class="slides">
 
 <section id="title-slide" data-background-image="../../slides_template/assets/anim.svg" data-background-opacity="0.15" data-background-size="cover" class="quarto-title-block center">
-  <h1 class="title">Measuring RAG Quality</h1>
-  <p class="subtitle">RAG Foundations &amp; Data Pipelines — Session 4</p>
+  <h1 class="title">Measuring Retrieval Quality</h1>
+  <p class="subtitle">RAG Foundations &amp; Data Pipelines — Session 3</p>
 
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-06-06</p>
+  <p class="date">2026-06-11</p>
 </section>
 <section>
 <section id="a.-why-measure" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
@@ -218,9 +218,9 @@
 <h2>Agenda</h2>
 <ul>
 <li><strong>A. Why Measure</strong> — From feelings to data, and the golden dataset</li>
-<li><strong>B. Retrieval Metrics</strong> — Hit Rate, MRR, Precision, Recall</li>
+<li><strong>B. Retrieval Metrics</strong> — Hit Rate, MRR, Precision, Recall <em>(+ optional NDCG@K)</em></li>
 <li><strong>C. Embedding Diagnostics</strong> — Reading the vector space</li>
-<li><strong>D. Generation Evaluation</strong> — Faithfulness &amp; Answer Relevance via LLM-as-Judge</li>
+<li><strong>D. LLM-Judged Retrieval</strong> — Contextual Precision/Recall/Relevancy with DeepEval</li>
 <li><strong>E. Wrap-up</strong> — The measure → improve loop</li>
 </ul>
 </section>
@@ -245,7 +245,30 @@
 <p><strong>Why this comes first</strong></p>
 </div>
 <div class="callout-content">
-<p>You just built a working RAG service. Before adding hybrid search, re-ranking, or query expansion, you need a <strong>baseline number</strong> — otherwise every “improvement” is a guess.</p>
+<p>You just built a brute-force retriever and saw a first taste of recall. Before swapping in a real vector store, hybrid search, or re-ranking, you need a <strong>baseline number</strong> — otherwise every “improvement” is a guess.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="why-small-scale-benchmarks-lie" class="slide level2">
+<h2>Why Small-Scale Benchmarks Lie</h2>
+<p>A demo corpus of a few hundred clean docs makes retrieval look solved. Enterprise corpora don’t.</p>
+<div class="fragment">
+<ul>
+<li>Real knowledge forms <strong>dense clusters of near-relevant content</strong> — many documents discuss the same topic; only one holds the exact answer.</li>
+<li>Retrieval then <strong>fails silently</strong>: it returns relevant-<em>looking</em> chunks, not necessarily the <em>right</em> one. No error, no empty result — just a confident wrong answer.</li>
+</ul>
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Retrieval is the reliability layer</strong></p>
+</div>
+<div class="callout-content">
+<p>At enterprise scale, retrieval stops being a “search feature.” It is the <strong>core reliability layer</strong> — which is why it must be measured at realistic scale (this deck) and hardened with hybrid retrieval, reranking, and metadata filtering (<a href="../../rag_foundations_data_pipelines/slides/advanced_retrieval_query_processing.html">Beyond Basic Search</a>).</p>
 </div>
 </div>
 </div>
@@ -253,7 +276,7 @@
 </section>
 <section id="golden-dataset" class="slide level2 smaller">
 <h2>Golden Dataset</h2>
-<p>A hand-curated set of <code>query → relevant chunks</code> pairs — your <strong>ground truth</strong>. Add an <code>expected_output</code> and the same dataset regression-tests the <em>generated answer</em> too.</p>
+<p>A hand-curated set of <code>query → relevant chunks</code> pairs — your <strong>ground truth</strong>. Add an <code>expected_output</code> (the ideal answer) and it also anchors the LLM-judged <em>Contextual</em> metrics in Section D.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href=""></a>RETRIEVAL_BENCHMARK <span class="op">=</span> [</span>
 <span id="cb1-2"><a href=""></a>    {</span>
 <span id="cb1-3"><a href=""></a>        <span class="st">"query"</span>: <span class="st">"What are ethical guidelines for AI?"</span>,</span>
@@ -261,7 +284,7 @@
 <span id="cb1-5"><a href=""></a>            <span class="st">"doc_ethics_sec2_chunk0"</span>,</span>
 <span id="cb1-6"><a href=""></a>            <span class="st">"doc_ethics_sec3_chunk1"</span></span>
 <span id="cb1-7"><a href=""></a>        ],</span>
-<span id="cb1-8"><a href=""></a>        <span class="co"># For generation eval, also pin the ideal answer:</span></span>
+<span id="cb1-8"><a href=""></a>        <span class="co"># Anchors the LLM-judged Contextual Precision/Recall metrics:</span></span>
 <span id="cb1-9"><a href=""></a>        <span class="st">"expected_output"</span>: <span class="st">"The guidelines require human oversight, ..."</span>,</span>
 <span id="cb1-10"><a href=""></a>    },</span>
 <span id="cb1-11"><a href=""></a>    <span class="co"># ... 20-50 curated examples</span></span>
@@ -359,7 +382,7 @@
 <p>Critical for: legal discovery, exhaustive search, research</p>
 </div></div>
 </section>
-<section id="which-metric-when" class="slide level2">
+<section id="which-metric-when" class="slide level2 smaller">
 <h2>Which Metric When?</h2>
 <table class="caption-top">
 <colgroup>
@@ -400,6 +423,11 @@
 <td style="text-align: center;">Hit Rate@5</td>
 <td>“Is it working at all?”</td>
 </tr>
+<tr class="even">
+<td><strong>Graded ranking quality</strong> <em>(optional)</em></td>
+<td style="text-align: center;">NDCG@K</td>
+<td>Best results must sit at the top</td>
+</tr>
 </tbody>
 </table>
 <div class="callout callout-note callout-titled callout-style-default">
@@ -411,10 +439,184 @@
 <p><strong>From these to the lab</strong></p>
 </div>
 <div class="callout-content">
-<p>Hit Rate/MRR/Precision/Recall are deterministic, id-based checks. The lab scores the <em>same</em> retrieval with DeepEval’s LLM-judged <strong>Contextual Precision / Recall / Relevancy</strong> (Section D), so retrieval and generation share one framework and one judge.</p>
+<p>Hit Rate/MRR/Precision/Recall are deterministic, id-based checks. The lab scores the <em>same</em> retrieval with DeepEval’s LLM-judged <strong>Contextual Precision / Recall / Relevancy</strong> (Section D) — the framework you’ll reuse for <em>generation</em> scoring once you produce answers in <a href="../../rag_foundations_data_pipelines/slides/response_synthesis.html">From Context to Answer</a>.</p>
 </div>
 </div>
 </div>
+</section>
+<section id="binary-relevance-isnt-enough" class="slide level2">
+<h2>Binary Relevance Isn’t Enough</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><strong>Traditional search</strong></p>
+<p>Getting the user to the right <em>document</em> is the finish line. The human skims and ignores the rest.</p>
+</div><div class="column" style="width:50%;">
+<p><strong>RAG</strong></p>
+<p>The chunk is pasted into the prompt. <strong>The LLM reads every token you retrieve</strong> — relevant or not.</p>
+</div></div>
+<p>A chunk can score a perfect <code>Recall@K</code> and still be <em>mostly noise</em>: retrieve 1024 tokens where only ~50 answer the query, and ~974 are distraction that degrades attention (→ hallucinations) and inflates cost.</p>
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Context density (a.k.a. chunk purity)</strong></p>
+</div>
+<div class="callout-content">
+<p>The fraction of a retrieved chunk that is actually relevant. Binary metrics can’t see it.</p>
+<p><span class="math display">\[\text{Context Density} = \frac{\text{relevant tokens in chunk}}{\text{total tokens in chunk}}\]</span></p>
+</div>
+</div>
+</div>
+</section>
+<section id="three-ways-to-measure-partial-relevance" class="slide level2">
+<h2>Three Ways to Measure Partial Relevance</h2>
+<table class="caption-top">
+<colgroup>
+<col style="width: 24%">
+<col style="width: 36%">
+<col style="width: 12%">
+<col style="width: 26%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Approach</th>
+<th>How it scores</th>
+<th style="text-align: center;">Cost</th>
+<th>Best when</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Token-level P/R</strong> (IoU-style)</td>
+<td>Chunk tokens vs.&nbsp;exact golden spans</td>
+<td style="text-align: center;">High — span labels</td>
+<td>You have highlighted spans</td>
+</tr>
+<tr class="even">
+<td><strong>LLM-as-judge</strong> (signal-to-noise)</td>
+<td>Judge keeps relevant sentences; score = relevant ÷ total</td>
+<td style="text-align: center;">Medium — judge calls</td>
+<td>Most teams <em>(default)</em></td>
+</tr>
+<tr class="odd">
+<td><strong>N-gram overlap</strong> (ROUGE-L / BLEU)</td>
+<td>Longest common subsequence vs.&nbsp;the answer; drops when diluted</td>
+<td style="text-align: center;">Low — no API/labels</td>
+<td>Cheap CI proxy</td>
+</tr>
+</tbody>
+</table>
+<div class="fragment fade-in">
+<p>Approach #2 is exactly DeepEval’s <strong>Contextual Relevancy</strong> — coming up in Section D, and the metric your lab already runs.</p>
+</div>
+</section></section>
+<section>
+<section id="optional-ndcgk-ranking-with-grades" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)">
+<h1>Optional: NDCG@K — Ranking with Grades</h1>
+<p>Safe to skip on a time budget — the one metric that scores <em>graded</em> relevance and <em>position</em> together</p>
+</section>
+<section id="ndcgk-graded-position-aware-ranking" class="slide level2 smaller">
+<h2>NDCG@K — Graded, Position-Aware Ranking</h2>
+<p>The metrics so far each see only part of the ranking:</p>
+<ul>
+<li><strong>MRR</strong> rewards only the <strong>first</strong> hit — everything after it is invisible.</li>
+<li><strong>Precision/Recall@K</strong> count hits but treat <strong>all positions equally</strong> — rank 1 and rank 5 score the same.</li>
+</ul>
+<div class="fragment">
+<p><strong>NDCG@K</strong> asks the sharper question: <em>“Are the <strong>best</strong> results at the <strong>top</strong>?”</em> — using <strong>graded relevance</strong> (<code>rel = 0/1/2/3</code>, not just the binary in/out of <a href="#/binary-relevance-isnt-enough">Binary Relevance Isn’t Enough</a>) and a <strong>position discount</strong>.</p>
+<p><span class="math display">\[DCG@K = \sum_{i=1}^{K} \frac{rel_i}{\log_2(i+1)} \qquad NDCG@K = \frac{DCG@K}{IDCG@K} \in [0,1]\]</span></p>
+<p>where <span class="math inline">\(IDCG@K\)</span> is the <span class="math inline">\(DCG\)</span> of the <strong>ideal</strong> ordering (grades sorted high→low). A perfect ranking scores <strong>1.0</strong>.</p>
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Needs graded labels to shine</strong></p>
+</div>
+<div class="callout-content">
+<p>With this deck’s <strong>binary</strong> <code>relevant_chunk_ids</code>, NDCG still adds position discounting over Hit Rate. Its real power needs <strong>graded</strong> labels — extend the golden set from <code>relevant_chunk_ids: [...]</code> to a <code>relevance: {chunk_id: grade}</code> map (<code>3</code> = exact answer, <code>1</code> = related context, <code>0</code> = noise).</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="ndcgk-worked-example" class="slide level2 smaller">
+<h2>NDCG@K — Worked Example</h2>
+<p>Top-5 retrieved, graded <code>[3, 2, 0, 1, 0]</code>. The ideal ordering would be <code>[3, 2, 1, 0, 0]</code>.</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Rank <span class="math inline">\(i\)</span></th>
+<th style="text-align: center;">Grade <span class="math inline">\(rel_i\)</span></th>
+<th style="text-align: center;">Discount <span class="math inline">\(\log_2(i{+}1)\)</span></th>
+<th style="text-align: center;">Discounted <span class="math inline">\(rel_i / \log_2(i{+}1)\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">1.000</td>
+<td style="text-align: center;">3.000</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">1.585</td>
+<td style="text-align: center;">1.262</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">2.000</td>
+<td style="text-align: center;">0.000</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">2.322</td>
+<td style="text-align: center;">0.431</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">2.585</td>
+<td style="text-align: center;">0.000</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>DCG</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><strong>4.693</strong></td>
+</tr>
+</tbody>
+</table>
+<p><span class="math display">\[IDCG = \tfrac{3}{1.000} + \tfrac{2}{1.585} + \tfrac{1}{2.000} = 4.762 \qquad NDCG@5 = \frac{4.693}{4.762} \approx \mathbf{0.99}\]</span></p>
+<div class="fragment fade-in">
+<p>The lone misranked chunk (a <code>rel=1</code> stuck at rank 4 while a <code>rel=0</code> sits at rank 3) nudges the score just below a perfect 1.0 — exactly the ordering error that Hit Rate and Recall can’t see.</p>
+</div>
+<aside class="notes">
+<p>Say it out loud: this section is optional. Nobody needs NDCG to get a first retrieval baseline — Hit Rate, MRR, and Precision/Recall are enough to start. But it’s the metric search teams actually report, because it’s the only one in the family that grades <em>how good</em> each result is and <em>where</em> it sits at the same time. The catch is honest: it only earns its keep once you label relevance in grades rather than yes/no, which is a real curation cost — so we flag it as optional, not core.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section></section>
 <section>
 <section id="c.-embedding-diagnostics" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #FF7A5C)">
@@ -472,61 +674,17 @@
 </div>
 </section></section>
 <section>
-<section id="d.-generation-evaluation" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #FF7A5C, #1C355E)">
-<h1>D. Generation Evaluation</h1>
-<p>Retrieval found the right context — did the model <em>use</em> it faithfully?</p>
+<section id="d.-llm-judged-retrieval-metrics" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #FF7A5C)">
+<h1>D. LLM-Judged Retrieval Metrics</h1>
+<p>Beyond id-based checks — grading retrieval with a strong LLM</p>
 </section>
-<section id="retrieval-is-only-half-the-story" class="slide level2">
-<h2>Retrieval Is Only Half the Story</h2>
-<div class="callout callout-note callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Two halves, one system</strong></p>
-</div>
-<div class="callout-content">
-<p>Retrieval metrics (A–C) tell you the <strong>right context</strong> reached the model. They say nothing about the <strong>answer</strong> the model then writes from it.</p>
-</div>
-</div>
-</div>
+<section id="why-llm-as-judge-for-retrieval" class="slide level2">
+<h2>Why LLM-as-Judge for Retrieval</h2>
+<p>Hit Rate/MRR/Precision/Recall need a hand-labelled <code>relevant_chunk_ids</code> list. <strong>Contextual</strong> metrics instead ask a strong LLM whether the retrieved context is relevant, complete, and well-ordered — graded against the <code>expected_output</code>, not a fixed id set.</p>
 <div class="fragment">
-<p>The citation-aware prompting that <em>produces</em> those answers is detailed later in <a href="../../rag_foundations_data_pipelines/slides/response_synthesis.html">From Context to Answer</a>. Here we focus on <strong>scoring</strong> them.</p>
-</div>
-</section>
-<section id="the-silent-failure" class="slide level2">
-<h2>The Silent Failure</h2>
-<div class="callout callout-important callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>The Problem</strong></p>
-</div>
-<div class="callout-content">
-<p>Retrieval failures are obvious: “No results found.”</p>
-<p>Generation failures are <strong>silent</strong>: The LLM confidently states “The moon is made of green cheese <strong>[1]</strong>.”</p>
-</div>
-</div>
-</div>
-<div class="fragment">
-<p>We need automated quality checks that catch:</p>
-<ul>
-<li>Hallucinated facts not in the context</li>
-<li>Answers that don’t address the question</li>
-<li>Misattributed citations</li>
-</ul>
-</div>
-</section>
-<section id="llm-as-judge" class="slide level2">
-<h2>LLM-as-Judge</h2>
-<p>Instead of expensive human review, use a <strong>strong LLM</strong> to grade the output of your RAG system.</p>
-<div class="fragment">
-<pre><code>Judge Prompt: "Given this context and question,
-              rate the answer's faithfulness 0-1.
-              Does every claim come from the context?"</code></pre>
+<pre><code>Judge Prompt: "Given this question and the retrieved
+              context, is each chunk relevant, and is
+              the relevant context ranked first?"</code></pre>
 <blockquote>
 <p><a href="https://github.com/confident-ai/deepeval">DeepEval</a>, <a href="https://github.com/explodinggradients/ragas">RAGAS</a>, and other frameworks automate this pattern.</p>
 </blockquote>
@@ -545,8 +703,8 @@
 </div>
 </div>
 </section>
-<section id="core-metrics" class="slide level2">
-<h2>Core Metrics</h2>
+<section id="contextual-metrics" class="slide level2">
+<h2>Contextual Metrics</h2>
 <table class="caption-top">
 <colgroup>
 <col style="width: 23%">
@@ -562,50 +720,58 @@
 </thead>
 <tbody>
 <tr class="odd">
-<td><strong>Faithfulness</strong></td>
-<td>Is every claim from the context?</td>
-<td>Hallucinations</td>
-</tr>
-<tr class="even">
-<td><strong>Answer Relevance</strong></td>
-<td>Does it address the question?</td>
-<td>Off-topic answers</td>
-</tr>
-<tr class="odd">
 <td><strong>Contextual Precision</strong></td>
 <td>Is relevant context ranked high?</td>
 <td>Poor retrieval ordering</td>
 </tr>
+<tr class="even">
+<td><strong>Contextual Recall</strong></td>
+<td>Did retrieval find all the relevant context?</td>
+<td>Missing chunks</td>
+</tr>
+<tr class="odd">
+<td><strong>Contextual Relevancy</strong></td>
+<td>Is the retrieved context on-topic?</td>
+<td>Noisy retrieval</td>
+</tr>
 </tbody>
 </table>
 <div class="fragment fade-in">
-<p>All three use “LLM-as-Judge” — a strong model evaluates the output.</p>
+<p>All three use “LLM-as-Judge” — a strong model grades the retrieved context against the ideal answer.</p>
+</div>
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>This is the chunk-purity score</strong></p>
+</div>
+<div class="callout-content">
+<p><strong>Contextual Relevancy</strong> is the automated <em>signal-to-noise</em> metric from Section B (approach #2) — so the knobs it actually tests are your <strong>chunk size</strong> and <strong>top-K</strong>.</p>
+</div>
+</div>
 </div>
 </section>
 <section id="deepeval-setup" class="slide level2 smaller">
 <h2>DeepEval Setup</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href=""></a><span class="im">import</span> os</span>
 <span id="cb4-2"><a href=""></a><span class="im">from</span> deepeval.metrics <span class="im">import</span> (</span>
-<span id="cb4-3"><a href=""></a>    ContextualPrecisionMetric, ContextualRecallMetric,  <span class="co"># retrieval</span></span>
+<span id="cb4-3"><a href=""></a>    ContextualPrecisionMetric, ContextualRecallMetric,</span>
 <span id="cb4-4"><a href=""></a>    ContextualRelevancyMetric,</span>
-<span id="cb4-5"><a href=""></a>    FaithfulnessMetric, AnswerRelevancyMetric,          <span class="co"># generation</span></span>
-<span id="cb4-6"><a href=""></a>)</span>
-<span id="cb4-7"><a href=""></a><span class="im">from</span> deepeval.models <span class="im">import</span> LiteLLMModel</span>
-<span id="cb4-8"><a href=""></a></span>
-<span id="cb4-9"><a href=""></a><span class="co"># One judge for every metric. Pass a LiteLLMModel object — a bare</span></span>
-<span id="cb4-10"><a href=""></a><span class="co"># model="..." string would default DeepEval to OpenAI.</span></span>
-<span id="cb4-11"><a href=""></a>judge <span class="op">=</span> LiteLLMModel(</span>
-<span id="cb4-12"><a href=""></a>    model<span class="op">=</span>os.getenv(<span class="st">"EVAL_JUDGE_MODEL"</span>,</span>
-<span id="cb4-13"><a href=""></a>                    <span class="st">"openrouter/deepseek/deepseek-v4-flash:free"</span>),</span>
-<span id="cb4-14"><a href=""></a>    temperature<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb4-15"><a href=""></a></span>
-<span id="cb4-16"><a href=""></a><span class="co"># Retrieval (LLM-judged Contextual metrics)</span></span>
-<span id="cb4-17"><a href=""></a>contextual_precision <span class="op">=</span> ContextualPrecisionMetric(threshold<span class="op">=</span><span class="fl">0.7</span>, model<span class="op">=</span>judge, include_reason<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb4-18"><a href=""></a>contextual_recall    <span class="op">=</span> ContextualRecallMetric(threshold<span class="op">=</span><span class="fl">0.7</span>, model<span class="op">=</span>judge, include_reason<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb4-19"><a href=""></a></span>
-<span id="cb4-20"><a href=""></a><span class="co"># Generation</span></span>
-<span id="cb4-21"><a href=""></a>faithfulness <span class="op">=</span> FaithfulnessMetric(threshold<span class="op">=</span><span class="fl">0.7</span>, model<span class="op">=</span>judge, include_reason<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb4-22"><a href=""></a>relevancy    <span class="op">=</span> AnswerRelevancyMetric(threshold<span class="op">=</span><span class="fl">0.7</span>, model<span class="op">=</span>judge, include_reason<span class="op">=</span><span class="va">True</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb4-5"><a href=""></a>)</span>
+<span id="cb4-6"><a href=""></a><span class="im">from</span> deepeval.models <span class="im">import</span> LiteLLMModel</span>
+<span id="cb4-7"><a href=""></a></span>
+<span id="cb4-8"><a href=""></a><span class="co"># One judge for every metric. Pass a LiteLLMModel object — a bare</span></span>
+<span id="cb4-9"><a href=""></a><span class="co"># model="..." string would default DeepEval to OpenAI.</span></span>
+<span id="cb4-10"><a href=""></a>judge <span class="op">=</span> LiteLLMModel(</span>
+<span id="cb4-11"><a href=""></a>    model<span class="op">=</span>os.getenv(<span class="st">"EVAL_JUDGE_MODEL"</span>,</span>
+<span id="cb4-12"><a href=""></a>                    <span class="st">"openrouter/deepseek/deepseek-chat-v3.1"</span>),</span>
+<span id="cb4-13"><a href=""></a>    temperature<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb4-14"><a href=""></a></span>
+<span id="cb4-15"><a href=""></a>contextual_precision <span class="op">=</span> ContextualPrecisionMetric(threshold<span class="op">=</span><span class="fl">0.7</span>, model<span class="op">=</span>judge, include_reason<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb4-16"><a href=""></a>contextual_recall    <span class="op">=</span> ContextualRecallMetric(threshold<span class="op">=</span><span class="fl">0.7</span>, model<span class="op">=</span>judge, include_reason<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb4-17"><a href=""></a>contextual_relevancy <span class="op">=</span> ContextualRelevancyMetric(threshold<span class="op">=</span><span class="fl">0.7</span>, model<span class="op">=</span>judge, include_reason<span class="op">=</span><span class="va">True</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="running-the-suite" class="slide level2 smaller">
 <h2>Running the Suite</h2>
@@ -613,21 +779,21 @@
 <span id="cb5-2"><a href=""></a><span class="im">from</span> deepeval.test_case <span class="im">import</span> LLMTestCase</span>
 <span id="cb5-3"><a href=""></a></span>
 <span id="cb5-4"><a href=""></a><span class="co"># One LLMTestCase per golden query; expected_output anchors the</span></span>
-<span id="cb5-5"><a href=""></a><span class="co"># retrieval metrics, retrieval_context feeds faithfulness.</span></span>
+<span id="cb5-5"><a href=""></a><span class="co"># Contextual metrics, retrieval_context is the ranked chunks scored.</span></span>
 <span id="cb5-6"><a href=""></a>test_cases <span class="op">=</span> [</span>
 <span id="cb5-7"><a href=""></a>    LLMTestCase(</span>
 <span id="cb5-8"><a href=""></a>        <span class="bu">input</span><span class="op">=</span>item[<span class="st">"query"</span>],</span>
-<span id="cb5-9"><a href=""></a>        actual_output<span class="op">=</span>rag_answer(item[<span class="st">"query"</span>]),</span>
+<span id="cb5-9"><a href=""></a>        actual_output<span class="op">=</span>item[<span class="st">"answer"</span>],</span>
 <span id="cb5-10"><a href=""></a>        expected_output<span class="op">=</span>item[<span class="st">"expected_output"</span>],</span>
 <span id="cb5-11"><a href=""></a>        retrieval_context<span class="op">=</span>item[<span class="st">"retrieval_context"</span>],</span>
 <span id="cb5-12"><a href=""></a>    )</span>
 <span id="cb5-13"><a href=""></a>    <span class="cf">for</span> item <span class="kw">in</span> GOLDEN_DATASET</span>
 <span id="cb5-14"><a href=""></a>]</span>
 <span id="cb5-15"><a href=""></a></span>
-<span id="cb5-16"><a href=""></a><span class="co"># Retrieval + generation in a single judged run</span></span>
+<span id="cb5-16"><a href=""></a><span class="co"># One judged run over every (test case x metric) — your retrieval BASELINE</span></span>
 <span id="cb5-17"><a href=""></a>evaluate(test_cases<span class="op">=</span>test_cases,</span>
 <span id="cb5-18"><a href=""></a>         metrics<span class="op">=</span>[contextual_precision, contextual_recall,</span>
-<span id="cb5-19"><a href=""></a>                  faithfulness, relevancy])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb5-19"><a href=""></a>                  contextual_relevancy])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>In CI, swap <code>evaluate(...)</code> for <code>assert_test(test_case, [...])</code> to <strong>fail the build</strong> when any metric drops below threshold.</p>
 </section>
 <section id="cicd-integration" class="slide level2">
@@ -639,17 +805,15 @@
 <div>
 <pre class="mermaid mermaid-js">flowchart LR
     A["PR to main"] --&gt; B["Run Retrieval&lt;br/&gt;Eval Suite"]
-    B --&gt; C["Run Generation&lt;br/&gt;Eval Suite"]
-    C --&gt; D{"Faithfulness&lt;br/&gt;&gt; 0.8?"}
-    D -- Yes --&gt; E["Merge PR"]
-    D -- No --&gt; F["Block +&lt;br/&gt;Alert"]
+    B --&gt; C{"Contextual Recall&lt;br/&gt;&gt; 0.8?"}
+    C -- Yes --&gt; D["Merge PR"]
+    C -- No --&gt; E["Block +&lt;br/&gt;Alert"]
 
     style A fill:#9B8EC0,stroke:#1C355E,color:#fff
     style B fill:#00C9A7,stroke:#1C355E,color:#fff
-    style C fill:#FF7A5C,stroke:#1C355E,color:#fff
-    style D fill:#9B8EC0,stroke:#1C355E,color:#fff
-    style E fill:#00C9A7,stroke:#1C355E,color:#fff
-    style F fill:#FF7A5C,stroke:#1C355E,color:#fff
+    style C fill:#9B8EC0,stroke:#1C355E,color:#fff
+    style D fill:#00C9A7,stroke:#1C355E,color:#fff
+    style E fill:#FF7A5C,stroke:#1C355E,color:#fff
 </pre>
 </div>
 <p></p></figure><p></p>
@@ -657,7 +821,7 @@
 </div>
 </div>
 <blockquote>
-<p>Gate every PR on evaluation metrics. A change to chunking can silently break generation quality.</p>
+<p>Gate every PR on retrieval metrics. A change to chunking or embeddings can silently break retrieval.</p>
 </blockquote>
 </section></section>
 <section>
@@ -665,32 +829,35 @@
 <h1>E. Wrap-up</h1>
 <p>The measure → improve loop</p>
 </section>
-<section id="both-halves-of-evaluation" class="slide level2">
-<h2>Both Halves of Evaluation</h2>
+<section id="the-retrieval-eval-stack" class="slide level2">
+<h2>The Retrieval Eval Stack</h2>
 <div class="cell" data-reveal="true" data-fig-width="10" data-layout-align="default">
 <div class="cell-output-display">
 <div>
 <p></p><figure class=""><p></p>
 <div>
 <pre class="mermaid mermaid-js">flowchart TD
-    A["RAG System"] --&gt; B["Retrieval Eval"]
-    A --&gt; C["Generation Eval"]
+    A["Retrieval Layer"] --&gt; B["Id-Based Metrics"]
+    A --&gt; C["LLM-Judged Metrics"]
+    A --&gt; D["Embedding Diagnostics"]
 
-    B --&gt; D["Hit Rate@K"]
-    B --&gt; E["MRR"]
-    B --&gt; F["Precision/Recall@K"]
-    B --&gt; G["Embedding Analysis"]
+    B --&gt; E["Hit Rate@K"]
+    B --&gt; F["MRR"]
+    B --&gt; G["Precision/Recall@K"]
 
-    C --&gt; H["Faithfulness"]
-    C --&gt; I["Answer Relevance"]
-    C --&gt; J["Contextual Precision"]
+    C --&gt; H["Contextual Precision"]
+    C --&gt; I["Contextual Recall"]
+    C --&gt; J["Contextual Relevancy"]
 
-    D &amp; E &amp; F &amp; G &amp; H &amp; I &amp; J --&gt; K["Dashboard +&lt;br/&gt;CI/CD Gates"]
+    D --&gt; K["Cluster Separation"]
+
+    E &amp; F &amp; G &amp; H &amp; I &amp; J &amp; K --&gt; L["Dashboard +&lt;br/&gt;CI/CD Gates"]
 
     style A fill:#1C355E,stroke:#1C355E,color:#fff
     style B fill:#00C9A7,stroke:#1C355E,color:#fff
     style C fill:#FF7A5C,stroke:#1C355E,color:#fff
-    style K fill:#9B8EC0,stroke:#1C355E,color:#fff
+    style D fill:#9B8EC0,stroke:#1C355E,color:#fff
+    style L fill:#9B8EC0,stroke:#1C355E,color:#fff
 </pre>
 </div>
 <p></p></figure><p></p>
@@ -698,7 +865,7 @@
 </div>
 </div>
 <blockquote>
-<p>Retrieval metrics tell you whether the <strong>right context</strong> reached the model; generation metrics tell you whether the model <strong>used it faithfully</strong>. You need both to trust a RAG system.</p>
+<p>This is the <strong>retrieval half</strong>. Once you produce answers (citation-aware prompting in <a href="../../rag_foundations_data_pipelines/slides/response_synthesis.html">From Context to Answer</a>), the <em>same</em> DeepEval framework scores the <strong>generation half</strong> — Faithfulness and Answer Relevance.</p>
 </blockquote>
 </section>
 <section id="the-feedback-loop" class="slide level2">
@@ -720,15 +887,15 @@
 <tbody>
 <tr class="odd">
 <td><strong>1. Measure</strong></td>
-<td>Run the retrieval <em>and</em> generation eval suites on the current system</td>
+<td>Run the retrieval eval suite on the current system</td>
 </tr>
 <tr class="even">
 <td><strong>2. Diagnose</strong></td>
-<td>Identify the weakest metric (low recall? poor ranking? hallucinations?)</td>
+<td>Identify the weakest metric (low recall? poor ranking? noisy context?)</td>
 </tr>
 <tr class="odd">
 <td><strong>3. Fix</strong></td>
-<td>Adjust chunking, embeddings, <strong>retrieval strategy</strong>, or the generation prompt</td>
+<td>Adjust chunking, embeddings, or the <strong>retrieval strategy</strong></td>
 </tr>
 <tr class="even">
 <td><strong>4. Re-measure</strong></td>
@@ -740,22 +907,6 @@
 </tr>
 </tbody>
 </table>
-<blockquote>
-<p>The next session adds hybrid search and re-ranking — each technique earns its place by <strong>moving these numbers</strong>, not by reputation.</p>
-</blockquote>
-<div class="callout callout-note callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Generalizes to a production flywheel</strong></p>
-</div>
-<div class="callout-content">
-<p>At scale this loop becomes a self-reinforcing <strong>Quality Flywheel</strong> — failures captured from live traffic feed back as permanent regression tests. See <a href="../../ai_agents/slides/observability_and_evaluation.html#quality-flywheel">AI Agents → Observability &amp; Evaluation</a>.</p>
-</div>
-</div>
-</div>
 </section>
 <section id="key-takeaways" class="slide level2 sdaia-dark" data-background-color="#1C355E">
 <h2>Key Takeaways</h2>
@@ -764,22 +915,9 @@
 <li><strong>Hit Rate@K</strong> answers “is it working at all?”; <strong>MRR</strong> measures how soon the first hit appears</li>
 <li><strong>Precision@K vs Recall@K</strong> trade “what we show is good” against “we found it all”</li>
 <li><strong>Embedding diagnostics</strong> catch a degrading vector space before metrics crater</li>
-<li><strong>Generation metrics</strong> (Faithfulness, Answer Relevance, Contextual Precision) catch <em>silent</em> LLM failures via LLM-as-Judge</li>
-<li><strong>Measure first</strong> — every later optimization is judged against this baseline, retrieval <em>and</em> generation</li>
+<li><strong>LLM-judged Contextual metrics</strong> (Precision/Recall/Relevancy) grade retrieval against the ideal answer — one DeepEval framework, reused for generation later</li>
+<li><strong>Measure first</strong> — this retrieval baseline is what every later optimization (real vector store, hybrid search, re-ranking) is judged against</li>
 </ol>
-<div class="callout callout-tip callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Up Next</strong></p>
-</div>
-<div class="callout-content">
-<p><strong>Lab</strong>: Build the RAG Evaluation Harness — curate a golden dataset, implement Hit Rate, MRR, Precision@K, and Recall@K from scratch, then add faithfulness and answer-relevance checks for generation. Record your baseline before optimizing.</p>
-</div>
-</div>
-</div>
 
 </section></section>
     </div>

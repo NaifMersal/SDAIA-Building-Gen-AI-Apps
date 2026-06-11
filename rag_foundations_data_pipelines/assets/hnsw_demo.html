@@ -34,6 +34,24 @@
   .ctrl{display:inline-flex; align-items:center; gap:6px; white-space:nowrap}
   .ctrl input[type=range]{width:104px; accent-color:var(--coral)}
   .ctrl b{font-variant-numeric:tabular-nums; color:var(--navy); min-width:22px; display:inline-block}
+  /* ---- grouped controls: build-time vs query-time ---- */
+  .group{
+    display:inline-flex; align-items:center; gap:12px;
+    padding:5px 11px 5px 9px; border:1px solid var(--border); border-radius:9px;
+    background:#fff; position:relative;
+  }
+  .group.build{border-left:3px solid var(--purple)}
+  .group.live{border-left:3px solid var(--coral)}
+  .glabel{
+    font-size:10.5px; font-weight:700; letter-spacing:.03em; text-transform:uppercase;
+    color:var(--muted);
+  }
+  .group.build .glabel{color:var(--purple)}
+  .group.live .glabel{color:var(--coral)}
+  #note{
+    flex:1 1 100%; font-size:11.5px; color:var(--muted); margin-top:2px;
+  }
+  #note b{color:var(--navy)}
   .btn{
     border:1px solid var(--border); background:#fff; color:var(--navy); border-radius:8px;
     padding:6px 11px; cursor:pointer; font-size:13px; font-weight:600;
@@ -65,15 +83,22 @@
         <button data-view="layers">HNSW Layers</button>
       </span>
     </div>
-    <div class="ctrl">N <input id="n" type="range" min="20" max="120" step="5" value="60"><b id="nv">60</b></div>
-    <div class="ctrl">M <input id="m" type="range" min="2" max="24" step="1" value="8"><b id="mv">8</b></div>
-    <div class="ctrl">ef_search <input id="ef" type="range" min="1" max="60" step="1" value="20"><b id="efv">20</b></div>
-    <div class="ctrl">k <input id="k" type="range" min="1" max="10" step="1" value="5"><b id="kv">5</b></div>
+    <div class="group build">
+      <span class="glabel">Built at index time</span>
+      <span class="ctrl">N <input id="n" type="range" min="20" max="120" step="5" value="60"><b id="nv">60</b></span>
+      <span class="ctrl">M <input id="m" type="range" min="2" max="24" step="1" value="8"><b id="mv">8</b></span>
+    </div>
+    <div class="group live">
+      <span class="glabel">Live at query time</span>
+      <span class="ctrl">ef_search <input id="ef" type="range" min="1" max="60" step="1" value="20"><b id="efv">20</b></span>
+      <span class="ctrl">k <input id="k" type="range" min="1" max="10" step="1" value="5"><b id="kv">5</b></span>
+    </div>
     <span class="spacer"></span>
     <button class="btn" id="reset" title="Back to the entry point">↺ Reset</button>
     <button class="btn primary" id="step">▸ Step</button>
     <button class="btn" id="play">⏵ Play</button>
     <button class="btn" id="rebuild" title="New random graph">⟳ Rebuild</button>
+    <span id="note"><b>N, M</b> are fixed once the index is built — only <b>ef_search</b> & <b>k</b> change per query. <b>k</b> is the final top-k drawn from the ef_search candidate pool, so k ≤ ef_search.</span>
   </div>
 
   <div id="stage"><canvas id="cv"></canvas></div>
@@ -352,9 +377,15 @@ $("viewSeg").addEventListener("click", e=>{
 function bindSlider(id, labelId, onChange){
   const el=$(id); el.addEventListener("input",()=>{ $(labelId).textContent=el.value; onChange(); });
 }
+// k is the final top-k drawn from the ef_search candidate pool, so k ≤ ef_search.
+function clampK(){
+  const kEl=$("k"), efv=+$("ef").value;
+  kEl.max = Math.min(10, efv);
+  if(+kEl.value > +kEl.max){ kEl.value = kEl.max; $("kv").textContent = kEl.value; }
+}
 bindSlider("n","nv",rebuild);
 bindSlider("m","mv",rebuild);
-bindSlider("ef","efv",research);
+$("ef").addEventListener("input",()=>{ $("efv").textContent=$("ef").value; clampK(); research(); });
 bindSlider("k","kv",research);
 // buttons
 $("reset").addEventListener("click",()=>{ stop(); cur=0; render(); });
@@ -381,7 +412,7 @@ new ResizeObserver(()=>draw()).observe($("stage"));
 window.addEventListener("keydown",e=>{ if(e.key==="ArrowRight"){stepFwd();} if(e.key===" "){e.preventDefault();play();} });
 
 // ===================== go =====================
-build(); render();
+clampK(); build(); render();
 </script>
 </body>
 </html>

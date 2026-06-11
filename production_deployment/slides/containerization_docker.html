@@ -9,7 +9,7 @@
 <link href="containerization_docker_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.9.38">
 
-  <meta name="dcterms.date" content="2026-06-06">
+  <meta name="dcterms.date" content="2026-06-11">
   <title>Containerization &amp; Packaging with Docker</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -207,7 +207,7 @@
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-06-06</p>
+  <p class="date">2026-06-11</p>
 </section>
 <section>
 <section id="a.-the-works-on-my-machine-problem" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
@@ -467,6 +467,44 @@
 <h1>C. Writing the AI Dockerfile</h1>
 <p>Two-stage build with security best practices</p>
 </section>
+<section id="the-.dockerignore-file" class="slide level2 smaller">
+<h2>The .dockerignore File</h2>
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Critical: Exclude Before You Build</strong></p>
+</div>
+<div class="callout-content">
+<p>Without <code>.dockerignore</code>, every <code>COPY . .</code> sends your entire repo context to Docker — including <code>.env</code> files with secrets, <code>__pycache__</code>, virtual envs (GB of data), and git history.</p>
+</div>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode numberSource dockerignore number-lines code-with-copy"><code class="sourceCode"><span id="cb5-1"><a href=""></a># Python artifacts</span>
+<span id="cb5-2"><a href=""></a>__pycache__/</span>
+<span id="cb5-3"><a href=""></a>*.py[cod]</span>
+<span id="cb5-4"><a href=""></a>*.egg-info/</span>
+<span id="cb5-5"><a href=""></a>.venv/</span>
+<span id="cb5-6"><a href=""></a>venv/</span>
+<span id="cb5-7"><a href=""></a></span>
+<span id="cb5-8"><a href=""></a># Secrets — keep out of the build context (see Section E)</span>
+<span id="cb5-9"><a href=""></a>.env</span>
+<span id="cb5-10"><a href=""></a>*.pem</span>
+<span id="cb5-11"><a href=""></a>secrets/</span>
+<span id="cb5-12"><a href=""></a></span>
+<span id="cb5-13"><a href=""></a># Dev tools</span>
+<span id="cb5-14"><a href=""></a>.git/</span>
+<span id="cb5-15"><a href=""></a>.pytest_cache/</span>
+<span id="cb5-16"><a href=""></a>tests/</span>
+<span id="cb5-17"><a href=""></a>notebooks/</span>
+<span id="cb5-18"><a href=""></a>*.ipynb</span>
+<span id="cb5-19"><a href=""></a></span>
+<span id="cb5-20"><a href=""></a># Large model files (mount at runtime instead)</span>
+<span id="cb5-21"><a href=""></a>models/*.bin</span>
+<span id="cb5-22"><a href=""></a>models/*.safetensors</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
 <section id="multi-stage-build-how-it-works" class="slide level2">
 <h2>Multi-Stage Build — How it Works</h2>
 <div class="cell" data-reveal="true" data-fig-width="10" data-layout-align="default">
@@ -505,46 +543,8 @@
 </div>
 </div>
 </div>
-<p>Single-stage ~2.3 GB → Multi-stage <strong>~450 MB</strong>. Cross-stage <code>COPY</code> eliminates <code>gcc</code>/<code>g++</code> from the final image.</p>
+<p>The two <code>subgraph</code>s become two <code>FROM</code> stages; the <strong>cross-stage <code>COPY</code></strong> lifts only the built venv into runtime, eliminating <code>gcc</code>/<code>g++</code> from the final image (the ~450 MB win from Section B).</p>
 <p>You will write the full Dockerfile in <strong>Lab 01</strong>.</p>
-</section>
-<section id="the-.dockerignore-file" class="slide level2 smaller">
-<h2>The .dockerignore File</h2>
-<div class="callout callout-warning callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Critical: Exclude Before You Build</strong></p>
-</div>
-<div class="callout-content">
-<p>Without <code>.dockerignore</code>, every <code>COPY . .</code> sends your entire repo context to Docker — including <code>.env</code> files with secrets, <code>__pycache__</code>, virtual envs (GB of data), and git history.</p>
-</div>
-</div>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode numberSource dockerignore number-lines code-with-copy"><code class="sourceCode"><span id="cb5-1"><a href=""></a># Python artifacts</span>
-<span id="cb5-2"><a href=""></a>__pycache__/</span>
-<span id="cb5-3"><a href=""></a>*.py[cod]</span>
-<span id="cb5-4"><a href=""></a>*.egg-info/</span>
-<span id="cb5-5"><a href=""></a>.venv/</span>
-<span id="cb5-6"><a href=""></a>venv/</span>
-<span id="cb5-7"><a href=""></a></span>
-<span id="cb5-8"><a href=""></a># Secrets — NEVER bake these in!</span>
-<span id="cb5-9"><a href=""></a>.env</span>
-<span id="cb5-10"><a href=""></a>*.pem</span>
-<span id="cb5-11"><a href=""></a>secrets/</span>
-<span id="cb5-12"><a href=""></a></span>
-<span id="cb5-13"><a href=""></a># Dev tools</span>
-<span id="cb5-14"><a href=""></a>.git/</span>
-<span id="cb5-15"><a href=""></a>.pytest_cache/</span>
-<span id="cb5-16"><a href=""></a>tests/</span>
-<span id="cb5-17"><a href=""></a>notebooks/</span>
-<span id="cb5-18"><a href=""></a>*.ipynb</span>
-<span id="cb5-19"><a href=""></a></span>
-<span id="cb5-20"><a href=""></a># Large model files (mount at runtime instead)</span>
-<span id="cb5-21"><a href=""></a>models/*.bin</span>
-<span id="cb5-22"><a href=""></a>models/*.safetensors</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="security-non-root-user" class="slide level2 smaller">
 <h2>Security: Non-Root User</h2>
@@ -664,19 +664,7 @@
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode numberSource yaml number-lines code-with-copy"><code class="sourceCode yaml"><span id="cb7-1"><a href=""></a><span class="fu">services</span><span class="kw">:</span></span>
 <span id="cb7-2"><a href=""></a><span class="at">  </span><span class="fu">api</span><span class="kw">:</span></span>
 <span id="cb7-3"><a href=""></a><span class="at">    </span><span class="fu">env_file</span><span class="kw">:</span><span class="at"> .env</span><span class="co">          # injected at runtime, never in the image</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="callout callout-warning callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>One extra file to guard</strong></p>
-</div>
-<div class="callout-content">
-<p><code>.env</code> must be listed in <strong>both</strong> <code>.gitignore</code> <em>and</em> <code>.dockerignore</code> — otherwise a <code>COPY . .</code> bakes your secrets into an image layer where <code>docker history</code> can recover them.</p>
-</div>
-</div>
-</div>
+<p>Runtime injection is only half the job — <strong>Section E</strong> covers why <code>.env</code> must never enter the image in the first place.</p>
 </section></section>
 <section>
 <section id="e.-secrets-security-best-practices" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)">
@@ -727,6 +715,7 @@
 <span id="cb9-4"><a href=""></a><span class="at">    </span><span class="fu">env_file</span><span class="kw">:</span><span class="at"> .env</span><span class="co">          # only on your machine</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href=""></a><span class="co"># ✅ CI/CD: inject from secrets manager</span></span>
 <span id="cb10-2"><a href=""></a><span class="ex">docker</span> run <span class="at">-e</span> ANTHROPIC_API_KEY=<span class="va">$SECRET</span> api:latest</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Guard <code>.env</code> in both <code>.gitignore</code> <em>and</em> <code>.dockerignore</code></strong> — otherwise a <code>COPY . .</code> bakes it into a layer <code>docker history</code> can recover.</p>
 </div>
 </section>
 <section id="cloud-secrets-management" class="slide level2">

@@ -9,7 +9,7 @@
 <link href="response_synthesis_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.9.38">
 
-  <meta name="dcterms.date" content="2026-06-06">
+  <meta name="dcterms.date" content="2026-06-11">
   <title>From Context to Answer</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -204,7 +204,7 @@
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-06-06</p>
+  <p class="date">2026-06-11</p>
 </section>
 <section>
 <section id="a.-citation-aware-prompting" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
@@ -216,7 +216,8 @@
 <ul>
 <li><strong>A. Citation-Aware Prompting</strong> — Grounded generation with sources</li>
 <li><strong>B. Context Window Management</strong> — Token budgets, pruning, and ordering</li>
-<li><strong>C. Wrap-up</strong> — From context to a trustworthy answer</li>
+<li><strong>C. Scoring the Answer</strong> — Faithfulness &amp; Answer Relevance via LLM-as-Judge</li>
+<li><strong>D. Wrap-up</strong> — From context to a trustworthy answer</li>
 </ul>
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
@@ -224,10 +225,10 @@
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<p><strong>Builds on Session 4</strong></p>
+<p><strong>Both sides of generation</strong></p>
 </div>
 <div class="callout-content">
-<p>In <a href="../../rag_foundations_data_pipelines/slides/rag_evaluation.html">Measuring RAG Quality</a> you learned to <strong>score</strong> answers (faithfulness, answer relevance). This session shows how to <strong>produce</strong> the grounded, citation-aware answers those metrics judge.</p>
+<p><a href="../../rag_foundations_data_pipelines/slides/rag_evaluation.html">Measuring Retrieval Quality</a> scored the <strong>retrieval</strong> half. This session closes the loop: first <strong>produce</strong> grounded, citation-aware answers, then <strong>score</strong> them (Section C) with the <em>same</em> DeepEval framework — reused for the generation half.</p>
 </div>
 </div>
 </div>
@@ -439,8 +440,134 @@ If not in context, say so."</code></pre>
 <span id="cb6-20"><a href=""></a>            <span class="st">"citations_used"</span>: pruned}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section></section>
 <section>
-<section id="c.-wrap-up" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)">
-<h1>C. Wrap-up</h1>
+<section id="c.-scoring-the-answer" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #FF7A5C, #1C355E)">
+<h1>C. Scoring the Answer</h1>
+<p>Retrieval found the right context — did the model <em>use</em> it faithfully?</p>
+</section>
+<section id="retrieval-eval-was-only-half" class="slide level2">
+<h2>Retrieval Eval Was Only Half</h2>
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Two halves, one system</strong></p>
+</div>
+<div class="callout-content">
+<p>The retrieval metrics from <a href="../../rag_foundations_data_pipelines/slides/rag_evaluation.html">Measuring Retrieval Quality</a> told you the <strong>right context</strong> reached the model. They say nothing about the <strong>answer</strong> you just learned to produce from it.</p>
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>Now that you can <em>generate</em> a grounded, citation-aware answer, you can <strong>score</strong> it.</p>
+</div>
+</section>
+<section id="the-silent-failure" class="slide level2">
+<h2>The Silent Failure</h2>
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>The Problem</strong></p>
+</div>
+<div class="callout-content">
+<p>Retrieval failures are obvious: “No results found.”</p>
+<p>Generation failures are <strong>silent</strong>: the LLM confidently states “The moon is made of green cheese <strong>[1]</strong>.”</p>
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>We need automated quality checks that catch:</p>
+<ul>
+<li>Hallucinated facts not in the context</li>
+<li>Answers that don’t address the question</li>
+<li>Misattributed citations</li>
+</ul>
+</div>
+</section>
+<section id="generation-metrics" class="slide level2">
+<h2>Generation Metrics</h2>
+<p>The <em>same</em> DeepEval LLM-as-Judge pattern from the retrieval session — now pointed at the <strong>answer</strong>:</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 23%">
+<col style="width: 50%">
+<col style="width: 26%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th>What It Measures</th>
+<th>Catches</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Faithfulness</strong></td>
+<td>Is every claim grounded in the retrieved context?</td>
+<td>Hallucinations</td>
+</tr>
+<tr class="even">
+<td><strong>Answer Relevance</strong></td>
+<td>Does the answer address the question?</td>
+<td>Off-topic answers</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Same judge, same calibration caveats</strong></p>
+</div>
+<div class="callout-content">
+<p>LLM judges carry biases (position, verbosity, self-preference) and must be calibrated against human labels before they gate releases. Full treatment — pairwise judging, bias mitigation, the SME-to-judge pipeline — in <a href="../../ai_agents/slides/observability_and_evaluation.html#evaluating-with-deepeval">AI Agents → Observability &amp; Evaluation</a>.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="deepeval-setup" class="slide level2 smaller">
+<h2>DeepEval Setup</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href=""></a><span class="im">import</span> os</span>
+<span id="cb7-2"><a href=""></a><span class="im">from</span> deepeval.metrics <span class="im">import</span> FaithfulnessMetric, AnswerRelevancyMetric</span>
+<span id="cb7-3"><a href=""></a><span class="im">from</span> deepeval.models <span class="im">import</span> LiteLLMModel</span>
+<span id="cb7-4"><a href=""></a></span>
+<span id="cb7-5"><a href=""></a><span class="co"># Same judge the retrieval suite used. Pass a LiteLLMModel object — a</span></span>
+<span id="cb7-6"><a href=""></a><span class="co"># bare model="..." string would default DeepEval to OpenAI.</span></span>
+<span id="cb7-7"><a href=""></a>judge <span class="op">=</span> LiteLLMModel(</span>
+<span id="cb7-8"><a href=""></a>    model<span class="op">=</span>os.getenv(<span class="st">"EVAL_JUDGE_MODEL"</span>,</span>
+<span id="cb7-9"><a href=""></a>                    <span class="st">"openrouter/deepseek/deepseek-chat-v3.1"</span>),</span>
+<span id="cb7-10"><a href=""></a>    temperature<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb7-11"><a href=""></a></span>
+<span id="cb7-12"><a href=""></a>faithfulness <span class="op">=</span> FaithfulnessMetric(threshold<span class="op">=</span><span class="fl">0.7</span>, model<span class="op">=</span>judge, include_reason<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb7-13"><a href=""></a>relevancy    <span class="op">=</span> AnswerRelevancyMetric(threshold<span class="op">=</span><span class="fl">0.7</span>, model<span class="op">=</span>judge, include_reason<span class="op">=</span><span class="va">True</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="gating-the-build" class="slide level2 smaller">
+<h2>Gating the Build</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href=""></a><span class="im">from</span> deepeval <span class="im">import</span> assert_test</span>
+<span id="cb8-2"><a href=""></a><span class="im">from</span> deepeval.test_case <span class="im">import</span> LLMTestCase</span>
+<span id="cb8-3"><a href=""></a></span>
+<span id="cb8-4"><a href=""></a><span class="co"># retrieval_context feeds Faithfulness; the answer is what we just generated.</span></span>
+<span id="cb8-5"><a href=""></a><span class="kw">def</span> test_rag_answer():</span>
+<span id="cb8-6"><a href=""></a>    test_case <span class="op">=</span> LLMTestCase(</span>
+<span id="cb8-7"><a href=""></a>        <span class="bu">input</span><span class="op">=</span><span class="st">"What is FlashAttention?"</span>,</span>
+<span id="cb8-8"><a href=""></a>        actual_output<span class="op">=</span>answer_with_citations(<span class="st">"What is FlashAttention?"</span>),</span>
+<span id="cb8-9"><a href=""></a>        retrieval_context<span class="op">=</span>retrieved_chunks,</span>
+<span id="cb8-10"><a href=""></a>    )</span>
+<span id="cb8-11"><a href=""></a>    <span class="co"># Fails the build when either metric drops below threshold</span></span>
+<span id="cb8-12"><a href=""></a>    assert_test(test_case, [faithfulness, relevancy])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<blockquote>
+<p>Gate every PR on <strong>both</strong> halves: retrieval metrics (prior session) <em>and</em> generation metrics here. A change to chunking, retrieval, or the citation prompt can silently break answer quality.</p>
+</blockquote>
+</section></section>
+<section>
+<section id="d.-wrap-up" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)">
+<h1>D. Wrap-up</h1>
 <p>From context to a trustworthy answer</p>
 </section>
 <section id="aside-rag-vs-memory" class="slide level2">
@@ -476,7 +603,7 @@ If not in context, say so."</code></pre>
 <li><strong>Citation-aware prompting</strong> with [ID] references produces attributable, auditable answers</li>
 <li><strong>Context window management</strong> — count tokens to prevent overflow, then <strong>order</strong> what survives so key chunks aren’t lost in the middle</li>
 <li><strong>Retrieved context is untrusted input</strong> — delimit it and treat the corpus as a trust boundary</li>
-<li><strong>Scoring</strong> these answers (faithfulness, answer relevance) was covered in <a href="../../rag_foundations_data_pipelines/slides/rag_evaluation.html">Measuring RAG Quality</a></li>
+<li><strong>Score the generated answer</strong> with Faithfulness &amp; Answer Relevance (LLM-as-Judge) — the same DeepEval framework that scored retrieval, now closing the loop on the generation half</li>
 </ol>
 <div class="callout callout-tip callout-titled callout-style-default">
 <div class="callout-body">

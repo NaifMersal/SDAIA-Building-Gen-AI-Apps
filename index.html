@@ -8,7 +8,7 @@
 
 <meta name="dcterms.date" content="2026-03-14">
 
-<title>Gen-AI Engineering Lab</title>
+<title>10-Day Program</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -50,8 +50,8 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Gen-AI Engineering Lab</h1>
-<p class="subtitle lead">Build Production Applications</p>
+<h1 class="title">10-Day Program</h1>
+<p class="subtitle lead">Core + Production Depth</p>
 </div>
 
 
@@ -75,586 +75,319 @@ ul.task-list li input[type="checkbox"] {
 
 
 <p><strong>GitHub Repository:</strong> <a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps">NaifMersal/SDAIA-Building-Gen-AI-Apps</a></p>
-<section id="module-01-architecture-fundamentals" class="level2">
-<h2 class="anchored" data-anchor-id="module-01-architecture-fundamentals">Module 01: Architecture Fundamentals</h2>
-<section id="slides" class="level3">
-<h3 class="anchored" data-anchor-id="slides">Slides</h3>
+<p><em>10-day program · 5-6 hours/day · 26 sessions · ~52 h of content.</em></p>
+<section id="prerequisites" class="level2">
+<h2 class="anchored" data-anchor-id="prerequisites">Prerequisites</h2>
+<p><em>What we assume you already know before day one.</em></p>
+<ul>
+<li>Working Python: functions, classes, virtual environments (<code>uv</code> / <code>venv</code>).</li>
+<li>Comfort with HTTP, REST APIs, and JSON payloads.</li>
+<li>Awareness of what LLMs are at a user level. Deeper concepts (context engineering, RAG internals) are covered in-course.</li>
+<li>Git and command-line basics.</li>
+</ul>
+</section>
+<section id="curriculum" class="level2">
+<h2 class="anchored" data-anchor-id="curriculum">Curriculum</h2>
+<p><strong>Setup:</strong> <a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/architecture_fundamentals/labs/00_setup_uv.md">00 Setup Uv</a></p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
+<th>#</th>
 <th>Session</th>
+<th>Module</th>
 <th>Covers</th>
 <th>Builds on</th>
 <th>Duration</th>
-<th>Link</th>
+<th>Slides</th>
+<th>Lab(s)</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>Session 1: Generative AI Fundamentals</td>
+<td>1</td>
+<td>Generative AI Fundamentals</td>
+<td>Architecture Fundamentals</td>
 <td>Words to intelligence, in-context learning, thinking models, and how LLMs actually generate text under the hood.</td>
 <td>—</td>
 <td>90 min</td>
 <td><a href="architecture_fundamentals/slides/genai_fundamentals.html">View Slides</a></td>
+<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/architecture_fundamentals/labs/tokenization_cost.ipynb">Tokenization Cost</a></td>
 </tr>
 <tr class="even">
-<td>Session 2: API &amp; Provider Landscape</td>
+<td>2</td>
+<td>API &amp; Provider Landscape</td>
+<td>Architecture Fundamentals</td>
 <td>From the messages mental model to picking providers, calling chat APIs, streaming, performance metrics, and first-look API security.</td>
-<td><a href="architecture_fundamentals/slides/genai_fundamentals.html">Generative AI Fundamentals</a></td>
+<td><a href="architecture_fundamentals/slides/genai_fundamentals.html">S1</a></td>
 <td>60 min</td>
 <td><a href="architecture_fundamentals/slides/api_and_provider_landscape.html">View Slides</a></td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="labs" class="level3">
-<h3 class="anchored" data-anchor-id="labs">Labs</h3>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Lab</th>
-<th>Duration</th>
-<th>GitHub</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>00 Setup Uv</td>
-<td>—</td>
-<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/architecture_fundamentals/labs/00_setup_uv.md">Open Guide</a></td>
-</tr>
-<tr class="even">
-<td>Lab 1: Tokenization Cost</td>
-<td>60 min</td>
-<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/architecture_fundamentals/labs/tokenization_cost.ipynb">Open Notebook</a></td>
+<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/architecture_fundamentals/labs/api_client.ipynb">API Client</a></td>
 </tr>
 <tr class="odd">
-<td>Lab 2: API Client</td>
-<td>60 min</td>
-<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/architecture_fundamentals/labs/api_client.ipynb">Open Notebook</a></td>
-</tr>
-</tbody>
-</table>
-<p><strong>Module total:</strong> ~270 min (150 min slides + 120 min labs)</p>
-<hr>
-</section>
-</section>
-<section id="module-02-function-calling-tool-systems" class="level2">
-<h2 class="anchored" data-anchor-id="module-02-function-calling-tool-systems">Module 02: Function Calling &amp; Tool Systems</h2>
-<section id="slides-1" class="level3">
-<h3 class="anchored" data-anchor-id="slides-1">Slides</h3>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Session</th>
-<th>Covers</th>
-<th>Builds on</th>
-<th>Duration</th>
-<th>Link</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Session 1: Structured Outputs &amp; Tool Calling</td>
+<td>3</td>
+<td>Structured Outputs &amp; Tool Calling</td>
+<td>Function Calling &amp; Tool Systems</td>
 <td>Constraint sampling, JSON schemas, the tool-calling loop, and the agent loop pattern.</td>
-<td><a href="architecture_fundamentals/slides/api_and_provider_landscape.html">API &amp; Provider Landscape</a></td>
+<td><a href="architecture_fundamentals/slides/api_and_provider_landscape.html">S2</a></td>
 <td>75 min</td>
 <td><a href="function_calling_tools/slides/structured_outputs_and_tool_use.html">View Slides</a></td>
+<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/function_calling_tools/labs/tool_calling.ipynb">Tool Calling</a></td>
 </tr>
 <tr class="even">
-<td>Session 2: MCP &amp; Standardization</td>
-<td>Model Context Protocol — standardising tool integrations across vendors; resources vs tools.</td>
-<td><a href="function_calling_tools/slides/structured_outputs_and_tool_use.html">Structured Outputs &amp; Tool Calling</a></td>
-<td>45 min</td>
-<td><a href="function_calling_tools/slides/mcp_and_standardization.html">View Slides</a></td>
-</tr>
-<tr class="odd">
-<td>Session 3: Efficient Tool Calling</td>
-<td>Routing strategies for large tool catalogs — classifier-based, semantic, and programmatic dispatch.</td>
-<td><a href="function_calling_tools/slides/structured_outputs_and_tool_use.html">Structured Outputs &amp; Tool Calling</a></td>
-<td>65 min</td>
-<td><a href="function_calling_tools/slides/efficient_tool_calling.html">View Slides</a></td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="labs-1" class="level3">
-<h3 class="anchored" data-anchor-id="labs-1">Labs</h3>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Lab</th>
-<th>Duration</th>
-<th>GitHub</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Lab 1: Tool Calling</td>
-<td>90 min</td>
-<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/function_calling_tools/labs/tool_calling.ipynb">Open Notebook</a></td>
-</tr>
-</tbody>
-</table>
-<p><strong>Module total:</strong> ~275 min (185 min slides + 90 min labs)</p>
-<hr>
-</section>
-</section>
-<section id="module-03-rag-foundations-data-pipelines" class="level2">
-<h2 class="anchored" data-anchor-id="module-03-rag-foundations-data-pipelines">Module 03: RAG Foundations &amp; Data Pipelines</h2>
-<section id="slides-2" class="level3">
-<h3 class="anchored" data-anchor-id="slides-2">Slides</h3>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Session</th>
-<th>Covers</th>
-<th>Builds on</th>
-<th>Duration</th>
-<th>Link</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Session 1: RAG Architecture &amp; Foundations</td>
+<td>4</td>
+<td>RAG Architecture &amp; Foundations</td>
+<td>RAG Foundations &amp; Data Pipelines</td>
 <td>Why RAG exists, how retrieval works, embedding models, and when to choose RAG over alternatives.</td>
-<td><a href="architecture_fundamentals/slides/api_and_provider_landscape.html">API &amp; Provider Landscape</a></td>
+<td><a href="architecture_fundamentals/slides/api_and_provider_landscape.html">S2</a></td>
 <td>60 min</td>
 <td><a href="rag_foundations_data_pipelines/slides/rag_architecture_foundations.html">View Slides</a></td>
+<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/rag_foundations_data_pipelines/labs/ingestion_pipeline.ipynb">Ingestion Pipeline</a></td>
 </tr>
-<tr class="even">
-<td>Session 2: Chunking Strategies</td>
+<tr class="odd">
+<td>5</td>
+<td>Chunking Strategies</td>
+<td>RAG Foundations &amp; Data Pipelines</td>
 <td>Splitting documents — fixed-size, document-aware, semantic, and content-type chunking trade-offs.</td>
-<td><a href="rag_foundations_data_pipelines/slides/rag_architecture_foundations.html">RAG Architecture &amp; Foundations</a></td>
+<td><a href="rag_foundations_data_pipelines/slides/rag_architecture_foundations.html">S4</a></td>
 <td>65 min</td>
 <td><a href="rag_foundations_data_pipelines/slides/chunking_strategies.html">View Slides</a></td>
-</tr>
-<tr class="odd">
-<td>Session 3: Vector Storage &amp; Retrieval</td>
-<td>Vector stores, HNSW indexing, building a Vector Store Manager and RAG service, production concerns.</td>
-<td><a href="rag_foundations_data_pipelines/slides/chunking_strategies.html">Chunking Strategies</a></td>
-<td>55 min</td>
-<td><a href="rag_foundations_data_pipelines/slides/vector_storage_retrieval.html">View Slides</a></td>
+<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/rag_foundations_data_pipelines/labs/embedding_pipeline.ipynb">Embedding Pipeline</a></td>
 </tr>
 <tr class="even">
-<td>Session 4: Measuring RAG Quality</td>
-<td>Evaluating both halves of RAG — retrieval metrics (Hit Rate, MRR, Precision, Recall) and generation quality (Faithfulness, Answer Relevance via LLM-as-Judge) — with a golden dataset and a measure → improve loop.</td>
-<td><a href="rag_foundations_data_pipelines/slides/vector_storage_retrieval.html">Vector Storage &amp; Retrieval</a></td>
+<td>6</td>
+<td>Measuring Retrieval Quality</td>
+<td>RAG Foundations &amp; Data Pipelines</td>
+<td>Evaluating the retrieval half of RAG — id-based metrics (Hit Rate, MRR, Precision, Recall), embedding diagnostics, and LLM-judged Contextual metrics — with a golden dataset and a measure → improve loop that baselines your brute-force RAG before you optimize it.</td>
+<td><a href="rag_foundations_data_pipelines/slides/chunking_strategies.html">S5</a></td>
 <td>50 min</td>
 <td><a href="rag_foundations_data_pipelines/slides/rag_evaluation.html">View Slides</a></td>
+<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/rag_foundations_data_pipelines/labs/rag_evaluation.ipynb">RAG Evaluation</a></td>
 </tr>
 <tr class="odd">
-<td>Session 5: Beyond Basic Search</td>
-<td>Hybrid search, re-ranking, adaptive retrieval, query understanding, and query expansion — each a measured improvement over the baseline.</td>
-<td><a href="rag_foundations_data_pipelines/slides/rag_evaluation.html">Measuring RAG Quality</a></td>
-<td>60 min</td>
-<td><a href="rag_foundations_data_pipelines/slides/advanced_retrieval_query_processing.html">View Slides</a></td>
+<td>7</td>
+<td>Vector Storage &amp; Retrieval</td>
+<td>RAG Foundations &amp; Data Pipelines</td>
+<td>Vector stores, HNSW indexing, building a Vector Store Manager and RAG service, production concerns.</td>
+<td><a href="rag_foundations_data_pipelines/slides/rag_evaluation.html">S6</a></td>
+<td>55 min</td>
+<td><a href="rag_foundations_data_pipelines/slides/vector_storage_retrieval.html">View Slides</a></td>
+<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/rag_foundations_data_pipelines/labs/rag_service.ipynb">RAG Service</a></td>
 </tr>
 <tr class="even">
-<td>Session 6: From Context to Answer</td>
-<td>Citation-aware prompting and context window management — producing grounded, attributable answers that stay within token budgets.</td>
-<td><a href="rag_foundations_data_pipelines/slides/advanced_retrieval_query_processing.html">Beyond Basic Search</a></td>
-<td>35 min</td>
-<td><a href="rag_foundations_data_pipelines/slides/response_synthesis.html">View Slides</a></td>
-</tr>
-<tr class="odd">
-<td>Session 7: Production Optimization</td>
-<td>HNSW benchmarking, quantization, caching, zero-downtime reindexing, and production cost planning.</td>
-<td><a href="rag_foundations_data_pipelines/slides/response_synthesis.html">From Context to Answer</a></td>
-<td>65 min</td>
-<td><a href="rag_foundations_data_pipelines/slides/optimization_production_architecture.html">View Slides</a></td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="labs-2" class="level3">
-<h3 class="anchored" data-anchor-id="labs-2">Labs</h3>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Lab</th>
-<th>Duration</th>
-<th>GitHub</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Lab 1: Ingestion Pipeline</td>
-<td>60 min</td>
-<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/rag_foundations_data_pipelines/labs/ingestion_pipeline.ipynb">Open Notebook</a></td>
-</tr>
-<tr class="even">
-<td>Lab 2: Embedding Pipeline</td>
-<td>60 min</td>
-<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/rag_foundations_data_pipelines/labs/embedding_pipeline.ipynb">Open Notebook</a></td>
-</tr>
-<tr class="odd">
-<td>Lab 3: RAG Service</td>
-<td>90 min</td>
-<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/rag_foundations_data_pipelines/labs/rag_service.ipynb">Open Notebook</a></td>
-</tr>
-<tr class="even">
-<td>Lab 4: RAG Evaluation</td>
-<td>60 min</td>
-<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/rag_foundations_data_pipelines/labs/rag_evaluation.ipynb">Open Notebook</a></td>
-</tr>
-<tr class="odd">
-<td>Lab 5: Advanced Retrieval</td>
-<td>60 min</td>
-<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/rag_foundations_data_pipelines/labs/advanced_retrieval.ipynb">Open Notebook</a></td>
-</tr>
-<tr class="even">
-<td>Lab 6: Production Readiness</td>
-<td>60 min</td>
-<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/rag_foundations_data_pipelines/labs/production_readiness.ipynb">Open Notebook</a></td>
-</tr>
-</tbody>
-</table>
-<p><strong>Module total:</strong> ~780 min (390 min slides + 390 min labs)</p>
-<hr>
-</section>
-</section>
-<section id="module-04-context-engineering" class="level2">
-<h2 class="anchored" data-anchor-id="module-04-context-engineering">Module 04: Context Engineering</h2>
-<section id="slides-3" class="level3">
-<h3 class="anchored" data-anchor-id="slides-3">Slides</h3>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Session</th>
-<th>Covers</th>
-<th>Builds on</th>
-<th>Duration</th>
-<th>Link</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Session 1: Context Engineering: Sessions &amp; Memory</td>
+<td>8</td>
+<td>Context Engineering: Sessions &amp; Memory</td>
+<td>Context Engineering</td>
 <td>Context engineering, sessions, long-context compaction, memory pipelines, and procedural self-improvement.</td>
-<td><a href="function_calling_tools/slides/structured_outputs_and_tool_use.html">Structured Outputs &amp; Tool Calling</a>; <a href="rag_foundations_data_pipelines/slides/vector_storage_retrieval.html">Vector Storage &amp; Retrieval</a></td>
+<td><a href="function_calling_tools/slides/structured_outputs_and_tool_use.html">S3</a>, <a href="rag_foundations_data_pipelines/slides/vector_storage_retrieval.html">S7</a></td>
 <td>85 min</td>
 <td><a href="context_engineering/slides/sessions_and_memory.html">View Slides</a></td>
+<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/context_engineering/labs/session_and_compaction.ipynb">Session And Compaction</a></td>
 </tr>
-<tr class="even">
-<td>Session 2: Skills: Packaging Agent Capabilities</td>
+<tr class="odd">
+<td>9</td>
+<td>Skills: Packaging Agent Capabilities</td>
+<td>Context Engineering</td>
 <td>Anthropic Agent Skills, SKILL.md structure, authoring skills, and how skills relate to tools and MCP.</td>
-<td><a href="context_engineering/slides/sessions_and_memory.html">Context Engineering: Sessions &amp; Memory</a></td>
+<td><a href="context_engineering/slides/sessions_and_memory.html">S8</a></td>
 <td>50 min</td>
 <td><a href="context_engineering/slides/skills.html">View Slides</a></td>
-</tr>
-<tr class="odd">
-<td>Session 3: Case Study: Hermes Agent</td>
-<td>How one production agent designs the user-facing surface for context, memory, skills, and tools.</td>
-<td><a href="context_engineering/slides/sessions_and_memory.html">Context Engineering: Sessions &amp; Memory</a>; <a href="context_engineering/slides/skills.html">Skills: Packaging Agent Capabilities</a></td>
-<td>80 min</td>
-<td><a href="context_engineering/slides/hermes_case_study.html">View Slides</a></td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="labs-3" class="level3">
-<h3 class="anchored" data-anchor-id="labs-3">Labs</h3>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Lab</th>
-<th>Duration</th>
-<th>GitHub</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Lab 1: Session And Compaction</td>
-<td>60 min</td>
-<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/context_engineering/labs/session_and_compaction.ipynb">Open Notebook</a></td>
+<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/context_engineering/labs/memory_pipeline.ipynb">Memory Pipeline</a></td>
 </tr>
 <tr class="even">
-<td>Lab 2: Memory Pipeline</td>
-<td>60 min</td>
-<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/context_engineering/labs/memory_pipeline.ipynb">Open Notebook</a></td>
-</tr>
-<tr class="odd">
-<td>Lab 3: Hermes User Tour</td>
-<td>60 min</td>
-<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/context_engineering/labs/hermes_user_tour.ipynb">Open Notebook</a></td>
-</tr>
-</tbody>
-</table>
-<p><strong>Module total:</strong> ~395 min (215 min slides + 180 min labs)</p>
-<hr>
-</section>
-</section>
-<section id="module-05-ai-agents-orchestration" class="level2">
-<h2 class="anchored" data-anchor-id="module-05-ai-agents-orchestration">Module 05: AI Agents &amp; Orchestration</h2>
-<section id="slides-4" class="level3">
-<h3 class="anchored" data-anchor-id="slides-4">Slides</h3>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Session</th>
-<th>Covers</th>
-<th>Builds on</th>
-<th>Duration</th>
-<th>Link</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Session 1: Patterns of Collaboration</td>
+<td>10</td>
+<td>Patterns of Collaboration</td>
+<td>AI Agents &amp; Orchestration</td>
 <td>Multi-agent orchestration — specialist roles, pipeline / hub-and-spoke / workspace patterns, and review gates.</td>
-<td><a href="function_calling_tools/slides/structured_outputs_and_tool_use.html">Structured Outputs &amp; Tool Calling</a></td>
+<td><a href="function_calling_tools/slides/structured_outputs_and_tool_use.html">S3</a></td>
 <td>50 min</td>
 <td><a href="ai_agents/slides/patterns_of_collaboration.html">View Slides</a></td>
+<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/ai_agents/labs/multi_agent_newsroom.ipynb">Multi Agent Newsroom</a></td>
 </tr>
-<tr class="even">
-<td>Session 2: Observability &amp; Evaluation</td>
+<tr class="odd">
+<td>11</td>
+<td>Observability &amp; Evaluation</td>
+<td>AI Agents &amp; Orchestration</td>
 <td>Tracing, loop detection, cost guards, DeepEval scoring, production metrics, and the quality flywheel.</td>
-<td><a href="ai_agents/slides/patterns_of_collaboration.html">Patterns of Collaboration</a></td>
+<td><a href="ai_agents/slides/patterns_of_collaboration.html">S10</a></td>
 <td>90 min</td>
 <td><a href="ai_agents/slides/observability_and_evaluation.html">View Slides</a></td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="labs-4" class="level3">
-<h3 class="anchored" data-anchor-id="labs-4">Labs</h3>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Lab</th>
-<th>Duration</th>
-<th>GitHub</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Lab 1: Multi Agent Newsroom</td>
-<td>90 min</td>
-<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/ai_agents/labs/multi_agent_newsroom.ipynb">Open Notebook</a></td>
+<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/ai_agents/labs/observability_and_evaluation.ipynb">Observability And Evaluation</a></td>
 </tr>
 <tr class="even">
-<td>Lab 2: Observability And Evaluation</td>
-<td>60 min</td>
-<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/ai_agents/labs/observability_and_evaluation.ipynb">Open Notebook</a></td>
-</tr>
-</tbody>
-</table>
-<p><strong>Module total:</strong> ~290 min (140 min slides + 150 min labs)</p>
-<hr>
-</section>
-</section>
-<section id="module-06-ai-security-guardrails-content-safety" class="level2">
-<h2 class="anchored" data-anchor-id="module-06-ai-security-guardrails-content-safety">Module 06: AI Security, Guardrails &amp; Content Safety</h2>
-<section id="slides-5" class="level3">
-<h3 class="anchored" data-anchor-id="slides-5">Slides</h3>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Session</th>
-<th>Covers</th>
-<th>Builds on</th>
-<th>Duration</th>
-<th>Link</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Session 1: Security Threat Modeling</td>
+<td>12</td>
+<td>Security Threat Modeling</td>
+<td>AI Security, Guardrails &amp; Content Safety</td>
 <td>OWASP LLM Top 10, threat-modeling methodology for AI systems, and a hands-on workshop.</td>
-<td><a href="architecture_fundamentals/slides/api_and_provider_landscape.html">API &amp; Provider Landscape</a></td>
+<td><a href="architecture_fundamentals/slides/api_and_provider_landscape.html">S2</a></td>
 <td>90 min</td>
 <td><a href="security_guardrails/slides/security_threat_modeling.html">View Slides</a></td>
+<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/security_guardrails/labs/threat_modeling.ipynb">Threat Modeling</a></td>
 </tr>
-<tr class="even">
-<td>Session 2: Guardrails: Input &amp; Output Defense</td>
+<tr class="odd">
+<td>13</td>
+<td>Guardrails: Input &amp; Output Defense</td>
+<td>AI Security, Guardrails &amp; Content Safety</td>
 <td>One guardrail pattern — a tiered detection ladder inside an I/O sandwich — applied to both input (sanitization, injection detection, hardening, sandboxing) and output (toxicity, PII, hallucination).</td>
-<td><a href="security_guardrails/slides/security_threat_modeling.html">Security Threat Modeling</a></td>
+<td><a href="security_guardrails/slides/security_threat_modeling.html">S12</a></td>
 <td>90 min</td>
 <td><a href="security_guardrails/slides/input_output_guardrails.html">View Slides</a></td>
-</tr>
-<tr class="odd">
-<td>Session 3: Security Testing &amp; Red-Teaming</td>
-<td>Adversarial mindset, static scanning, red-teaming, incident response, fairness/parity testing, and a CTF activity.</td>
-<td><a href="security_guardrails/slides/input_output_guardrails.html">Guardrails: Input &amp; Output Defense</a></td>
-<td>90 min</td>
-<td><a href="security_guardrails/slides/security_testing_red_teaming.html">View Slides</a></td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="labs-5" class="level3">
-<h3 class="anchored" data-anchor-id="labs-5">Labs</h3>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Lab</th>
-<th>Duration</th>
-<th>GitHub</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Lab 1: Threat Modeling</td>
-<td>60 min</td>
-<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/security_guardrails/labs/threat_modeling.ipynb">Open Notebook</a></td>
+<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/security_guardrails/labs/input_validation.ipynb">Input Validation</a><br><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/security_guardrails/labs/tool_filesystem_security.ipynb">Tool Filesystem Security</a><br><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/security_guardrails/labs/output_guardrails.ipynb">Output Guardrails</a></td>
 </tr>
 <tr class="even">
-<td>Lab 2: Input Validation</td>
-<td>120 min</td>
-<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/security_guardrails/labs/input_validation.ipynb">Open Notebook</a></td>
-</tr>
-<tr class="odd">
-<td>Lab 3: Output Guardrails</td>
-<td>—</td>
-<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/security_guardrails/labs/output_guardrails.ipynb">Open Notebook</a></td>
-</tr>
-<tr class="even">
-<td>Lab 4: Tool Filesystem Security</td>
-<td>—</td>
-<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/security_guardrails/labs/tool_filesystem_security.ipynb">Open Notebook</a></td>
-</tr>
-<tr class="odd">
-<td>Lab 5: Red Teaming</td>
-<td>60 min</td>
-<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/security_guardrails/labs/red_teaming.ipynb">Open Notebook</a></td>
-</tr>
-</tbody>
-</table>
-<p><strong>Module total:</strong> ~510 min (270 min slides + 240 min labs)</p>
-<hr>
-</section>
-</section>
-<section id="module-07-production-ai-deployment" class="level2">
-<h2 class="anchored" data-anchor-id="module-07-production-ai-deployment">Module 07: Production AI Deployment</h2>
-<section id="slides-6" class="level3">
-<h3 class="anchored" data-anchor-id="slides-6">Slides</h3>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Session</th>
-<th>Covers</th>
-<th>Builds on</th>
-<th>Duration</th>
-<th>Link</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Session 1: Containerization &amp; Packaging with Docker</td>
+<td>14</td>
+<td>Containerization &amp; Packaging with Docker</td>
+<td>Production AI Deployment</td>
 <td>Packaging LLM apps with Docker — fundamentals, the AI Dockerfile, Compose orchestration, and secrets handling.</td>
-<td><a href="architecture_fundamentals/slides/api_and_provider_landscape.html">API &amp; Provider Landscape</a></td>
+<td><a href="architecture_fundamentals/slides/api_and_provider_landscape.html">S2</a></td>
 <td>45 min</td>
 <td><a href="production_deployment/slides/containerization_docker.html">View Slides</a></td>
+<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/production_deployment/labs/containerization.ipynb">Containerization</a></td>
+</tr>
+<tr class="odd">
+<td>15</td>
+<td>MCP &amp; Standardization</td>
+<td>Function Calling &amp; Tool Systems</td>
+<td>Model Context Protocol — standardising tool integrations across vendors; resources vs tools.</td>
+<td><a href="function_calling_tools/slides/structured_outputs_and_tool_use.html">S3</a></td>
+<td>45 min</td>
+<td><a href="function_calling_tools/slides/mcp_and_standardization.html">View Slides</a></td>
+<td>—</td>
 </tr>
 <tr class="even">
-<td>Session 2: CI/CD Pipelines &amp; Quality Gates</td>
+<td>16</td>
+<td>Efficient Tool Calling</td>
+<td>Function Calling &amp; Tool Systems</td>
+<td>Routing strategies for large tool catalogs — classifier-based, semantic, and programmatic dispatch.</td>
+<td><a href="function_calling_tools/slides/structured_outputs_and_tool_use.html">S3</a></td>
+<td>65 min</td>
+<td><a href="function_calling_tools/slides/efficient_tool_calling.html">View Slides</a></td>
+<td>—</td>
+</tr>
+<tr class="odd">
+<td>17</td>
+<td>Beyond Basic Search</td>
+<td>RAG Foundations &amp; Data Pipelines</td>
+<td>Hybrid search, re-ranking, adaptive retrieval, query understanding, and query expansion — each a measured improvement over the baseline.</td>
+<td><a href="rag_foundations_data_pipelines/slides/rag_evaluation.html">S6</a></td>
+<td>60 min</td>
+<td><a href="rag_foundations_data_pipelines/slides/advanced_retrieval_query_processing.html">View Slides</a></td>
+<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/rag_foundations_data_pipelines/labs/advanced_retrieval.ipynb">Advanced Retrieval</a></td>
+</tr>
+<tr class="even">
+<td>18</td>
+<td>From Context to Answer</td>
+<td>RAG Foundations &amp; Data Pipelines</td>
+<td>Citation-aware prompting and context window management — producing grounded, attributable answers that stay within token budgets — then scoring them with generation metrics (Faithfulness, Answer Relevance via LLM-as-Judge).</td>
+<td><a href="rag_foundations_data_pipelines/slides/advanced_retrieval_query_processing.html">S17</a></td>
+<td>50 min</td>
+<td><a href="rag_foundations_data_pipelines/slides/response_synthesis.html">View Slides</a></td>
+<td>—</td>
+</tr>
+<tr class="odd">
+<td>19</td>
+<td>Production Optimization</td>
+<td>RAG Foundations &amp; Data Pipelines</td>
+<td>HNSW benchmarking, quantization, caching, zero-downtime reindexing, and production cost planning.</td>
+<td><a href="rag_foundations_data_pipelines/slides/response_synthesis.html">S18</a></td>
+<td>65 min</td>
+<td><a href="rag_foundations_data_pipelines/slides/optimization_production_architecture.html">View Slides</a></td>
+<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/rag_foundations_data_pipelines/labs/production_readiness.ipynb">Production Readiness</a></td>
+</tr>
+<tr class="even">
+<td>20</td>
+<td>Case Study: Hermes Agent</td>
+<td>Context Engineering</td>
+<td>How one production agent designs the user-facing surface for context, memory, skills, and tools.</td>
+<td><a href="context_engineering/slides/sessions_and_memory.html">S8</a>, <a href="context_engineering/slides/skills.html">S9</a></td>
+<td>80 min</td>
+<td><a href="context_engineering/slides/hermes_case_study.html">View Slides</a></td>
+<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/context_engineering/labs/hermes_user_tour.ipynb">Hermes User Tour</a></td>
+</tr>
+<tr class="odd">
+<td>21</td>
+<td>CI/CD Pipelines &amp; Quality Gates</td>
+<td>Production AI Deployment</td>
 <td>AI-aware CI/CD — eval suites, quality gates, GitHub Actions pipelines, deployment strategies, and the ops loop.</td>
-<td><a href="ai_agents/slides/observability_and_evaluation.html">Observability &amp; Evaluation</a>; <a href="production_deployment/slides/containerization_docker.html">Containerization &amp; Packaging with Docker</a></td>
+<td><a href="ai_agents/slides/observability_and_evaluation.html">S11</a>, <a href="production_deployment/slides/containerization_docker.html">S14</a></td>
 <td>52 min</td>
 <td><a href="production_deployment/slides/cicd_quality_gates.html">View Slides</a></td>
+<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/production_deployment/labs/cicd_pipeline.ipynb">CI/CD Pipeline</a></td>
+</tr>
+<tr class="even">
+<td>22</td>
+<td>Security Testing &amp; Red-Teaming</td>
+<td>AI Security, Guardrails &amp; Content Safety</td>
+<td>Adversarial mindset, static scanning, red-teaming, incident response, fairness/parity testing, and a CTF activity.</td>
+<td><a href="security_guardrails/slides/input_output_guardrails.html">S13</a></td>
+<td>90 min</td>
+<td><a href="security_guardrails/slides/security_testing_red_teaming.html">View Slides</a></td>
+<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/security_guardrails/labs/red_teaming.ipynb">Red Teaming</a></td>
 </tr>
 <tr class="odd">
-<td>Session 3: Model Weight Quantization</td>
+<td>23</td>
+<td>When to Fine-Tune</td>
+<td>Model Adaptation</td>
+<td>The adaptation ladder — prompting, RAG, and fine-tuning — and the decision framework for choosing the right tool.</td>
+<td><a href="architecture_fundamentals/slides/api_and_provider_landscape.html">S2</a></td>
+<td>50 min</td>
+<td><a href="model_adaptation/slides/when_to_fine_tune.html">View Slides</a></td>
+<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/model_adaptation/labs/adaptation_decisions.ipynb">Adaptation Decisions</a></td>
+</tr>
+<tr class="even">
+<td>24</td>
+<td>Fine-Tuning in Practice</td>
+<td>Model Adaptation</td>
+<td>SFT, DPO, and PEFT/LoRA — the methods, the tooling, and the data pipeline behind a real fine-tuning project.</td>
+<td><a href="model_adaptation/slides/when_to_fine_tune.html">S23</a></td>
+<td>65 min</td>
+<td><a href="model_adaptation/slides/fine_tuning_in_practice.html">View Slides</a></td>
+<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/model_adaptation/labs/qlora_finetuning.ipynb">Qlora Finetuning</a></td>
+</tr>
+<tr class="odd">
+<td>25</td>
+<td>Model Weight Quantization</td>
+<td>Production AI Deployment</td>
 <td>Compressing model weights for inference — precision levels, methods (GGUF/AWQ/GPTQ/BitsAndBytes), and how QLoRA stitches it all together.</td>
-<td><a href="model_adaptation/slides/fine_tuning_in_practice.html">Fine-Tuning in Practice</a></td>
+<td><a href="model_adaptation/slides/fine_tuning_in_practice.html">S24</a></td>
 <td>50 min</td>
 <td><a href="production_deployment/slides/model_quantization.html">View Slides</a></td>
+<td>—</td>
 </tr>
 <tr class="even">
-<td>Session 4: Local &amp; Self-Hosted Deployment</td>
+<td>26</td>
+<td>Local &amp; Self-Hosted Deployment</td>
+<td>Production AI Deployment</td>
 <td>Running LLMs on your own hardware — when to self-host, inference servers (Ollama / vLLM / TGI / llama.cpp), hardware sizing, and operational concerns.</td>
-<td><a href="production_deployment/slides/containerization_docker.html">Containerization &amp; Packaging with Docker</a>; <a href="production_deployment/slides/model_quantization.html">Model Weight Quantization</a></td>
+<td><a href="production_deployment/slides/containerization_docker.html">S14</a>, <a href="production_deployment/slides/model_quantization.html">S25</a></td>
 <td>50 min</td>
 <td><a href="production_deployment/slides/local_deployment.html">View Slides</a></td>
+<td>—</td>
 </tr>
 </tbody>
 </table>
-</section>
-<section id="labs-6" class="level3">
-<h3 class="anchored" data-anchor-id="labs-6">Labs</h3>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Lab</th>
-<th>Duration</th>
-<th>GitHub</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Lab 1: Containerization</td>
-<td>90 min</td>
-<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/production_deployment/labs/containerization.ipynb">Open Notebook</a></td>
-</tr>
-<tr class="even">
-<td>Lab 2: CI/CD Pipeline</td>
-<td>60 min</td>
-<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/production_deployment/labs/cicd_pipeline.ipynb">Open Notebook</a></td>
-</tr>
-</tbody>
-</table>
-<p><strong>Module total:</strong> ~347 min (197 min slides + 150 min labs)</p>
 <hr>
 </section>
-</section>
-<section id="module-08-model-adaptation" class="level2">
-<h2 class="anchored" data-anchor-id="module-08-model-adaptation">Module 08: Model Adaptation</h2>
-<section id="slides-7" class="level3">
-<h3 class="anchored" data-anchor-id="slides-7">Slides</h3>
+<section id="capstone-project" class="level2">
+<h2 class="anchored" data-anchor-id="capstone-project">Capstone Project</h2>
+<p>In this project, you will build an autonomous research agent.</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
-<th>Session</th>
-<th>Covers</th>
-<th>Builds on</th>
-<th>Duration</th>
+<th>Item</th>
 <th>Link</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>Session 1: When to Fine-Tune</td>
-<td>The adaptation ladder — prompting, RAG, and fine-tuning — and the decision framework for choosing the right tool.</td>
-<td><a href="architecture_fundamentals/slides/api_and_provider_landscape.html">API &amp; Provider Landscape</a></td>
-<td>50 min</td>
-<td><a href="model_adaptation/slides/when_to_fine_tune.html">View Slides</a></td>
+<td>Project Instructions &amp; Rubric</td>
+<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/tree/project">View Project</a></td>
 </tr>
 <tr class="even">
-<td>Session 2: Fine-Tuning in Practice</td>
-<td>SFT, DPO, and PEFT/LoRA — the methods, the tooling, and the data pipeline behind a real fine-tuning project.</td>
-<td><a href="model_adaptation/slides/when_to_fine_tune.html">When to Fine-Tune</a></td>
-<td>65 min</td>
-<td><a href="model_adaptation/slides/fine_tuning_in_practice.html">View Slides</a></td>
+<td>Project Starter Code</td>
+<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/tree/project">View Starter Code</a></td>
 </tr>
 </tbody>
 </table>
-</section>
-<section id="labs-7" class="level3">
-<h3 class="anchored" data-anchor-id="labs-7">Labs</h3>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Lab</th>
-<th>Duration</th>
-<th>GitHub</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Lab 1: Adaptation Decisions</td>
-<td>60 min</td>
-<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/model_adaptation/labs/adaptation_decisions.ipynb">Open Notebook</a></td>
-</tr>
-<tr class="even">
-<td>Lab 2: Qlora Finetuning</td>
-<td>90 min</td>
-<td><a href="https://github.com/NaifMersal/SDAIA-Building-Gen-AI-Apps/blob/master/model_adaptation/labs/qlora_finetuning.ipynb">Open Notebook</a></td>
-</tr>
-</tbody>
-</table>
-<p><strong>Module total:</strong> ~265 min (115 min slides + 150 min labs)</p>
-</section>
 </section>
 
 </main>

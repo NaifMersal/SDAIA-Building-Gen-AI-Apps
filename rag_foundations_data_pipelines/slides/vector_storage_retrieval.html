@@ -9,7 +9,7 @@
 <link href="vector_storage_retrieval_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.9.38">
 
-  <meta name="dcterms.date" content="2026-06-06">
+  <meta name="dcterms.date" content="2026-06-11">
   <title>Vector Storage &amp; Retrieval</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -202,12 +202,12 @@
 
 <section id="title-slide" data-background-image="../../slides_template/assets/anim.svg" data-background-opacity="0.15" data-background-size="cover" class="quarto-title-block center">
   <h1 class="title">Vector Storage &amp; Retrieval</h1>
-  <p class="subtitle">RAG Foundations &amp; Data Pipelines — Session 3</p>
+  <p class="subtitle">RAG Foundations &amp; Data Pipelines — Session 4</p>
 
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-06-06</p>
+  <p class="date">2026-06-11</p>
 </section>
 <section>
 <section id="a.-vector-store-landscape" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
@@ -218,11 +218,12 @@
 <h2>Agenda</h2>
 <ul>
 <li><strong>A. Vector Store Landscape</strong> — Comparing databases</li>
-<li><strong>B. HNSW Indexing</strong> — How fast search actually works</li>
-<li><strong>C. Vector Store Manager</strong> — Building the storage layer</li>
-<li><strong>D. The RAG Service</strong> — Wiring up Retrieve → Augment → Generate</li>
-<li><strong>E. Production Concerns</strong> — Updates, deletions, versioning</li>
-<li><strong>F. Wrap-up</strong> — The complete pipeline so far</li>
+<li><strong>B. Indexing: Brute Force → ANN</strong> — Why search needs an index</li>
+<li><strong>C. HNSW Indexing</strong> — Intuition, parameters, and an optional deep dive</li>
+<li><strong>D. Vector Store Manager</strong> — Building the storage layer</li>
+<li><strong>E. The RAG Service</strong> — Wiring up Retrieve → Augment → Generate</li>
+<li><strong>F. Production Concerns</strong> — Updates, deletions, versioning</li>
+<li><strong>G. Wrap-up</strong> — The complete pipeline so far</li>
 </ul>
 </section>
 <section id="why-specialized-databases" class="slide level2">
@@ -236,7 +237,7 @@
 <p><strong>Vector Database:</strong> “Find the 5 most similar vectors to this 1536-dimensional point” — approximate nearest neighbor search</p>
 </div>
 <div class="fragment fade-in">
-<p><strong>The key difference:</strong> Vector DBs use specialized index structures (HNSW, IVF) that trade small accuracy losses for <strong>massive</strong> speed gains.</p>
+<p><strong>The key difference:</strong> Vector DBs are built around a specialized <strong>index</strong> that trades small accuracy losses for <strong>massive</strong> speed gains — we unpack how that index works next.</p>
 </div>
 </div>
 </section>
@@ -323,20 +324,101 @@
 </div>
 </section></section>
 <section>
-<section id="b.-hnsw-indexing" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #FF7A5C)">
-<h1>B. HNSW Indexing</h1>
-<p>The algorithm behind fast vector search</p>
+<section id="b.-indexing-brute-force-ann" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)">
+<h1>B. Indexing: Brute Force → ANN</h1>
+<p>Why search needs an index at all</p>
 </section>
-<section id="the-big-idea-a-skip-list-for-vectors" class="slide level2">
-<h2>The Big Idea: A Skip-List for Vectors</h2>
-<p>Brute force compares the query to <strong>every</strong> vector — fine for thousands, hopeless at millions. HNSW instead <strong>navigates a graph</strong> and visits only a tiny fraction of the nodes.</p>
+<section id="the-indexing-problem" class="slide level2">
+<h2>The Indexing Problem</h2>
+<p>The brute-force retriever you built and baselined compared the query against <strong>every</strong> chunk vector. That’s a “flat” index — exact, and the baseline every optimization here is measured against.</p>
 <div class="fragment">
 <div class="fragment fade-in-then-semi-out">
-<p><strong>1. Navigable Small World</strong> — each vector links to a few near neighbours. Greedily “hop to the neighbour closest to the query” and you reach the right region in just a handful of hops.</p>
+<p><strong>The cost:</strong> one query at 1M vectors × 1536 dims ≈ <strong>1.5 billion</strong> multiply-adds. Double the corpus, double the work — cost grows <strong>linearly</strong> with the collection.</p>
 </div>
-<div class="fragment fade-in-then-semi-out">
-<p><strong>2. Hierarchy</strong> — stack sparse upper layers over the dense base. The top layer has few nodes and long-range links to cross the space fast; <strong>descend a layer</strong> whenever no neighbour is closer; the dense base layer does the fine-grained search.</p>
+<div class="fragment fade-in">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
 </div>
+<p><strong>Fine at thousands, hopeless at millions</strong></p>
+</div>
+<div class="callout-content">
+<p>Brute force is the right default for a few thousand vectors. At millions-to-billions with sub-100ms latency targets, scanning everything per query simply doesn’t fit the budget. We need to <strong>not look at most of the data.</strong></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="the-ann-bargain" class="slide level2">
+<h2>The ANN Bargain</h2>
+<p><strong>Approximate Nearest Neighbor (ANN)</strong> search trades a sliver of correctness for orders-of-magnitude speed — stop demanding the <em>exact</em> nearest neighbours.</p>
+<div class="fragment">
+<div class="columns">
+<div class="column" style="width:48%;">
+<p><strong>The new quality metric: recall</strong></p>
+<ul>
+<li><strong>Recall</strong> = fraction of the <em>true</em> top-K the index returns</li>
+<li>Production runs at <strong>~95–99%</strong> recall</li>
+</ul>
+</div><div class="column" style="width:52%;">
+<p><strong>The trade-off space</strong></p>
+<p>Every index balances four forces:</p>
+<ul>
+<li><strong>Recall</strong> ↔︎ <strong>Latency</strong> (the headline trade-off)</li>
+<li><strong>Memory</strong> footprint</li>
+<li><strong>Build time</strong></li>
+</ul>
+<p>Tuning = moving along these axes.</p>
+</div></div>
+</div>
+</section>
+<section id="families-of-ann-indexes" class="slide level2">
+<h2>Families of ANN Indexes</h2>
+<p>Three broad strategies for not scanning everything:</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 19%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 22%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Family</th>
+<th>Idea</th>
+<th style="text-align: center;">Recall@Speed</th>
+<th style="text-align: center;">Memory</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Flat</strong></td>
+<td>Compare to all (no index)</td>
+<td style="text-align: center;">Exact, slow</td>
+<td style="text-align: center;">Low</td>
+<td>Baseline; great &lt; ~10K vectors</td>
+</tr>
+<tr class="even">
+<td><strong>IVF / Cluster</strong></td>
+<td>Partition into cells; probe a few nearest</td>
+<td style="text-align: center;">Good</td>
+<td style="text-align: center;">Low–Med</td>
+<td>Probe nearest cells (<code>nprobe</code>); <strong>trains</strong> centroids first</td>
+</tr>
+<tr class="odd">
+<td><strong>Graph / HNSW</strong></td>
+<td>Navigable graph; hop toward the query</td>
+<td style="text-align: center;"><strong>Best</strong></td>
+<td style="text-align: center;">Higher</td>
+<td>Inserts self-build the graph; no training pass</td>
+</tr>
+</tbody>
+</table>
 <div class="fragment fade-in">
 <div class="callout callout-tip callout-titled callout-style-default">
 <div class="callout-body">
@@ -344,24 +426,122 @@
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<p><strong>The Highway Analogy</strong></p>
+<p><strong>Why HNSW is the default</strong></p>
 </div>
 <div class="callout-content">
-<p>Take the <strong>highway</strong> to cover distance fast (few exits, long jumps), then <strong>exit to local streets</strong> for the last mile (every address). HNSW’s layers are exactly that: upper layers are the highway, the base layer is the streets.</p>
-</div>
+<p><strong>Graph methods lead the recall-vs-latency frontier</strong> and need <strong>no training pass</strong> — vectors slot straight in, so the index grows with your data instead of being fit up front. That’s why ChromaDB and most vector DBs default to <strong>HNSW</strong>.</p>
 </div>
 </div>
 </div>
 </div>
 </section>
+<section id="what-training-an-index-means" class="slide level2">
+<h2>What “Training” an Index Means</h2>
+<p><strong>“Training” an index ≠ model training</strong> — no gradient descent, no labels. It’s a one-time pass over a <em>sample</em> of your vectors to fit the index’s <strong>structure</strong>, <em>before</em> any data is added.</p>
+<div class="fragment">
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><strong>IVF</strong> — runs k-means on a sample to place cell <strong>centroids</strong>, <em>then</em> adds each vector to the nearest cell (two phases).</p>
+</div><div class="column" style="width:50%;">
+<p><strong>HNSW</strong> — <strong>no training phase</strong>: you insert, and the graph organises itself as it grows.</p>
+</div></div>
+</div>
+<div class="fragment">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Don’t conflate three things</strong></p>
+</div>
+<div class="callout-content">
+<p><strong>Training</strong> fits the structure up front · <strong>indexing / building</strong> inserts your vectors · <strong>reindexing</strong> rebuilds from scratch (new model, metric, or <code>M</code>). You’ll call <code>index.train()</code> on IVF in the optimization session.</p>
+</div>
+</div>
+</div>
+</div>
+</section></section>
+<section>
+<section id="c.-hnsw-indexing" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #FF7A5C)">
+<h1>C. HNSW Indexing</h1>
+<p>The algorithm behind fast vector search</p>
+</section>
+<section id="the-big-idea-zoom-in-then-comb" class="slide level2">
+<h2>The Big Idea: Zoom In, Then Comb</h2>
+<p>A <strong>layered graph</strong> of your vectors — searched in <strong>two gears</strong>.</p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="fragment fade-in">
+<p><strong>Top layers — zoom in</strong> 🛰️</p>
+<ul>
+<li>Sparse nodes, <strong>long-range links</strong></li>
+<li>Big leaps → the right neighbourhood</li>
+<li>High-speed GPS, not a careful search</li>
+</ul>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="fragment fade-in">
+<p><strong>Layer 0 — comb</strong> 🔍</p>
+<ul>
+<li>Drop in, then <strong>widen out</strong></li>
+<li><strong><code>ef_search</code></strong> = candidates kept in play</li>
+<li>Thorough sweep — no near-miss next door</li>
+<li>Return the closest <strong>k</strong> (so <strong><code>k ≤ ef_search</code></strong>)</li>
+</ul>
+</div>
+</div></div>
+<div class="fragment fade-in">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Three knobs — only one is live</strong></p>
+</div>
+<div class="callout-content">
+<p><code>M</code> and <code>ef_construction</code> shape the graph <strong>at build time</strong>; <strong><code>ef_search</code></strong> is the only dial you turn <strong>per query</strong> — wider comb, higher recall, slower search. <em>(How the graph gets built is the optional deep dive that follows.)</em></p>
+</div>
+</div>
+</div>
+</div>
+<aside class="notes">
+<p>Don’t open with graph theory — open with the picture. HNSW keeps your vectors as dots joined to their near neighbours, stacked in a few layers, and a query searches it in two gears.</p>
+<p>First gear, the top layers: a sparse set of nodes wired with long-range links. You take big leaps to <em>zoom in</em> on roughly the right region of the bottom layer — think GPS routing you onto the right street, not yet reading house numbers.</p>
+<p>Second gear, Layer 0: now you comb. You stop sprinting toward the single closest node and instead keep a pool of the <code>ef_search</code> best candidates, exploring their neighbours so you don’t walk straight past the true nearest. That pool width <em>is</em> <code>ef_search</code>.</p>
+<p>Leave them with the parameter split, because it’s the practical takeaway: M and ef_construction are baked in when the graph is built; ef_search is the one live knob at query time — wider comb, better recall, slower query. Everyone needs this much. If you want to see how the graph is actually assembled — the layers, the links — that’s the optional deep dive at the end, and it follows the FAISS source closely.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
 <section id="how-hnsw-works" class="slide level2 smaller">
 <h2>How HNSW Works</h2>
-<p>Drag the <strong>✕</strong> query; press <strong>Step</strong> to walk the greedy descent (or <strong>Play</strong> it). Toggle between the <em>embedding space</em> and the stacked <em>HNSW layers</em> — same search, two views.</p>
+<p>Watch the two gears play out. Drag the <strong>✕</strong> query; <strong>Step</strong> through the descent (or <strong>Play</strong>). Toggle between the <em>embedding space</em> and the stacked <em>HNSW layers</em> — same search, two views.</p>
 <iframe src="../assets/hnsw_demo.html" title="Interactive HNSW search demo" width="100%" height="500" style="border:0;border-radius:12px;" loading="lazy"></iframe>
-
-<aside><div>
-<p>Start at the <strong>top layer</strong> (coarse, long-range hops), greedily move toward the query, <strong>descend</strong> when no neighbour is closer; the <strong>base layer</strong> does the fine <code>ef_search</code> beam that returns the nearest neighbours.</p>
-</div></aside></section>
+<aside class="notes">
+<p>This is where the two gears come alive — drive it live. Drag the ✕ to a fresh spot, then Step through one hop at a time so they can call out each move: enter at the top, greedy hops, drop a layer, repeat, then the wider beam (the comb) at the base. Play runs it end to end once they’ve seen the steps.</p>
+<p>The toggle is the payoff. The “embedding space” view shows the search as a path through the actual vectors; the “layers” view shows the same search as a descent down the stacked HNSW levels. Flip back and forth on the same query and point out they’re two pictures of one process — the descent down the layers <em>is</em> the walk through the space.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
 <section id="key-parameters" class="slide level2">
 <h2>Key Parameters</h2>
 <table class="caption-top">
@@ -394,7 +574,7 @@
 </tr>
 <tr class="odd">
 <td><code>ef_construction</code></td>
-<td>Build-time search depth</td>
+<td>Beam width when picking links</td>
 <td style="text-align: center;">200</td>
 <td>Higher = better index, slower build</td>
 </tr>
@@ -406,13 +586,42 @@
 </tr>
 </tbody>
 </table>
-</section>
+
+<aside class="notes">
+<p>This table is the whole section on one page — keep it as a reference, not a lecture. Space is the distance metric: cosine for text, basically always. M and ef_construction are the two build-time knobs (fixed when the graph is built); ef_search is the query-time beam width. The pattern to leave them with: every knob trades the same currency — accuracy against speed or memory. There’s no free recall.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<aside><div>
+<p><code>k</code> is the final top-k drawn from the <code>ef_search</code> candidate pool, so <strong><code>k ≤ ef_search</code></strong>.</p>
+</div></aside></section>
 <section id="speed-vs-accuracy" class="slide level2">
 <h2>Speed vs Accuracy</h2>
 
 <img data-src="../assets/internet_images/recall_vs_latency_osc.png" class="r-stretch quarto-figure-center"><p class="caption">Varying <code>ef_search</code> or ‘k’ here</p><blockquote>
 <p>SOURCE: <a href="https://opensourceconnections.com/blog/2025/02/27/vector-search-navigating-recall-and-performance/">OpenSource Connections (2025)</a>, “Vector Search: Navigating Recall and Performance”. Standard Pareto frontier for HNSW.</p>
 </blockquote>
+<aside class="notes">
+<p>This is the curve that makes the trade-off concrete. As you raise ef_search — or ask for more neighbours, k — recall climbs but so does latency. The published numbers run from roughly 80% recall at a millisecond up to near-100% at fifty-odd milliseconds. The point isn’t a magic setting; it’s that you’re picking an operating point on this frontier. Where you sit depends on whether your app cares more about catching every relevant result or about answering fast.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section>
 <section id="tuning-rules" class="slide level2">
 <h2>Tuning Rules</h2>
@@ -439,10 +648,277 @@
 <p><strong>Key insight:</strong> You can increase <code>ef_search</code> at query time without rebuilding the index. In ChromaDB, use <code>collection.modify(metadata={"hnsw:search_ef": 200})</code> to tune accuracy without downtime.</p>
 </blockquote>
 </div>
+<aside class="notes">
+<p>Give them defaults they can actually ship. M = 16 carries you to about a million vectors; ef_construction = 200 builds a solid graph; ef_search of 50 to 100 balances speed and recall; cosine for text, always. Start there, measure, adjust.</p>
+<p>The one insight to underline: ef_search is the only knob you can change after the fact. M and ef_construction are baked into the graph at build time — moving them means a rebuild. But ef_search is live. In ChromaDB it’s a one-line collection.modify, no downtime, no re-ingest. So when recall looks weak in production, reach for ef_search first before you even think about rebuilding.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section></section>
 <section>
-<section id="c.-vector-store-manager" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)">
-<h1>C. Vector Store Manager</h1>
+<section id="optional-deep-dive-how-hnsw-is-built" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #FF7A5C)">
+<h1>Optional Deep Dive: How HNSW Is Built</h1>
+<p>Safe to skip on a time budget — the algorithm behind the graph, following the FAISS source</p>
+</section>
+<section id="one-graph-three-procedures" class="slide level2">
+<h2>One Graph, Three Procedures</h2>
+<p>Everything HNSW does reduces to <strong>three functions</strong> — the same three in <a href="https://github.com/facebookresearch/faiss/blob/main/faiss/impl/HNSW.cpp"><code>faiss/impl/HNSW.cpp</code></a>:</p>
+<div class="columns">
+<div class="column" style="width:33%;">
+<p><strong>1 · Pick a level</strong></p>
+<p><code>random_level()</code> — one random roll sets how high a new node reaches.</p>
+</div><div class="column" style="width:33%;">
+<p><strong>2 · Search</strong></p>
+<p><code>greedy_update_nearest</code> + <code>search_from_candidates</code> — zoom in, then comb. <em>Runs at query time <strong>and</strong> inside every insert.</em></p>
+</div><div class="column" style="width:34%;">
+<p><strong>3 · Insert</strong></p>
+<p>search → <strong>prune</strong> → link. Wire the new node to good neighbours.</p>
+</div></div>
+<div class="fragment fade-in">
+<p>The payoff: <strong>searching and building are the same walk.</strong> An insert just runs the search to find where the node belongs, then adds links. We’ll take the three in order.</p>
+</div>
+<aside class="notes">
+<p>Say it out loud: this is the optional half. Nobody needs it to <em>use</em> HNSW, but if the layers-and-links story felt hand-wavy, this is where it gets concrete — and it maps closely onto the FAISS source, so anyone can go read the real thing.</p>
+<p>The whole algorithm is three functions. One: pick a level for the new node — a single random roll. Two: search — and here’s the key simplification, it’s <em>one</em> routine, used both when you query and inside every insert. Three: insert — which is just “run the search, then wire up links.” Hold onto that line: building the graph is the same walk as searching it, with a wiring step bolted on the end.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="procedure-1-pick-a-level" class="slide level2">
+<h2>Procedure 1 — Pick a Level</h2>
+<p>When a node is inserted, <code>random_level()</code> draws its <strong>top layer</strong> from an exponential decay:</p>
+<p><span class="math display">\[\text{level} = \left\lfloor -\ln(U)\cdot \text{levelMult} \right\rfloor, \quad \text{levelMult} = \frac{1}{\ln M}, \quad U \sim \text{Uniform}(0,1)\]</span></p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><strong>What the roll does</strong></p>
+<ul>
+<li>Most nodes land <strong>only on Layer 0</strong></li>
+<li>Exponentially fewer reach each layer up</li>
+<li>The top holds a handful — the express lane</li>
+</ul>
+</div><div class="column" style="width:50%;">
+<p><strong>Why it’s just one number</strong></p>
+<p>Nobody designs the hierarchy. <code>M</code> sets the decay (<code>levelMult = 1/ln M</code>), so the dense-base / sparse-summit shape <strong>falls out of the rolls</strong> — that’s the whole “layers” story, one line of code.</p>
+</div></div>
+<aside class="notes">
+<p>Procedure one is almost anticlimactic: insert a node, draw one random number, that’s its top level. The formula is an exponential decay with rate levelMult = 1 over ln M. Because it decays, the overwhelming majority of nodes sit only on Layer 0, exponentially fewer reach each layer up, and the very top is a sparse handful — those are the long-range express nodes.</p>
+<p>The point to land: nobody hand-builds the highway-versus-side-streets hierarchy. It’s emergent — it falls straight out of these rolls. And M does double duty: it’s links-per-node <em>and</em>, through levelMult, the decay rate that sets how tall and sparse the upper layers grow.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="procedure-2-search-one-routine-two-gears" class="slide level2">
+<h2>Procedure 2 — Search: One Routine, Two Gears</h2>
+<p>The search you already saw, named as it appears in the code:</p>
+<div class="fragment fade-in-then-semi-out">
+<p><strong>Upper layers — <code>greedy_update_nearest</code> (<code>ef = 1</code>).</strong> Hop to the single closest neighbour; when none is closer, drop a layer. The long links make this a few big jumps. <em>Zoom in.</em></p>
+</div>
+<div class="fragment fade-in-then-semi-out">
+<p><strong>Base layer — <code>search_from_candidates</code> (beam of width <code>ef</code>).</strong> Keep the <code>ef</code> best candidates, expand their neighbours, return the top-K. <em>Comb.</em></p>
+</div>
+<div class="fragment fade-in">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>The same routine runs at insert time</strong></p>
+</div>
+<div class="callout-content">
+<p>At <strong>query</strong> time the beam width is <code>ef_search</code>. At <strong>insert</strong> time the <em>same</em> <code>search_from_candidates</code> runs with width <code>ef_construction</code> to find where the new node belongs. One routine, two callers — that’s why search and build share a code path.</p>
+</div>
+</div>
+</div>
+</div>
+<aside class="notes">
+<p>Procedure two is the search, but now I want them to see it’s literally one routine. On the upper layers it’s greedy_update_nearest — single best candidate, hop closer, drop a layer when stuck; that’s a beam of width one, the zoom-in. At the base it’s search_from_candidates with a beam of width ef — keep a pool, expand neighbours, return top-K. That’s the comb.</p>
+<p>Here’s the unification worth pausing on: that base-layer beam is the exact same function whether you’re answering a query or inserting a new node. Query time it runs at width ef_search; insert time it runs at width ef_construction to locate where the newcomer belongs. Same code, two callers.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="the-search-in-full" class="slide level2 smaller scrollable">
+<h2>The Search, in Full</h2>
+<p>The three phases map one-to-one onto the search demo’s captions — <strong>descent → beam → return top-k</strong>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href=""></a>function hnsw_search(query, k, ef_search, graph):</span>
+<span id="cb1-2"><a href=""></a>    <span class="co"># PHASE 1 — ZOOM IN (greedy, ef = 1 on the upper layers)</span></span>
+<span id="cb1-3"><a href=""></a>    node <span class="op">=</span> graph.entry_point                          <span class="co"># single entry at the top layer</span></span>
+<span id="cb1-4"><a href=""></a>    <span class="cf">for</span> layer <span class="kw">in</span> <span class="bu">range</span>(graph.max_level, <span class="dv">0</span>, <span class="op">-</span><span class="dv">1</span>):       <span class="co"># down to layer 1</span></span>
+<span id="cb1-5"><a href=""></a>        node <span class="op">=</span> greedy_update_nearest(query, node, layer)   <span class="co"># hop to closest, then drop</span></span>
+<span id="cb1-6"><a href=""></a></span>
+<span id="cb1-7"><a href=""></a>    <span class="co"># PHASE 2 — COMB (beam of width ef_search on layer 0)</span></span>
+<span id="cb1-8"><a href=""></a>    candidates <span class="op">=</span> MinHeap(by distance to query)        <span class="co"># frontier still to expand</span></span>
+<span id="cb1-9"><a href=""></a>    results    <span class="op">=</span> MaxHeap(by distance to query)        <span class="co"># best ef_search kept so far</span></span>
+<span id="cb1-10"><a href=""></a>    visited    <span class="op">=</span> {node}</span>
+<span id="cb1-11"><a href=""></a>    candidates.push(node)<span class="op">;</span> results.push(node)</span>
+<span id="cb1-12"><a href=""></a></span>
+<span id="cb1-13"><a href=""></a>    <span class="cf">while</span> candidates <span class="kw">not</span> empty:</span>
+<span id="cb1-14"><a href=""></a>        c <span class="op">=</span> candidates.pop_closest()</span>
+<span id="cb1-15"><a href=""></a>        <span class="co"># STOP: nearest unexpanded candidate is farther than our worst keeper</span></span>
+<span id="cb1-16"><a href=""></a>        <span class="cf">if</span> dist(c, query) <span class="op">&gt;</span> results.worst() <span class="kw">and</span> results.size() <span class="op">&gt;=</span> ef_search:</span>
+<span id="cb1-17"><a href=""></a>            <span class="cf">break</span></span>
+<span id="cb1-18"><a href=""></a>        <span class="cf">for</span> nb <span class="kw">in</span> graph.neighbors(c, layer<span class="op">=</span><span class="dv">0</span>):</span>
+<span id="cb1-19"><a href=""></a>            <span class="cf">if</span> nb <span class="kw">in</span> visited: <span class="cf">continue</span></span>
+<span id="cb1-20"><a href=""></a>            visited.add(nb)</span>
+<span id="cb1-21"><a href=""></a>            <span class="cf">if</span> dist(nb, query) <span class="op">&lt;</span> results.worst() <span class="kw">or</span> results.size() <span class="op">&lt;</span> ef_search:</span>
+<span id="cb1-22"><a href=""></a>                candidates.push(nb)<span class="op">;</span> results.push(nb)</span>
+<span id="cb1-23"><a href=""></a>                <span class="cf">if</span> results.size() <span class="op">&gt;</span> ef_search:</span>
+<span id="cb1-24"><a href=""></a>                    results.pop_worst()               <span class="co"># keep only the ef_search best</span></span>
+<span id="cb1-25"><a href=""></a></span>
+<span id="cb1-26"><a href=""></a>    <span class="co"># PHASE 3 — RETURN k  (k &lt;= ef_search)</span></span>
+<span id="cb1-27"><a href=""></a>    <span class="cf">return</span> results.closest(k)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<aside class="notes">
+<p>This is the optional “see it all at once” slide for the search — it’s the same walk the demo animates, just written down. Phase 1 is the greedy descent with ef = 1: one entry node at the top, hop to the closest neighbour, drop a layer when nothing’s closer. Phase 2 is the layer-0 beam: two heaps — a frontier of candidates to expand and a running set of the ef_search best. The line to dwell on is the break: once the nearest thing left to explore is farther than the worst node we’re already keeping, more digging can’t help, so we stop. Phase 3 is the easy part everyone forgets — we kept ef_search candidates but only hand back the closest k, which is why k can never exceed ef_search.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="procedure-3-insert-search-prune-link" class="slide level2">
+<h2>Procedure 3 — Insert = Search → Prune → Link</h2>
+<p>To add a node: run the search (Procedure 2) at each layer with beam <code>ef_construction</code> to gather candidates — then <strong>don’t just keep the closest <code>M</code>.</strong></p>
+<div class="fragment fade-in-then-semi-out">
+<p><strong>Prune for diversity (<code>shrink_neighbor_list</code>).</strong> Keep a candidate <code>c</code> only if it’s <strong>closer to the new node than to any neighbour already kept</strong>. A near-duplicate of an existing link is dropped — each link should point in a <em>new direction</em>.</p>
+</div>
+<div class="fragment fade-in-then-semi-out">
+<p><strong>Link, both ways.</strong> Connect to the survivors, bidirectionally — up to <strong><code>M</code></strong> links per node, <strong><code>2·M</code></strong> on the crowded base layer.</p>
+</div>
+<div class="fragment fade-in">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Why diversity beats “nearest”</strong></p>
+</div>
+<div class="callout-content">
+<p>The <code>M</code> literally-nearest points often cluster on one side — a dead end for a greedy walk arriving from elsewhere. Diverse links fan out around the node, so wherever a query comes from there’s a link pointing toward it. <strong>This prune is what makes the graph navigable.</strong></p>
+</div>
+</div>
+</div>
+</div>
+<aside class="notes">
+<p>Procedure three is where most explanations — including our old one — quietly cheat. You run the search to gather candidate neighbours, fine. But you do <em>not</em> simply keep the M closest. FAISS calls shrink_neighbor_list, and the rule is a diversity test: keep a candidate only if it’s closer to the new node than it is to any neighbour you’ve already accepted. If a candidate is basically a duplicate direction of an existing link, throw it away.</p>
+<p>Why bother? Because the M literally-nearest points tend to bunch up on one side of the node. A greedy walk arriving from the other side hits a dead end. Diverse links fan out in different directions, so wherever a query comes from, there’s a link pointing roughly toward it. That heuristic is the difference between a graph that’s navigable and one that traps you. Then we link bidirectionally, capped at M per node, 2M on the base layer because it’s the busiest.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="the-insert-in-full" class="slide level2 smaller scrollable">
+<h2>The Insert, in Full</h2>
+<p>Procedures 1 → 2 → 3 in sequence — the build demo below animates exactly these steps:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href=""></a>function hnsw_insert(new_vec, M, ef_construction, graph):</span>
+<span id="cb2-2"><a href=""></a>    <span class="co"># PROCEDURE 1 — pick this node's top layer (one random roll)</span></span>
+<span id="cb2-3"><a href=""></a>    level <span class="op">=</span> floor(<span class="op">-</span>ln(U) <span class="op">/</span> ln(M)),  U <span class="op">~</span> Uniform(<span class="dv">0</span>,<span class="dv">1</span>)        <span class="co"># levelMult = 1/ln M</span></span>
+<span id="cb2-4"><a href=""></a></span>
+<span id="cb2-5"><a href=""></a>    <span class="co"># ROUTE DOWN greedily (ef = 1) through layers above the new node's level</span></span>
+<span id="cb2-6"><a href=""></a>    node <span class="op">=</span> graph.entry_point</span>
+<span id="cb2-7"><a href=""></a>    <span class="cf">for</span> layer <span class="kw">in</span> <span class="bu">range</span>(graph.max_level, level, <span class="op">-</span><span class="dv">1</span>):</span>
+<span id="cb2-8"><a href=""></a>        node <span class="op">=</span> greedy_update_nearest(new_vec, node, layer)  <span class="co"># no links made up here</span></span>
+<span id="cb2-9"><a href=""></a></span>
+<span id="cb2-10"><a href=""></a>    <span class="co"># INSERT from the node's top layer down to layer 0</span></span>
+<span id="cb2-11"><a href=""></a>    entry <span class="op">=</span> [node]</span>
+<span id="cb2-12"><a href=""></a>    <span class="cf">for</span> layer <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">min</span>(graph.max_level, level), <span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>):</span>
+<span id="cb2-13"><a href=""></a>        <span class="co"># PROCEDURE 2 reused: beam of width ef_construction gathers candidates</span></span>
+<span id="cb2-14"><a href=""></a>        cands <span class="op">=</span> search_from_candidates(new_vec, entry, ef_construction, layer)</span>
+<span id="cb2-15"><a href=""></a></span>
+<span id="cb2-16"><a href=""></a>        <span class="co"># PROCEDURE 3: diversity prune, then link both ways</span></span>
+<span id="cb2-17"><a href=""></a>        Mlayer <span class="op">=</span> (<span class="dv">2</span> <span class="op">*</span> M) <span class="cf">if</span> layer <span class="op">==</span> <span class="dv">0</span> <span class="cf">else</span> M               <span class="co"># M_0 = 2M on the crowded base</span></span>
+<span id="cb2-18"><a href=""></a>        chosen <span class="op">=</span> shrink_neighbor_list(new_vec, cands, Mlayer)   <span class="co"># keep diverse, not just nearest</span></span>
+<span id="cb2-19"><a href=""></a>        <span class="cf">for</span> nb <span class="kw">in</span> chosen:</span>
+<span id="cb2-20"><a href=""></a>            graph.add_edge(new_vec, nb, layer)              <span class="co"># bidirectional</span></span>
+<span id="cb2-21"><a href=""></a>            <span class="cf">if</span> graph.degree(nb, layer) <span class="op">&gt;</span> Mlayer:</span>
+<span id="cb2-22"><a href=""></a>                graph.shrink_neighbor_list(nb, Mlayer)      <span class="co"># re-prune the over-full neighbour</span></span>
+<span id="cb2-23"><a href=""></a>        entry <span class="op">=</span> chosen                                      <span class="co"># carry down to the next, denser layer</span></span>
+<span id="cb2-24"><a href=""></a></span>
+<span id="cb2-25"><a href=""></a>    <span class="cf">if</span> level <span class="op">&gt;</span> graph.max_level:                             <span class="co"># this node climbed highest</span></span>
+<span id="cb2-26"><a href=""></a>        graph.max_level <span class="op">=</span> level</span>
+<span id="cb2-27"><a href=""></a>        graph.entry_point <span class="op">=</span> new_vec</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<aside class="notes">
+<p>The whole insert on one page, and it’s just the three procedures back to back. Procedure 1 is the single random roll for the node’s top level. Then we route down greedily — ef = 1 — through every layer above that level, making no links, purely to find a good entry point. From the node’s own top level down to layer 0 we run Procedure 2’s beam at width ef_construction to gather candidates, then Procedure 3’s shrink_neighbor_list to keep diverse neighbours and wire them bidirectionally. Two things to point at: Mlayer doubles to 2M on layer 0 because the base is the busiest — that’s the M_0 from FAISS — and when a neighbour overflows its cap we re-prune it with the same heuristic. Last, if this node rolled higher than anything before it, it becomes the new entry point. Building is searching plus a wiring step — that’s the whole takeaway.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="watch-the-index-build" class="slide level2 smaller">
+<h2>Watch the Index Build</h2>
+<p>Press <strong>Step</strong> to walk one insert — <strong>roll a level</strong>, <strong>search</strong> to the right spot, <strong>prune</strong> to diverse candidates, <strong>link</strong> the survivors. <strong>Next Insert</strong> moves on; watch the hierarchy emerge from the random rolls.</p>
+<iframe src="../assets/hnsw_build_demo.html" title="Interactive HNSW build demo" width="100%" height="500" style="border:0;border-radius:12px;" loading="lazy"></iframe>
+<aside class="notes">
+<p>Now run the three procedures live. Step walks one insert: first the level roll (procedure 1), then the descent to find the entry point (procedure 2), then the prune-and-link (procedure 3). Next Insert moves to the following vector.</p>
+<p>Over many inserts, watch the hierarchy assemble itself from pure chance — most nodes parking on the base, the rare lucky roll seeding the sparse top. By the end you’ve built a graph you could search with the exact walk from the core section. Searching and building really are one walk plus a wiring step.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="d.-vector-store-manager" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)">
+<h1>D. Vector Store Manager</h1>
 <p>Building the storage layer</p>
 </section>
 <section id="architecture" class="slide level2">
@@ -475,68 +951,68 @@
 </section>
 <section id="init-hnsw-config" class="slide level2">
 <h2>Init + HNSW Config</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href=""></a><span class="kw">class</span> VectorStoreManager:</span>
-<span id="cb1-2"><a href=""></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, persist_directory<span class="op">=</span><span class="st">"./data/vector_store"</span>,</span>
-<span id="cb1-3"><a href=""></a>                 collection_name<span class="op">=</span><span class="st">"research_papers"</span>):</span>
-<span id="cb1-4"><a href=""></a>        <span class="co"># Persistent client — survives restarts</span></span>
-<span id="cb1-5"><a href=""></a>        <span class="va">self</span>.client <span class="op">=</span> chromadb.PersistentClient(</span>
-<span id="cb1-6"><a href=""></a>            path<span class="op">=</span>persist_directory,</span>
-<span id="cb1-7"><a href=""></a>            settings<span class="op">=</span>Settings(anonymized_telemetry<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb1-8"><a href=""></a>        )</span>
-<span id="cb1-9"><a href=""></a></span>
-<span id="cb1-10"><a href=""></a>        <span class="co"># Collection with optimized HNSW</span></span>
-<span id="cb1-11"><a href=""></a>        <span class="va">self</span>.collection <span class="op">=</span> <span class="va">self</span>.client.get_or_create_collection(</span>
-<span id="cb1-12"><a href=""></a>            name<span class="op">=</span>collection_name,</span>
-<span id="cb1-13"><a href=""></a>            metadata<span class="op">=</span>{</span>
-<span id="cb1-14"><a href=""></a>                <span class="st">"hnsw:space"</span>: <span class="st">"cosine"</span>,</span>
-<span id="cb1-15"><a href=""></a>                <span class="st">"hnsw:construction_ef"</span>: <span class="dv">200</span>,</span>
-<span id="cb1-16"><a href=""></a>                <span class="st">"hnsw:search_ef"</span>: <span class="dv">100</span>,</span>
-<span id="cb1-17"><a href=""></a>                <span class="st">"hnsw:M"</span>: <span class="dv">16</span>,</span>
-<span id="cb1-18"><a href=""></a>            }</span>
-<span id="cb1-19"><a href=""></a>        )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href=""></a><span class="kw">class</span> VectorStoreManager:</span>
+<span id="cb3-2"><a href=""></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, persist_directory<span class="op">=</span><span class="st">"./data/vector_store"</span>,</span>
+<span id="cb3-3"><a href=""></a>                 collection_name<span class="op">=</span><span class="st">"research_papers"</span>):</span>
+<span id="cb3-4"><a href=""></a>        <span class="co"># Persistent client — survives restarts</span></span>
+<span id="cb3-5"><a href=""></a>        <span class="va">self</span>.client <span class="op">=</span> chromadb.PersistentClient(</span>
+<span id="cb3-6"><a href=""></a>            path<span class="op">=</span>persist_directory,</span>
+<span id="cb3-7"><a href=""></a>            settings<span class="op">=</span>Settings(anonymized_telemetry<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb3-8"><a href=""></a>        )</span>
+<span id="cb3-9"><a href=""></a></span>
+<span id="cb3-10"><a href=""></a>        <span class="co"># Collection with optimized HNSW</span></span>
+<span id="cb3-11"><a href=""></a>        <span class="va">self</span>.collection <span class="op">=</span> <span class="va">self</span>.client.get_or_create_collection(</span>
+<span id="cb3-12"><a href=""></a>            name<span class="op">=</span>collection_name,</span>
+<span id="cb3-13"><a href=""></a>            metadata<span class="op">=</span>{</span>
+<span id="cb3-14"><a href=""></a>                <span class="st">"hnsw:space"</span>: <span class="st">"cosine"</span>,</span>
+<span id="cb3-15"><a href=""></a>                <span class="st">"hnsw:construction_ef"</span>: <span class="dv">200</span>,</span>
+<span id="cb3-16"><a href=""></a>                <span class="st">"hnsw:search_ef"</span>: <span class="dv">100</span>,</span>
+<span id="cb3-17"><a href=""></a>                <span class="st">"hnsw:M"</span>: <span class="dv">16</span>,</span>
+<span id="cb3-18"><a href=""></a>            }</span>
+<span id="cb3-19"><a href=""></a>        )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="batch-ingestion" class="slide level2">
 <h2>Batch Ingestion</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href=""></a><span class="kw">def</span> add_documents(<span class="va">self</span>, documents, batch_size<span class="op">=</span><span class="dv">100</span>):</span>
-<span id="cb2-2"><a href=""></a>    <span class="co">"""Add documents with embeddings in batches."""</span></span>
-<span id="cb2-3"><a href=""></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, <span class="bu">len</span>(documents), batch_size):</span>
-<span id="cb2-4"><a href=""></a>        batch <span class="op">=</span> documents[i:i <span class="op">+</span> batch_size]</span>
-<span id="cb2-5"><a href=""></a></span>
-<span id="cb2-6"><a href=""></a>        ids, embeddings, metadatas, texts <span class="op">=</span> [], [], [], []</span>
-<span id="cb2-7"><a href=""></a>        <span class="cf">for</span> doc <span class="kw">in</span> batch:</span>
-<span id="cb2-8"><a href=""></a>            <span class="co"># Deterministic ID prevents duplicates</span></span>
-<span id="cb2-9"><a href=""></a>            content_hash <span class="op">=</span> hashlib.md5(</span>
-<span id="cb2-10"><a href=""></a>                doc[<span class="st">'text'</span>].encode()).hexdigest()</span>
-<span id="cb2-11"><a href=""></a>            ids.append(<span class="ss">f"doc_</span><span class="sc">{</span>content_hash<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb2-12"><a href=""></a>            embeddings.append(doc[<span class="st">"embedding"</span>])</span>
-<span id="cb2-13"><a href=""></a>            metadatas.append(doc.get(<span class="st">"metadata"</span>, {}))</span>
-<span id="cb2-14"><a href=""></a>            texts.append(doc[<span class="st">"text"</span>])</span>
-<span id="cb2-15"><a href=""></a></span>
-<span id="cb2-16"><a href=""></a>        <span class="va">self</span>.collection.add(</span>
-<span id="cb2-17"><a href=""></a>            embeddings<span class="op">=</span>embeddings, documents<span class="op">=</span>texts,</span>
-<span id="cb2-18"><a href=""></a>            metadatas<span class="op">=</span>metadatas, ids<span class="op">=</span>ids)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href=""></a><span class="kw">def</span> add_documents(<span class="va">self</span>, documents, batch_size<span class="op">=</span><span class="dv">100</span>):</span>
+<span id="cb4-2"><a href=""></a>    <span class="co">"""Add documents with embeddings in batches."""</span></span>
+<span id="cb4-3"><a href=""></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, <span class="bu">len</span>(documents), batch_size):</span>
+<span id="cb4-4"><a href=""></a>        batch <span class="op">=</span> documents[i:i <span class="op">+</span> batch_size]</span>
+<span id="cb4-5"><a href=""></a></span>
+<span id="cb4-6"><a href=""></a>        ids, embeddings, metadatas, texts <span class="op">=</span> [], [], [], []</span>
+<span id="cb4-7"><a href=""></a>        <span class="cf">for</span> doc <span class="kw">in</span> batch:</span>
+<span id="cb4-8"><a href=""></a>            <span class="co"># Deterministic ID prevents duplicates</span></span>
+<span id="cb4-9"><a href=""></a>            content_hash <span class="op">=</span> hashlib.md5(</span>
+<span id="cb4-10"><a href=""></a>                doc[<span class="st">'text'</span>].encode()).hexdigest()</span>
+<span id="cb4-11"><a href=""></a>            ids.append(<span class="ss">f"doc_</span><span class="sc">{</span>content_hash<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb4-12"><a href=""></a>            embeddings.append(doc[<span class="st">"embedding"</span>])</span>
+<span id="cb4-13"><a href=""></a>            metadatas.append(doc.get(<span class="st">"metadata"</span>, {}))</span>
+<span id="cb4-14"><a href=""></a>            texts.append(doc[<span class="st">"text"</span>])</span>
+<span id="cb4-15"><a href=""></a></span>
+<span id="cb4-16"><a href=""></a>        <span class="va">self</span>.collection.add(</span>
+<span id="cb4-17"><a href=""></a>            embeddings<span class="op">=</span>embeddings, documents<span class="op">=</span>texts,</span>
+<span id="cb4-18"><a href=""></a>            metadatas<span class="op">=</span>metadatas, ids<span class="op">=</span>ids)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="search" class="slide level2">
 <h2>Search</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href=""></a><span class="kw">def</span> search(<span class="va">self</span>, query_embedding, n_results<span class="op">=</span><span class="dv">5</span>,</span>
-<span id="cb3-2"><a href=""></a>           filter_conditions<span class="op">=</span><span class="va">None</span>):</span>
-<span id="cb3-3"><a href=""></a>    <span class="co">"""Search for similar documents."""</span></span>
-<span id="cb3-4"><a href=""></a>    results <span class="op">=</span> <span class="va">self</span>.collection.query(</span>
-<span id="cb3-5"><a href=""></a>        query_embeddings<span class="op">=</span>[query_embedding],</span>
-<span id="cb3-6"><a href=""></a>        n_results<span class="op">=</span>n_results,</span>
-<span id="cb3-7"><a href=""></a>        where<span class="op">=</span>filter_conditions,</span>
-<span id="cb3-8"><a href=""></a>        include<span class="op">=</span>[<span class="st">"documents"</span>, <span class="st">"metadatas"</span>, <span class="st">"distances"</span>]</span>
-<span id="cb3-9"><a href=""></a>    )</span>
-<span id="cb3-10"><a href=""></a></span>
-<span id="cb3-11"><a href=""></a>    <span class="co"># Convert distance to similarity score</span></span>
-<span id="cb3-12"><a href=""></a>    formatted <span class="op">=</span> []</span>
-<span id="cb3-13"><a href=""></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(results[<span class="st">"documents"</span>][<span class="dv">0</span>])):</span>
-<span id="cb3-14"><a href=""></a>        formatted.append({</span>
-<span id="cb3-15"><a href=""></a>            <span class="st">"text"</span>: results[<span class="st">"documents"</span>][<span class="dv">0</span>][i],</span>
-<span id="cb3-16"><a href=""></a>            <span class="st">"metadata"</span>: results[<span class="st">"metadatas"</span>][<span class="dv">0</span>][i],</span>
-<span id="cb3-17"><a href=""></a>            <span class="st">"score"</span>: <span class="dv">1</span> <span class="op">-</span> results[<span class="st">"distances"</span>][<span class="dv">0</span>][i]</span>
-<span id="cb3-18"><a href=""></a>        })</span>
-<span id="cb3-19"><a href=""></a>    <span class="cf">return</span> formatted</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href=""></a><span class="kw">def</span> search(<span class="va">self</span>, query_embedding, n_results<span class="op">=</span><span class="dv">5</span>,</span>
+<span id="cb5-2"><a href=""></a>           filter_conditions<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb5-3"><a href=""></a>    <span class="co">"""Search for similar documents."""</span></span>
+<span id="cb5-4"><a href=""></a>    results <span class="op">=</span> <span class="va">self</span>.collection.query(</span>
+<span id="cb5-5"><a href=""></a>        query_embeddings<span class="op">=</span>[query_embedding],</span>
+<span id="cb5-6"><a href=""></a>        n_results<span class="op">=</span>n_results,</span>
+<span id="cb5-7"><a href=""></a>        where<span class="op">=</span>filter_conditions,</span>
+<span id="cb5-8"><a href=""></a>        include<span class="op">=</span>[<span class="st">"documents"</span>, <span class="st">"metadatas"</span>, <span class="st">"distances"</span>]</span>
+<span id="cb5-9"><a href=""></a>    )</span>
+<span id="cb5-10"><a href=""></a></span>
+<span id="cb5-11"><a href=""></a>    <span class="co"># Convert distance to similarity score</span></span>
+<span id="cb5-12"><a href=""></a>    formatted <span class="op">=</span> []</span>
+<span id="cb5-13"><a href=""></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(results[<span class="st">"documents"</span>][<span class="dv">0</span>])):</span>
+<span id="cb5-14"><a href=""></a>        formatted.append({</span>
+<span id="cb5-15"><a href=""></a>            <span class="st">"text"</span>: results[<span class="st">"documents"</span>][<span class="dv">0</span>][i],</span>
+<span id="cb5-16"><a href=""></a>            <span class="st">"metadata"</span>: results[<span class="st">"metadatas"</span>][<span class="dv">0</span>][i],</span>
+<span id="cb5-17"><a href=""></a>            <span class="st">"score"</span>: <span class="dv">1</span> <span class="op">-</span> results[<span class="st">"distances"</span>][<span class="dv">0</span>][i]</span>
+<span id="cb5-18"><a href=""></a>        })</span>
+<span id="cb5-19"><a href=""></a>    <span class="cf">return</span> formatted</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="dedup-strategy" class="slide level2">
 <h2>Dedup Strategy</h2>
@@ -550,18 +1026,18 @@
 </div>
 <div class="callout-content">
 <p>Use <strong>content-based hashing</strong> for document IDs:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href=""></a>content_hash <span class="op">=</span> hashlib.md5(</span>
-<span id="cb4-2"><a href=""></a>    (doc[<span class="st">'text'</span>] <span class="op">+</span> doc.get(<span class="st">'source'</span>, <span class="st">''</span>)).encode()</span>
-<span id="cb4-3"><a href=""></a>).hexdigest()</span>
-<span id="cb4-4"><a href=""></a>doc_id <span class="op">=</span> <span class="ss">f"doc_</span><span class="sc">{</span>content_hash<span class="sc">}</span><span class="ss">"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href=""></a>content_hash <span class="op">=</span> hashlib.md5(</span>
+<span id="cb6-2"><a href=""></a>    (doc[<span class="st">'text'</span>] <span class="op">+</span> doc.get(<span class="st">'source'</span>, <span class="st">''</span>)).encode()</span>
+<span id="cb6-3"><a href=""></a>).hexdigest()</span>
+<span id="cb6-4"><a href=""></a>doc_id <span class="op">=</span> <span class="ss">f"doc_</span><span class="sc">{</span>content_hash<span class="sc">}</span><span class="ss">"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Re-running ingestion on the same documents won’t create duplicates — reuse the deterministic ID and <code>upsert</code> to overwrite in place. (Plain <code>add</code> on an existing ID is ignored with a warning rather than updated, so prefer <code>upsert</code> when content may change.)</p>
 </div>
 </div>
 </div>
 </section></section>
 <section>
-<section id="d.-the-rag-service" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
-<h1>D. The RAG Service</h1>
+<section id="e.-the-rag-service" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
+<h1>E. The RAG Service</h1>
 <p>Wiring it all together</p>
 </section>
 <section id="the-rag-loop" class="slide level2">
@@ -596,33 +1072,33 @@
 </section>
 <section id="ragservice-class" class="slide level2">
 <h2>RAGService Class</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href=""></a><span class="kw">class</span> RAGService:</span>
-<span id="cb5-2"><a href=""></a>    <span class="co">"""Orchestrates Retrieval + Generation."""</span></span>
-<span id="cb5-3"><a href=""></a></span>
-<span id="cb5-4"><a href=""></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</span>
-<span id="cb5-5"><a href=""></a>        <span class="va">self</span>.embedding_gen <span class="op">=</span> EmbeddingGenerator()</span>
-<span id="cb5-6"><a href=""></a>        <span class="va">self</span>.vector_store <span class="op">=</span> VectorStoreManager()</span>
-<span id="cb5-7"><a href=""></a>        <span class="va">self</span>.model <span class="op">=</span> <span class="st">"openrouter/deepseek/deepseek-v4-flash:free"</span></span>
-<span id="cb5-8"><a href=""></a></span>
-<span id="cb5-9"><a href=""></a>    <span class="cf">async</span> <span class="kw">def</span> answer_question(<span class="va">self</span>, query: <span class="bu">str</span>):</span>
-<span id="cb5-10"><a href=""></a>        <span class="co"># 1. RETRIEVE</span></span>
-<span id="cb5-11"><a href=""></a>        query_vector <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.embedding_gen.embed(query)</span>
-<span id="cb5-12"><a href=""></a>        results <span class="op">=</span> <span class="va">self</span>.vector_store.search(query_vector, n_results<span class="op">=</span><span class="dv">5</span>)</span>
-<span id="cb5-13"><a href=""></a></span>
-<span id="cb5-14"><a href=""></a>        <span class="co"># 2. AUGMENT</span></span>
-<span id="cb5-15"><a href=""></a>        context <span class="op">=</span> <span class="va">self</span>._build_context(results)</span>
-<span id="cb5-16"><a href=""></a>        prompt <span class="op">=</span> <span class="ss">f"Context:</span><span class="ch">\n</span><span class="sc">{</span>context<span class="sc">}</span><span class="ch">\n\n</span><span class="ss">Question: </span><span class="sc">{</span>query<span class="sc">}</span><span class="ss">"</span></span>
-<span id="cb5-17"><a href=""></a></span>
-<span id="cb5-18"><a href=""></a>        <span class="co"># 3. GENERATE</span></span>
-<span id="cb5-19"><a href=""></a>        response <span class="op">=</span> litellm.completion(</span>
-<span id="cb5-20"><a href=""></a>            model<span class="op">=</span><span class="va">self</span>.model,</span>
-<span id="cb5-21"><a href=""></a>            messages<span class="op">=</span>[</span>
-<span id="cb5-22"><a href=""></a>                {<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: SYSTEM_PROMPT},</span>
-<span id="cb5-23"><a href=""></a>                {<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: prompt}</span>
-<span id="cb5-24"><a href=""></a>            ], temperature<span class="op">=</span><span class="fl">0.3</span>)</span>
-<span id="cb5-25"><a href=""></a></span>
-<span id="cb5-26"><a href=""></a>        <span class="cf">return</span> {<span class="st">"answer"</span>: response.choices[<span class="dv">0</span>].message.content,</span>
-<span id="cb5-27"><a href=""></a>                <span class="st">"sources"</span>: [r[<span class="st">'metadata'</span>] <span class="cf">for</span> r <span class="kw">in</span> results]}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href=""></a><span class="kw">class</span> RAGService:</span>
+<span id="cb7-2"><a href=""></a>    <span class="co">"""Orchestrates Retrieval + Generation."""</span></span>
+<span id="cb7-3"><a href=""></a></span>
+<span id="cb7-4"><a href=""></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</span>
+<span id="cb7-5"><a href=""></a>        <span class="va">self</span>.embedding_gen <span class="op">=</span> EmbeddingGenerator()</span>
+<span id="cb7-6"><a href=""></a>        <span class="va">self</span>.vector_store <span class="op">=</span> VectorStoreManager()</span>
+<span id="cb7-7"><a href=""></a>        <span class="va">self</span>.model <span class="op">=</span> <span class="st">"openrouter/deepseek/deepseek-v4-flash:free"</span></span>
+<span id="cb7-8"><a href=""></a></span>
+<span id="cb7-9"><a href=""></a>    <span class="cf">async</span> <span class="kw">def</span> answer_question(<span class="va">self</span>, query: <span class="bu">str</span>):</span>
+<span id="cb7-10"><a href=""></a>        <span class="co"># 1. RETRIEVE</span></span>
+<span id="cb7-11"><a href=""></a>        query_vector <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.embedding_gen.embed(query)</span>
+<span id="cb7-12"><a href=""></a>        results <span class="op">=</span> <span class="va">self</span>.vector_store.search(query_vector, n_results<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb7-13"><a href=""></a></span>
+<span id="cb7-14"><a href=""></a>        <span class="co"># 2. AUGMENT</span></span>
+<span id="cb7-15"><a href=""></a>        context <span class="op">=</span> <span class="va">self</span>._build_context(results)</span>
+<span id="cb7-16"><a href=""></a>        prompt <span class="op">=</span> <span class="ss">f"Context:</span><span class="ch">\n</span><span class="sc">{</span>context<span class="sc">}</span><span class="ch">\n\n</span><span class="ss">Question: </span><span class="sc">{</span>query<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb7-17"><a href=""></a></span>
+<span id="cb7-18"><a href=""></a>        <span class="co"># 3. GENERATE</span></span>
+<span id="cb7-19"><a href=""></a>        response <span class="op">=</span> litellm.completion(</span>
+<span id="cb7-20"><a href=""></a>            model<span class="op">=</span><span class="va">self</span>.model,</span>
+<span id="cb7-21"><a href=""></a>            messages<span class="op">=</span>[</span>
+<span id="cb7-22"><a href=""></a>                {<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: SYSTEM_PROMPT},</span>
+<span id="cb7-23"><a href=""></a>                {<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: prompt}</span>
+<span id="cb7-24"><a href=""></a>            ], temperature<span class="op">=</span><span class="fl">0.3</span>)</span>
+<span id="cb7-25"><a href=""></a></span>
+<span id="cb7-26"><a href=""></a>        <span class="cf">return</span> {<span class="st">"answer"</span>: response.choices[<span class="dv">0</span>].message.content,</span>
+<span id="cb7-27"><a href=""></a>                <span class="st">"sources"</span>: [r[<span class="st">'metadata'</span>] <span class="cf">for</span> r <span class="kw">in</span> results]}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="the-three-steps" class="slide level2">
 <h2>The Three Steps</h2>
@@ -654,8 +1130,8 @@
 </div></div>
 </section></section>
 <section>
-<section id="e.-production-concerns" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #FF7A5C)">
-<h1>E. Production Concerns</h1>
+<section id="f.-production-concerns" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #FF7A5C)">
+<h1>F. Production Concerns</h1>
 <p>Keeping your knowledge base alive</p>
 </section>
 <section id="living-knowledge-base" class="slide level2">
@@ -673,34 +1149,34 @@
 </section>
 <section id="update-delete" class="slide level2">
 <h2>Update / Delete</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href=""></a><span class="kw">def</span> update_document(<span class="va">self</span>, doc_id, new_text,</span>
-<span id="cb6-2"><a href=""></a>                    new_embedding, new_metadata):</span>
-<span id="cb6-3"><a href=""></a>    <span class="co">"""Update = delete + re-add."""</span></span>
-<span id="cb6-4"><a href=""></a>    <span class="va">self</span>.collection.delete(ids<span class="op">=</span>[doc_id])</span>
-<span id="cb6-5"><a href=""></a>    <span class="va">self</span>.collection.add(</span>
-<span id="cb6-6"><a href=""></a>        embeddings<span class="op">=</span>[new_embedding],</span>
-<span id="cb6-7"><a href=""></a>        documents<span class="op">=</span>[new_text],</span>
-<span id="cb6-8"><a href=""></a>        metadatas<span class="op">=</span>[new_metadata],</span>
-<span id="cb6-9"><a href=""></a>        ids<span class="op">=</span>[doc_id])</span>
-<span id="cb6-10"><a href=""></a></span>
-<span id="cb6-11"><a href=""></a><span class="kw">def</span> delete_by_metadata(<span class="va">self</span>, filter_conditions):</span>
-<span id="cb6-12"><a href=""></a>    <span class="co">"""Delete all docs matching a metadata filter."""</span></span>
-<span id="cb6-13"><a href=""></a>    results <span class="op">=</span> <span class="va">self</span>.collection.get(where<span class="op">=</span>filter_conditions)</span>
-<span id="cb6-14"><a href=""></a>    <span class="cf">if</span> results[<span class="st">"ids"</span>]:</span>
-<span id="cb6-15"><a href=""></a>        <span class="va">self</span>.collection.delete(ids<span class="op">=</span>results[<span class="st">"ids"</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href=""></a><span class="kw">def</span> update_document(<span class="va">self</span>, doc_id, new_text,</span>
+<span id="cb8-2"><a href=""></a>                    new_embedding, new_metadata):</span>
+<span id="cb8-3"><a href=""></a>    <span class="co">"""Update = delete + re-add."""</span></span>
+<span id="cb8-4"><a href=""></a>    <span class="va">self</span>.collection.delete(ids<span class="op">=</span>[doc_id])</span>
+<span id="cb8-5"><a href=""></a>    <span class="va">self</span>.collection.add(</span>
+<span id="cb8-6"><a href=""></a>        embeddings<span class="op">=</span>[new_embedding],</span>
+<span id="cb8-7"><a href=""></a>        documents<span class="op">=</span>[new_text],</span>
+<span id="cb8-8"><a href=""></a>        metadatas<span class="op">=</span>[new_metadata],</span>
+<span id="cb8-9"><a href=""></a>        ids<span class="op">=</span>[doc_id])</span>
+<span id="cb8-10"><a href=""></a></span>
+<span id="cb8-11"><a href=""></a><span class="kw">def</span> delete_by_metadata(<span class="va">self</span>, filter_conditions):</span>
+<span id="cb8-12"><a href=""></a>    <span class="co">"""Delete all docs matching a metadata filter."""</span></span>
+<span id="cb8-13"><a href=""></a>    results <span class="op">=</span> <span class="va">self</span>.collection.get(where<span class="op">=</span>filter_conditions)</span>
+<span id="cb8-14"><a href=""></a>    <span class="cf">if</span> results[<span class="st">"ids"</span>]:</span>
+<span id="cb8-15"><a href=""></a>        <span class="va">self</span>.collection.delete(ids<span class="op">=</span>results[<span class="st">"ids"</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="versioning" class="slide level2">
 <h2>Versioning</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href=""></a><span class="kw">def</span> create_versioned_collection(<span class="va">self</span>, version_suffix):</span>
-<span id="cb7-2"><a href=""></a>    <span class="co">"""Create a new version when changing models."""</span></span>
-<span id="cb7-3"><a href=""></a>    new_name <span class="op">=</span> <span class="ss">f"</span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>collection_name<span class="sc">}</span><span class="ss">_</span><span class="sc">{</span>version_suffix<span class="sc">}</span><span class="ss">"</span></span>
-<span id="cb7-4"><a href=""></a>    <span class="cf">return</span> <span class="va">self</span>.client.create_collection(</span>
-<span id="cb7-5"><a href=""></a>        name<span class="op">=</span>new_name,</span>
-<span id="cb7-6"><a href=""></a>        metadata<span class="op">=</span>{</span>
-<span id="cb7-7"><a href=""></a>            <span class="st">"parent_collection"</span>: <span class="va">self</span>.collection_name,</span>
-<span id="cb7-8"><a href=""></a>            <span class="st">"created_at"</span>: datetime.now().isoformat(),</span>
-<span id="cb7-9"><a href=""></a>            <span class="st">"version"</span>: version_suffix,</span>
-<span id="cb7-10"><a href=""></a>        })</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href=""></a><span class="kw">def</span> create_versioned_collection(<span class="va">self</span>, version_suffix):</span>
+<span id="cb9-2"><a href=""></a>    <span class="co">"""Create a new version when changing models."""</span></span>
+<span id="cb9-3"><a href=""></a>    new_name <span class="op">=</span> <span class="ss">f"</span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>collection_name<span class="sc">}</span><span class="ss">_</span><span class="sc">{</span>version_suffix<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb9-4"><a href=""></a>    <span class="cf">return</span> <span class="va">self</span>.client.create_collection(</span>
+<span id="cb9-5"><a href=""></a>        name<span class="op">=</span>new_name,</span>
+<span id="cb9-6"><a href=""></a>        metadata<span class="op">=</span>{</span>
+<span id="cb9-7"><a href=""></a>            <span class="st">"parent_collection"</span>: <span class="va">self</span>.collection_name,</span>
+<span id="cb9-8"><a href=""></a>            <span class="st">"created_at"</span>: datetime.now().isoformat(),</span>
+<span id="cb9-9"><a href=""></a>            <span class="st">"version"</span>: version_suffix,</span>
+<span id="cb9-10"><a href=""></a>        })</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <blockquote>
 <p>When you change embedding models or chunking strategies, you need a <strong>new collection</strong>. Old embeddings are incompatible with new model vectors.</p>
 </blockquote>
@@ -745,8 +1221,8 @@
 </table>
 </section></section>
 <section>
-<section id="f.-wrap-up" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)">
-<h1>F. Wrap-up</h1>
+<section id="g.-wrap-up" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)">
+<h1>G. Wrap-up</h1>
 <p>The complete pipeline so far</p>
 </section>
 <section id="complete-pipeline" class="slide level2">
@@ -803,7 +1279,7 @@
 <li>No keyword search fallback</li>
 <li>No re-ranking quality gate</li>
 <li>No citation formatting</li>
-<li>No evaluation framework</li>
+<li>Gains not yet re-measured against the baseline</li>
 </ul>
 </div></div>
 </section>
@@ -811,6 +1287,7 @@
 <h2>References &amp; Evidence</h2>
 <ol type="1">
 <li><strong>HNSW Algorithm</strong>: <a href="https://arxiv.org/abs/1603.09320">Malkov &amp; Yashunin (2018)</a> - <em>Efficient and robust approximate nearest neighbor search using Hierarchical Navigable Small World graphs.</em></li>
+<li><strong>HNSW Reference Implementation</strong>: <a href="https://github.com/facebookresearch/faiss/blob/main/faiss/impl/HNSW.cpp">faiss/impl/HNSW.cpp</a> - <em>FAISS source for the level-pick, search, and insert procedures shown in the deep dive.</em></li>
 <li><strong>Pinecone Pricing</strong>: <a href="https://www.pinecone.io/pricing/">Pinecone Serverless</a> - <em>Usage-based pricing model overview.</em></li>
 <li><strong>ChromaDB Configuration</strong>: <a href="https://docs.trychroma.com/usage-guide#changing-the-distance-function">Official ChromaDB Docs</a> - <em>Details on tuning HNSW parameters.</em></li>
 <li><strong>Vector DB Benchmarks</strong>: <a href="https://ann-benchmarks.com/">ANN-Benchmarks</a> - <em>Evidence for scale and latency claims for various algorithms.</em></li>
@@ -826,19 +1303,6 @@
 <li><strong>The RAG Service</strong> orchestrates Retrieve → Augment → Generate</li>
 <li><strong>Version your collections</strong> when changing embedding models or chunking strategies</li>
 </ol>
-<div class="callout callout-tip callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Up Next</strong></p>
-</div>
-<div class="callout-content">
-<p><strong>Lab 3</strong>: Build your first working RAG system — connect all components and test with real queries on your research paper corpus.</p>
-</div>
-</div>
-</div>
 
 </section></section>
     </div>

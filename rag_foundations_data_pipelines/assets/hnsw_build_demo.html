@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HNSW Build — Interactive Demo</title>
+<style>
+  /* ---- SDAIA palette (hardcoded: CSS vars don't cross the iframe boundary) ---- */
+  :root{
+    --navy:#1C355E; --teal:#00C9A7; --coral:#FF7A5C; --purple:#9B8EC0;
+    --gold:#FFB548;                    /* "new node being inserted" accent */
+    --muted:#5b6678; --panel:#f7f9fc; --border:#dbe2ea; --ink:#101820;
+    --base:#c2cbd6;                    /* inactive node */
+    --visited:#7fd9c6;                 /* visited node  */
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink); background:#fff; height:100%;
+    display:flex; flex-direction:column; overflow:hidden;
+  }
+  /* ---- control bar ---- */
+  #bar{
+    display:flex; flex-wrap:wrap; align-items:center; gap:10px 16px;
+    padding:8px 12px; background:var(--panel); border-bottom:1px solid var(--border);
+    font-size:13px;
+  }
+  .ctrl{display:inline-flex; align-items:center; gap:6px; white-space:nowrap}
+  .ctrl input[type=range]{width:104px; accent-color:var(--coral)}
+  .ctrl b{font-variant-numeric:tabular-nums; color:var(--navy); min-width:22px; display:inline-block}
+  .btn{
+    border:1px solid var(--border); background:#fff; color:var(--navy); border-radius:8px;
+    padding:6px 11px; cursor:pointer; font-size:13px; font-weight:600;
+  }
+  .btn:hover{background:var(--panel)}
+  .btn.primary{background:var(--coral); border-color:var(--coral); color:#fff}
+  .btn:disabled{opacity:.45; cursor:default}
+  .spacer{flex:1 1 auto}
+  /* ---- canvas ---- */
+  #stage{position:relative; flex:1 1 auto; min-height:0; background:#fff}
+  canvas{position:absolute; inset:0; width:100%; height:100%; cursor:default}
+  /* ---- caption / legend ---- */
+  #foot{
+    border-top:1px solid var(--border); padding:7px 12px; font-size:12.5px;
+    display:flex; align-items:center; gap:16px; flex-wrap:wrap; background:var(--panel);
+  }
+  #caption{color:var(--navy); font-weight:600}
+  #counters{color:var(--muted); font-variant-numeric:tabular-nums}
+  .legend{display:flex; gap:12px; flex-wrap:wrap; color:var(--muted); margin-left:auto}
+  .legend span{display:inline-flex; align-items:center; gap:5px}
+  .dot{width:11px; height:11px; border-radius:50%; display:inline-block}
+  .swatch{width:14px; height:2.5px; display:inline-block; border-radius:1px}
+</style>
+</head>
+<body>
+  <div id="bar">
+    <div class="ctrl">N <input id="n" type="range" min="10" max="30" step="1" value="18"><b id="nv">18</b></div>
+    <div class="ctrl">M <input id="m" type="range" min="2" max="24" step="1" value="6"><b id="mv">6</b></div>
+    <div class="ctrl">ef_c <input id="efc" type="range" min="4" max="80" step="1" value="20"><b id="efcv">20</b></div>
+    <span class="spacer"></span>
+    <button class="btn" id="reset" title="Back to the start of the build">↺ Reset</button>
+    <button class="btn primary" id="step" title="Step one sub-step forward">▸ Step</button>
+    <button class="btn" id="play" title="Walk the build sub-step by sub-step">⏵ Play</button>
+    <button class="btn" id="next" title="Jump to the start of the next insert">Next Insert »</button>
+    <button class="btn" id="rebuild" title="New random graph (same params)">⟳ Rebuild</button>
+  </div>
+
+  <div id="stage"><canvas id="cv"></canvas></div>
+
+  <div id="foot">
+    <span id="counters">Insert – / – · Step – / –</span>
+    <span id="caption">Press <b>Step</b> to build the index one insert at a time.</span>
+    <span class="legend">
+      <span><i class="dot" style="background:#FFB548"></i>new node</span>
+      <span><i class="dot" style="background:#FF7A5C"></i>current</span>
+      <span><i class="dot" style="background:#9B8EC0"></i>candidate</span>
+      <span><i class="dot" style="background:#7fd9c6"></i>visited</span>
+      <span><i class="dot" style="background:#00C9A7"></i>M-nearest</span>
+      <span><i class="swatch" style="background:#00C9A7"></i>new link</span>
+    </span>
+  </div>
+
+<script>
+"use strict";
+// ===================== state =====================
+const C = {navy:"#1C355E", teal:"#00C9A7", coral:"#FF7A5C", purple:"#9B8EC0",
+           gold:"#FFB548", muted:"#5b6678", base:"#c2cbd6", visited:"#7fd9c6",
+           border:"#dbe2ea"};
+let nodes = [];              // {id, x, y, level, nbr:[Set per layer]} — fully wired after build()
+let topLayer = -1;           // -1 = empty (final max level after build())
+let entry = -1;              // entry-point id (only valid when nodes.length > 0)
+let steps = [];              // full sub-step timeline
+let placedAt = [];           // placedAt[id] = step index at which node id first appears
+let edges = [];              // {a, b, L, at} — every link, tagged with the step that created it
+let cur = 0;                 // current sub-step index
+let timer = null;
+let seed = 12345;
+
+const $ = id => document.getElementById(id);
+const cv = $("cv"), ctx = cv.getContext("2d");
+
+// ===================== helpers =====================
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+
+const Dp = (aId, p) => Math.hypot(nodes[aId].x - p.x, nodes[aId].y - p.y);   // existing node → planned new
+function nbrsAt(id, L){ return nodes[id] && nodes[id].nbr[L] ? [...nodes[id].nbr[L]] : []; }
+
+// ===================== geometry (stacked-layers view) =====================
+function plotBox(){ const pad=26; return {x:pad, y:pad, w:cv.clientW-2*pad, h:cv.clientH-2*pad}; }
+// `top` is the highest layer currently on screen — the stack grows as the build proceeds.
+function layerBox(L, top){ const b=plotBox();
+  const rows = Math.max(1, top+1);
+  const h = b.h/rows; const topY = b.y + (top - L)*h;
+  return {x:b.x, y:topY, w:b.w, h:h};
+}
+function layerPx(id, L, top){ const lb=layerBox(L, top); const p=nodes[id];
+  return [lb.x+p.x*lb.w, lb.y+lb.h*0.18+p.y*lb.h*0.64];
+}
+
+// small arrow head from (x1,y1) → (x2,y2)
+function drawArrow(x1,y1,x2,y2,color){
+  ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+  const a = Math.atan2(y2-y1, x2-x1), s = 6;
+  ctx.beginPath();
+  ctx.moveTo(x2,y2);
+  ctx.lineTo(x2 - s*Math.cos(a - Math.PI/6), y2 - s*Math.sin(a - Math.PI/6));
+  ctx.lineTo(x2 - s*Math.cos(a + Math.PI/6), y2 - s*Math.sin(a + Math.PI/6));
+  ctx.closePath(); ctx.fill();
+}
+
+// ===================== build pipeline =====================
+function rollLevel(U, M){
+  const mL = 1/Math.log(M);
+  return Math.min(4, Math.max(0, Math.floor(-Math.log(Math.max(U, 1e-12)) * mL)));
+}
+
+function greedyDescent(startId, p, L){
+  // ef=1 — hop to the neighbor closest to the new node, until no neighbor is closer
+  const path = [];
+  let cur = startId;
+  let improved = true;
+  while(improved){
+    improved = false;
+    let best = cur, bd = Dp(cur, p);
+    for(const nb of nbrsAt(cur, L)){
+      const d = Dp(nb, p);
+      if(d < bd){ bd = d; best = nb; }
+    }
+    if(best !== cur){ path.push(best); cur = best; improved = true; }
+  }
+  return {path, end: cur};
+}
+
+function beamSearch(startId, p, L, efC){
+  // Standard HNSW beam search at layer L
+  const visited = new Set([startId]);
+  const cand = [startId];
+  const res  = [startId];
+  // bound ef by what's available at this layer
+  const here = nodes.filter(n => n.level >= L && n.id !== undefined);
+  const maxEf = Math.min(efC, Math.max(1, here.length));
+  while(cand.length){
+    cand.sort((a,b)=>Dp(a,p)-Dp(b,p));
+    const c = cand.shift();
+    const furthest = res.reduce((m,id)=>Math.max(m,Dp(id,p)), -Infinity);
+    if(Dp(c,p) > furthest && res.length >= maxEf) break;
+    for(const nb of nbrsAt(c, L)){
+      if(visited.has(nb)) continue;
+      visited.add(nb);
+      const f = res.length ? res.reduce((m,id)=>Math.max(m,Dp(id,p)), -Infinity) : Infinity;
+      if(res.length < maxEf || Dp(nb,p) < f){
+        cand.push(nb); res.push(nb);
+        if(res.length > maxEf){
+          res.sort((a,b)=>Dp(a,p)-Dp(b,p));
+          res.length = maxEf;
+        }
+      }
+    }
+  }
+  return {visited:[...visited], candidates:[...cand], results:[...res]};
+}
+
+function pickAndLink(newId, p, L, candidates, Mmax){
+  // Sort candidates by distance, link greedily while both endpoints have room
+  const sorted = candidates.slice().sort((a,b)=>Dp(a,p)-Dp(b,p));
+  const picked = [];
+  for(const q of sorted){
+    if(picked.length >= Mmax) break;
+    const qHasRoom = (nodes[q].nbr[L] ? nodes[q].nbr[L].size : 0) < Mmax;
+    const nHasRoom = (nodes[newId].nbr[L] ? nodes[newId].nbr[L].size : 0) < Mmax;
+    if(!qHasRoom || !nHasRoom) continue;
+    if(!nodes[q].nbr[L]) nodes[q].nbr[L] = new Set();
+    if(!nodes[newId].nbr[L]) nodes[newId].nbr[L] = new Set();
+    nodes[q].nbr[L].add(newId);
+    nodes[newId].nbr[L].add(q);
+    picked.push(q);
+  }
+  return picked;
+}
+
+function countEdges(){
+  // count undirected edges, summed across layers
+  const seen = new Set();
+  let total = 0;
+  for(const p of nodes){
+    for(let L=0; L<=p.level; L++){
+      for(const q of (p.nbr[L] || [])){
+        const key = (p.id<q) ? `${p.id}-${q}-${L}` : `${q}-${p.id}-${L}`;
+        if(!seen.has(key)){ seen.add(key); total++; }
+      }
+    }
+  }
+  return total;
+}
+
+function build(){
+  // Reset
+  nodes = [];
+  topLayer = -1;
+  entry = -1;
+  steps = [];
+  placedAt = [];
+  edges = [];
+  const rng = mulberry32(seed);
+  const N = +$("n").value;
+  const M = +$("m").value;
+  const efC = Math.min(+$("efc").value, 80);
+  const mL = 1/Math.log(M);
+
+  // Pre-plan all nodes
+  const plan = [];
+  for(let i=0;i<N;i++){
+    plan.push({id:i, x:rng(), y:rng(), U:rng(), level:0});
+  }
+  for(const p of plan){
+    p.level = rollLevel(p.U, M);
+  }
+
+  // Simulate the full build, emitting a sub-step timeline
+  for(let i=0;i<N;i++){
+    const p = plan[i];
+
+    // Snapshot the current topLayer/entry BEFORE this insert — the descent/beam
+    // loops must walk the graph as it stands *before* the new node is wired in.
+    const oldTopLayer = topLayer;
+    const oldEntry = entry;
+
+    // Pre-update topLayer/entry so the layer view can draw the new node at its
+    // proper height. The "newtop" step below notes the change for the user.
+    const willBeNewTop = p.level > topLayer;
+    if(willBeNewTop){ topLayer = p.level; entry = i; }
+    else if(i === 0){ entry = i; }
+
+    // Create the node up front so it's always visible from "place" onward
+    nodes.push({id:i, x:p.x, y:p.y, level:p.level, nbr:[]});
+    for(let L=0; L<=p.level; L++) nodes[i].nbr[L] = new Set();
+
+    // ---- "place" sub-step ----  (node i becomes visible from here on)
+    placedAt[i] = steps.length;
+    steps.push({
+      phase:"place", node:i, level:p.level, insertIndex:i, totalN:N,
+      M, efC,
+      caption:`Insert #${i+1} of ${N}: a new vector arrives. Next: roll its top layer.`
+    });
+
+    // ---- "roll" sub-step ----
+    steps.push({
+      phase:"roll", node:i, level:p.level, insertIndex:i, totalN:N,
+      U:p.U, M, mL,
+      caption:`Roll: U=${p.U.toFixed(3)}, level = ⌊-ln(${p.U.toFixed(3)})·${mL.toFixed(2)}⌋ = ${p.level}. ` +
+              (p.level === 0
+                ? "Most nodes land only at Layer 0 — the hierarchy is emergent, not designed."
+                : (willBeNewTop
+                    ? `New top layer ${p.level} (was ${oldTopLayer<0?"none":oldTopLayer}).`
+                    : `Node reaches Layer ${p.level} of ${oldTopLayer}.`))
+    });
+
+    // ---- "descent" sub-steps (greedy ef=1) ----
+    if(i === 0){
+      // First node — skip descent
+      steps.push({
+        phase:"first", node:i, level:p.level, insertIndex:i, totalN:N,
+        caption:`First node — no graph to descend into. It becomes the entry point. (Future inserts will enter from here.)`
+      });
+    } else {
+      // Enter from the old entry point. Greedy descent ef=1 through every layer ABOVE the new node's level.
+      let curId = oldEntry;
+      for(let L = oldTopLayer; L > p.level; L--){
+        const d = greedyDescent(curId, p, L);
+        if(d.path.length > 0){
+          steps.push({
+            phase:"descent", node:i, layer:L, insertIndex:i, totalN:N,
+            current: curId, moveTo: d.end, path:[curId, ...d.path],
+            caption:`Layer ${L}: greedy descent (ef=1) from the entry — hop to the neighbour closest to node #${i}, repeat until local minimum, then descend.`
+          });
+        } else {
+          steps.push({
+            phase:"descent", node:i, layer:L, insertIndex:i, totalN:N,
+            current: curId, moveTo: curId, path:[curId],
+            caption:`Layer ${L}: at the entry, no neighbour is closer to node #${i} → descend to Layer ${L-1}.`
+          });
+        }
+        curId = d.end;
+      }
+      // Now curId is the entry into the new node's top layer.
+      // ---- "beam" + "link" sub-steps, from min(oldTopLayer, p.level) down to 0 ----
+      for(let L = Math.min(oldTopLayer, p.level); L >= 0; L--){
+        const beam = beamSearch(curId, p, L, efC);
+        steps.push({
+          phase:"beam", node:i, layer:L, insertIndex:i, totalN:N,
+          current: curId, efC, M, Mmax: (L===0 ? 2*M : M),
+          visited: beam.visited, candidates: beam.candidates, results: beam.results,
+          caption:`Layer ${L}: beam search (ef_construction=${efC}) — gather up to ${efC} candidates around the entry.`
+        });
+        // pick the M (or 2M at base) nearest, link them
+        const Mmax = (L === 0) ? 2*M : M;
+        const picked = pickAndLink(i, p, L, beam.results, Mmax);
+        const linkIdx = steps.length;   // index this "link" step will occupy
+        steps.push({
+          phase:"link", node:i, layer:L, insertIndex:i, totalN:N,
+          current: curId, efC, M, Mmax,
+          picked, newEdges: picked.map(q => [i, q]),
+          caption:`Layer ${L}: link to the ${picked.length} nearest neighbour${picked.length===1?"":"s"} (M${L===0?"_0 = 2M":" = "+M}). Bidirectional edges drawn.`
+        });
+        for(const q of picked) edges.push({a:i, b:q, L, at:linkIdx});
+        // descend one layer from the closest pick
+        if(picked.length > 0){
+          curId = picked.slice().sort((a,b)=>Dp(a,p)-Dp(b,p))[0];
+        }
+      }
+    }
+
+    // ---- "newtop" sub-step (if applicable) ----
+    if(willBeNewTop){
+      steps.push({
+        phase:"newtop", node:i, level:p.level, insertIndex:i, totalN:N,
+        caption:`New top layer ${p.level} (was ${oldTopLayer<0?"none":oldTopLayer}). Node #${i} becomes the entry point.`
+      });
+    }
+
+    // ---- "done" sub-step ----
+    let totalLinks = 0, layerCount = 0;
+    for(let L=0; L<=nodes[i].level; L++){
+      if(nodes[i].nbr[L] && nodes[i].nbr[L].size > 0) layerCount++;
+      totalLinks += nodes[i].nbr[L] ? nodes[i].nbr[L].size : 0;
+    }
+    steps.push({
+      phase:"done", node:i, level:p.level, insertIndex:i, totalN:N,
+      totalLinks, layerCount, M, efC,
+      caption:`Insert #${i+1} complete — node #${i} has ${totalLinks} links across ${layerCount} layer${layerCount===1?"":"s"}.`
+    });
+  }
+
+  // Final "build done" step
+  steps.push({
+    phase:"final", insertIndex:N, totalN:N,
+    caption:`Build complete — ${N} nodes, ${topLayer+1} layer${topLayer+1===1?"":"s"}, ${countEdges()} total links. Press ⟳ Rebuild for a new graph.`
+  });
+
+  cur = 0;
+}
+
+// ===================== rendering =====================
+function existingNodeColor(id, s){
+  if(s.picked && s.picked.includes(id)) return C.teal;
+  if(id === s.current) return C.coral;
+  if(s.candidates && s.candidates.includes(id)) return C.purple;
+  if(s.visited && s.visited.includes(id)) return C.visited;
+  return C.base;
+}
+
+function draw(){
+  const dpr = window.devicePixelRatio||1;
+  cv.clientW = cv.clientWidth; cv.clientH = cv.clientHeight;
+  cv.width = cv.clientW*dpr; cv.height = cv.clientH*dpr;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,cv.clientW,cv.clientH);
+  const s = steps[cur] || {phase:"empty"};
+  if(s.phase === "empty" || nodes.length === 0){
+    return; // no nodes yet — empty stage
+  }
+  drawLayers(s);
+}
+
+function drawLayers(s){
+  if(topLayer < 0) return;
+
+  // Only what exists *at this point in the build* is drawn: nodes placed so far
+  // and edges already created. This is what makes it read as an incremental build.
+  const vis = id => placedAt[id] != null && placedAt[id] <= cur;
+  const visNodes = nodes.filter(p => vis(p.id));
+  if(visNodes.length === 0) return;
+  // the layer stack grows as taller nodes arrive
+  const vTop = visNodes.reduce((m,p)=>Math.max(m,p.level), 0);
+
+  // 0) skip-list "columns": faint vertical connectors linking each node's copies
+  //    across the layers it lives in — makes the emergent hierarchy visible.
+  ctx.setLineDash([3,4]); ctx.lineWidth = 1;
+  for(const p of visNodes){
+    if(p.level < 1) continue;
+    ctx.strokeStyle = (p.id === s.node) ? "rgba(255,181,72,0.55)" : "rgba(28,53,94,0.14)";
+    for(let L = p.level; L >= 1; L--){
+      const [ax,ay] = layerPx(p.id, L, vTop), [bx,by] = layerPx(p.id, L-1, vTop);
+      ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(bx,by); ctx.stroke();
+    }
+  }
+  ctx.setLineDash([]);
+
+  // 1) bands, top layer first
+  for(let L = vTop; L >= 0; L--){
+    const lb = layerBox(L, vTop);
+    const active = (s.layer === L);
+    // band
+    ctx.fillStyle = active ? "rgba(255,122,92,0.07)" : "rgba(28,53,94,0.035)";
+    ctx.fillRect(lb.x-12, lb.y+2, lb.w+24, lb.h-4);
+    ctx.strokeStyle = active ? C.coral : C.border; ctx.lineWidth = active ? 1.6 : 1;
+    ctx.strokeRect(lb.x-12, lb.y+2, lb.w+24, lb.h-4);
+    ctx.fillStyle = active ? C.coral : C.muted;
+    ctx.font = "600 12px sans-serif"; ctx.textBaseline = "top";
+    ctx.fillText(L === 0 ? "Layer 0 (base)" : `Layer ${L}`, lb.x-6, lb.y+6);
+
+    // edges already created in this band (faint)
+    ctx.strokeStyle = active ? "rgba(28,53,94,0.30)" : "rgba(120,130,150,0.16)";
+    ctx.lineWidth = 1;
+    for(const e of edges){
+      if(e.L !== L || e.at > cur || !vis(e.a) || !vis(e.b)) continue;
+      const [ax,ay] = layerPx(e.a, L, vTop), [bx,by] = layerPx(e.b, L, vTop);
+      ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(bx,by); ctx.stroke();
+    }
+    // new edges just added in the current "link" step at this layer
+    if(s.phase === "link" && s.layer === L && s.newEdges){
+      ctx.strokeStyle = C.teal; ctx.lineWidth = 2.4;
+      for(const [a,b] of s.newEdges){
+        const [ax,ay] = layerPx(a, L, vTop), [bx,by] = layerPx(b, L, vTop);
+        ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(bx,by); ctx.stroke();
+      }
+    }
+    // existing-graph nodes in this band
+    for(const p of visNodes){
+      if(p.level < L || p.id === s.node) continue; // new node drawn separately (below)
+      const [x,y] = layerPx(p.id, L, vTop);
+      const col = existingNodeColor(p.id, s);
+      const big = (p.id === s.current) || (s.picked && s.picked.includes(p.id));
+      ctx.beginPath(); ctx.arc(x,y, big?6:3.5, 0, 7);
+      ctx.fillStyle = col; ctx.fill();
+      if(s.picked && s.picked.includes(p.id)){
+        ctx.lineWidth=2; ctx.strokeStyle=C.navy; ctx.stroke();
+      }
+    }
+    // new node, if it lives in this band
+    if(s.node != null){
+      const p = nodes[s.node];
+      if(p && vis(p.id) && p.level >= L){
+        const [x,y] = layerPx(p.id, L, vTop);
+        ctx.beginPath(); ctx.arc(x,y, 9, 0, 7);
+        ctx.fillStyle = "rgba(255,181,72,0.18)"; ctx.fill();
+        ctx.beginPath(); ctx.arc(x,y, 6, 0, 7);
+        ctx.fillStyle = C.gold; ctx.fill();
+        ctx.lineWidth = 1.8; ctx.strokeStyle = C.navy; ctx.stroke();
+      }
+    }
+  }
+
+  // 2) descent overlay — draw the greedy ef=1 traversal and the "drop a layer" cue
+  if(s.phase === "descent" && s.path && s.layer != null){
+    const L = s.layer;
+    if(s.path.length > 1){
+      ctx.strokeStyle = C.coral; ctx.lineWidth = 2.4;
+      ctx.beginPath();
+      s.path.forEach((id,i)=>{ const [x,y] = layerPx(id, L, vTop); i ? ctx.lineTo(x,y) : ctx.moveTo(x,y); });
+      ctx.stroke();
+    }
+    // mark where descent ended in this band
+    const [ex,ey] = layerPx(s.moveTo, L, vTop);
+    ctx.beginPath(); ctx.arc(ex,ey, 7, 0, 7);
+    ctx.fillStyle = C.coral; ctx.fill();
+    ctx.lineWidth = 2; ctx.strokeStyle = C.navy; ctx.stroke();
+    // drop-a-layer arrow toward the band below
+    if(L > 0){
+      const [bx,by] = layerPx(s.moveTo, L-1, vTop);
+      drawArrow(ex, ey+10, bx, by-10, C.coral);
+    }
+  }
+}
+
+// ===================== UI wiring =====================
+function refreshCaption(){
+  const s = steps[cur] || {};
+  $("caption").textContent = s.caption || "";
+  const total = steps.length;
+  const insIdx = (s.insertIndex != null) ? s.insertIndex + 1 : (s.phase === "final" ? s.totalN : 0);
+  $("counters").textContent =
+    `Insert ${insIdx} / ${s.totalN || "?"} · Step ${cur+1} / ${total}`;
+  // disable step at the very end
+  $("step").disabled = cur >= steps.length - 1;
+}
+
+function render(){ draw(); refreshCaption(); }
+
+function stepFwd(){
+  if(cur < steps.length - 1){ cur++; render(); }
+  else stop();
+}
+
+function nextInsert(){
+  // jump cur to the next step with phase "place" strictly after cur
+  for(let i = cur + 1; i < steps.length; i++){
+    if(steps[i].phase === "place"){ cur = i; render(); return; }
+  }
+  // no more inserts — jump to the end (the "final" step)
+  cur = steps.length - 1; render();
+}
+
+function play(){
+  if(timer){ stop(); return; }
+  if(cur >= steps.length - 1) cur = 0;
+  $("play").textContent = "⏸ Pause";
+  timer = setInterval(() => { if(cur >= steps.length - 1) stop(); else stepFwd(); }, 700);
+}
+function stop(){ if(timer){ clearInterval(timer); timer = null; } $("play").textContent = "⏵ Play"; }
+
+function rebuild(){ stop(); cur = 0; seed = (Math.random()*1e9)|0; build(); render(); }
+
+// sliders — any param change triggers a rebuild (build is pre-computed)
+function bindSlider(id, labelId){
+  const el = $(id);
+  el.addEventListener("input", () => { $(labelId).textContent = el.value; stop(); build(); render(); });
+}
+bindSlider("n", "nv");
+bindSlider("m", "mv");
+bindSlider("efc", "efcv");
+
+// buttons
+$("reset").addEventListener("click", () => { stop(); cur = 0; render(); });
+$("step").addEventListener("click", () => { stop(); stepFwd(); });
+$("play").addEventListener("click", play);
+$("next").addEventListener("click", () => { stop(); nextInsert(); });
+$("rebuild").addEventListener("click", rebuild);
+
+new ResizeObserver(() => draw()).observe($("stage"));
+window.addEventListener("keydown", e => {
+  if(e.key === "ArrowRight"){ stop(); stepFwd(); }
+  if(e.key === " "){ e.preventDefault(); stop(); play(); }
+  if(e.key === "n" || e.key === "N"){ stop(); nextInsert(); }
+});
+
+// ===================== go =====================
+build();
+render();
+</script>
+</body>
+</html>

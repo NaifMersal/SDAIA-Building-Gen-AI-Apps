@@ -9,7 +9,7 @@
 <link href="fine_tuning_in_practice_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.9.38">
 
-  <meta name="dcterms.date" content="2026-06-06">
+  <meta name="dcterms.date" content="2026-06-11">
   <title>Fine-Tuning in Practice</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -202,12 +202,12 @@
 
 <section id="title-slide" data-background-image="../../slides_template/assets/anim.svg" data-background-opacity="0.15" data-background-size="cover" class="quarto-title-block center">
   <h1 class="title">Fine-Tuning in Practice</h1>
-  <p class="subtitle">Architecture Fundamentals — Session 4</p>
+  <p class="subtitle">Model Adaptation — Session 2</p>
 
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-06-06</p>
+  <p class="date">2026-06-11</p>
 </section>
 <section>
 <section id="a.-the-fine-tuning-family" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
@@ -237,7 +237,7 @@
     A["1. Objective&lt;br/&gt;(what to teach)"] --&gt; B["SFT&lt;br/&gt;imitate ideal outputs"]
     A --&gt; C["DPO&lt;br/&gt;prefer A over B"]
 
-    D["2. Parameterization&lt;br/&gt;(how to update)"] --&gt; E["Full FT&lt;br/&gt;~80 GB VRAM"]
+    D["2. Parameterization&lt;br/&gt;(how to update)"] --&gt; E["Full FT&lt;br/&gt;80 GB+ VRAM"]
     D --&gt; F["LoRA&lt;br/&gt;~24 GB VRAM"]
     D --&gt; G["QLoRA&lt;br/&gt;~16 GB VRAM"]
 
@@ -311,8 +311,8 @@
 <p>For “prefer A over B” learning. Your dataset is triples of <code>(prompt, chosen_response, rejected_response)</code>.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource json number-lines code-with-copy"><code class="sourceCode json"><span id="cb2-1"><a href=""></a><span class="fu">{</span></span>
 <span id="cb2-2"><a href=""></a>  <span class="dt">"prompt"</span><span class="fu">:</span> <span class="st">"Explain BM25 to a junior engineer."</span><span class="fu">,</span></span>
-<span id="cb2-3"><a href=""></a>  <span class="dt">"chosen"</span><span class="fu">:</span> <span class="st">"BM25 is a ranking function that scores documents by..."</span><span class="fu">,</span></span>
-<span id="cb2-4"><a href=""></a>  <span class="dt">"rejected"</span><span class="fu">:</span> <span class="st">"BM25 stands for Best Matching 25 and is used in..."</span></span>
+<span id="cb2-3"><a href=""></a>  <span class="dt">"chosen"</span><span class="fu">:</span> <span class="st">"BM25 ranks documents by combining term frequency (with diminishing returns) and inverse document frequency, plus a length penalty so long documents don't win by default."</span><span class="fu">,</span></span>
+<span id="cb2-4"><a href=""></a>  <span class="dt">"rejected"</span><span class="fu">:</span> <span class="st">"BM25 is an algorithm used in search engines to rank things. It works well and is very popular."</span></span>
 <span id="cb2-5"><a href=""></a><span class="fu">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
@@ -353,7 +353,7 @@
 <p><strong>Full fine-tuning</strong></p>
 <ul>
 <li>Updates ~7B parameters</li>
-<li>Needs ~80GB VRAM for a 7B model</li>
+<li>Needs 80 GB+ VRAM (multi-GPU) for a 7B model</li>
 <li>~$50–500 per training run</li>
 <li>Produces a new full model (~14 GB)</li>
 </ul>
@@ -393,7 +393,7 @@
 <p><strong>The adapter shipping pattern</strong></p>
 </div>
 <div class="callout-content">
-<p>Keep the base model on disk once. Ship <strong>adapters</strong> per use-case (legal, medical, customer-service) and hot-swap them per request — same VRAM, many models.</p>
+<p>Keep the base model on disk once. Ship <strong>adapters</strong> per use-case (legal, medical, customer-service) and hot-swap them per request — same VRAM, many models. For a single dedicated model, <code>merge_and_unload()</code> folds the adapter back into the base weights so inference carries zero adapter overhead.</p>
 </div>
 </div>
 </div>
@@ -565,7 +565,7 @@
 <ul>
 <li><strong>Train</strong> (~80%) — the model sees this during training</li>
 <li><strong>Validation</strong> (~10%) — checked every epoch to spot overfitting</li>
-<li><strong>Eval / test</strong> (~10%) — held out for the final report card; never touched until the end</li>
+<li><strong>Eval / test</strong> (~10%) — held out for the final report card; never touched until the end. <strong>Check it doesn’t overlap the train set</strong> — easy to violate when training data is synthetic or distilled</li>
 </ul>
 </div>
 </div>
@@ -884,12 +884,12 @@
 </section>
 <section id="the-memory-wall" class="slide level2">
 <h2>The Memory Wall</h2>
-<p>A 7B model in FP16 = ~14 GB just for weights. Add gradients, optimizer state, and activations → <strong>~80 GB VRAM</strong> for full SFT. That’s an A100/H100 minimum.</p>
+<p>A 7B model in FP16 = ~14 GB just for weights. Add gradients, optimizer state, and activations → <strong>80 GB+ VRAM</strong> for full SFT — beyond a single consumer card, typically multi-GPU or offload territory.</p>
 <div class="fragment">
-<p><strong>LoRA cuts this</strong> by only updating adapters — gradients &amp; optimizer state shrink ~100×.</p>
+<p><strong>LoRA cuts this</strong> by only updating adapters — gradients &amp; optimizer state shrink ~100×, so a 7B run drops to ~24 GB.</p>
 </div>
 <div class="fragment">
-<p><strong>QLoRA cuts it further</strong> by also storing the <strong>base model itself in 4-bit precision</strong> during training. Same 7B model now fits in ~6 GB VRAM. Runs on a consumer 24 GB GPU comfortably.</p>
+<p><strong>QLoRA cuts it further</strong> by also storing the <strong>base model itself in 4-bit precision</strong> during training. The 4-bit weights drop to ~4 GB; a full QLoRA <em>training run</em> (adapters, optimizer state, activations) fits in <strong>~12–16 GB</strong> — comfortably on a single consumer 24 GB GPU.</p>
 <div class="callout callout-tip callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -936,19 +936,6 @@
 <li><strong>TRL docs</strong> — <a href="https://huggingface.co/docs/trl">huggingface.co/docs/trl</a> — <code>SFTTrainer</code>, <code>DPOTrainer</code>, and the chat-template helpers.</li>
 <li><strong>Open question:</strong> <em>Is DPO actually better than PPO?</em> See Xu et al.&nbsp;(2024) on DPO failure modes for the contrarian case.</li>
 </ul>
-</div>
-</div>
-</div>
-<div class="callout callout-tip callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Up Next</strong></p>
-</div>
-<div class="callout-content">
-<p><strong><a href="../../production_deployment/slides/model_quantization.html">Model Weight Quantization</a></strong> — the precision spectrum, the methods (GGUF/AWQ/GPTQ/BitsAndBytes), and how QLoRA wires it all together.</p>
 </div>
 </div>
 </div>
