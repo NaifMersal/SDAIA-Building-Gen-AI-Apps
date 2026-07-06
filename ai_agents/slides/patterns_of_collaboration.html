@@ -9,7 +9,7 @@
 <link href="patterns_of_collaboration_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.9.38">
 
-  <meta name="dcterms.date" content="2026-06-11">
+  <meta name="dcterms.date" content="2026-07-06">
   <title>Patterns of Collaboration</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -207,7 +207,7 @@
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-06-11</p>
+  <p class="date">2026-07-06</p>
 </section>
 <section>
 <section id="a.-why-multi-agent" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
@@ -217,7 +217,7 @@
 <section id="agenda" class="slide level2">
 <h2>Agenda</h2>
 <ul>
-<li><strong>A. Why Multi-Agent?</strong> — Bottlenecks and harness as a product</li>
+<li><strong>A. Why Multi-Agent?</strong> — Bottlenecks, and when a skills library is the lighter answer</li>
 <li><strong>B. Specialist Roles</strong> — Researcher, Writer, Fact-Checker</li>
 <li><strong>C. Orchestration Patterns</strong> — Pipeline, Hub-and-Spoke, Workspace</li>
 <li><strong>D. Quality Gates</strong> — Fact-checking and revision loops</li>
@@ -314,6 +314,69 @@
 <li><strong>Hardest to debug</strong> — failures span agents and handoffs, not a single trace.</li>
 <li><strong>Highest cost and latency</strong> — every specialist call is another round-trip.</li>
 </ul>
+</section>
+<section id="before-you-split-skills-vs.-a-team" class="slide level2 smaller">
+<h2>Before You Split: Skills vs.&nbsp;a Team</h2>
+<p>A multi-agent system isn’t the only way to handle many specialized jobs. Often the lighter answer is <strong>one general-purpose agent with a library of <a href="../../context_engineering/slides/skills.html">skills</a></strong> it loads on demand.</p>
+<p>Take a logistics operation with <strong>100 process variants</strong> (product type, route, SLA, hazmat flag, region). Four ways to serve them:</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 43%">
+<col style="width: 56%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Approach</th>
+<th style="text-align: left;">What breaks</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">One giant system prompt</td>
+<td style="text-align: left;">Context rot + every-turn token cost</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">RAG over the runbooks</td>
+<td style="text-align: left;">A vector DB whose chunking quality has nothing to do with the actual procedures</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Multi-agent — one sub-agent per process</td>
+<td style="text-align: left;">100 deployments, 100 eval surfaces, a complex routing layer</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>One agent + 100 skills</strong></td>
+<td style="text-align: left;">Progressive disclosure ≈ 100 × ~50 tokens of always-on metadata; the 101st variant is a <strong>new folder, not a new deployment</strong></td>
+</tr>
+</tbody>
+</table>
+<div class="fragment">
+<p>Strong activation cues (SKU, origin, weight, SLA) make the skill descriptions sharp — so selection stays reliable even with a large library.</p>
+</div>
+</section>
+<section id="skills-didnt-kill-multi-agent" class="slide level2 smaller">
+<h2>Skills Didn’t Kill Multi-Agent</h2>
+<p>The skills option collapses many systems that were multi-agent <em>by default</em>. But multi-agent is still the right call <strong>by design</strong> when you have:</p>
+<ul>
+<li class="fragment"><strong>Genuine parallelism</strong> — independent sub-problems running at once</li>
+<li class="fragment"><strong>Real capability boundaries</strong> — different access, security postures, or external systems per agent</li>
+<li class="fragment"><strong>Adversarial / check-and-balance</strong> setups — one agent reviews another (our Fact-Checker gate, Section D)</li>
+<li class="fragment"><strong>Heterogeneous models</strong> — a cheap router, an expensive reasoner, a vision specialist</li>
+</ul>
+<div class="fragment">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>The reframing</strong></p>
+</div>
+<div class="callout-content">
+<p>Skills restored the <strong>single-agent option</strong> for work that was multi-agent <em>by default</em>, not <em>by design</em>. Start with the lightest primitive that holds; reach for a team only when a boundary above is real.</p>
+</div>
+</div>
+</div>
+</div>
 </section></section>
 <section>
 <section id="b.-specialist-roles" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)">
@@ -554,7 +617,7 @@
 <ul>
 <li>Strong encapsulation</li>
 <li>Lower per-agent context cost</li>
-<li>Need a contract (A2A, agent-as-tool)</li>
+<li>Need a contract (<a href="../../ai_agents/slides/agent_interoperability.html">A2A</a>, agent-as-tool)</li>
 </ul>
 </div></div>
 </section>
@@ -656,6 +719,55 @@
 <p></p></figure><p></p>
 </div>
 </div>
+</div>
+</section>
+<section id="production-hardening-dag-capability-profiles" class="slide level2 smaller">
+<h2>Production Hardening: DAG &amp; Capability Profiles</h2>
+<p>As these patterns grow up, two refinements recur:</p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><strong>DAG orchestration</strong> — Plan-and-Execute, hardened</p>
+<ul>
+<li><strong>Decoupled state</strong> — handoffs don’t accumulate in the prompt</li>
+<li><strong>File / message bus</strong> — pass <em>schema references</em>, not raw text</li>
+<li><strong>Protected attention</strong> — payloads stay out of the model’s context window</li>
+</ul>
+</div><div class="column" style="width:50%;">
+<p><strong>Capability Profiles</strong> — swappable “personas”</p>
+<p>A version-controlled bundle of active skills + tools + guardrails + model/params. The orchestrator <strong>tears down</strong> one profile (flushing stale state) before loading the next.</p>
+</div></div>
+<div class="fragment">
+<table class="caption-top">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Architecture</th>
+<th style="text-align: left;">Mechanism</th>
+<th style="text-align: left;">Best for</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Linear pipeline</td>
+<td style="text-align: left;">Sequential text passing</td>
+<td style="text-align: left;">Single-domain, low-complexity</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DAG orchestration</td>
+<td style="text-align: left;">Graph + file-bus state via schema refs</td>
+<td style="text-align: left;">Multi-agent, high-reliability</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Capability profiles</td>
+<td style="text-align: left;">Swappable tool / skill bundles</td>
+<td style="text-align: left;">Role-based, domain-specific agents</td>
+</tr>
+</tbody>
+</table>
 </div>
 </section></section>
 <section>

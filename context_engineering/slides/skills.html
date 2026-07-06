@@ -9,7 +9,7 @@
 <link href="skills_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.9.38">
 
-  <meta name="dcterms.date" content="2026-06-11">
+  <meta name="dcterms.date" content="2026-07-06">
   <title>Skills: Packaging Agent Capabilities</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -207,7 +207,7 @@
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-06-11</p>
+  <p class="date">2026-07-06</p>
 </section>
 <section>
 <section id="a.-from-tools-to-skills" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
@@ -221,8 +221,9 @@
 <li><strong>B. Anthropic Agent Skills &amp; the open spec</strong> — <code>SKILL.md</code>, invocation, the standard</li>
 <li><strong>C. Authoring a Skill</strong> — description, naming, scripts &amp; assets, scope</li>
 <li><strong>D. Skills vs Tools vs MCP</strong> — three layers, three jobs</li>
-<li><strong>E. Skills as Procedural Memory</strong> — bridge to <a href="../../context_engineering/slides/hermes_case_study.html">Hermes Agent</a></li>
-<li><strong>F. Wrap-up</strong> — key takeaways</li>
+<li><strong>E. Evaluating Skills</strong> — failure modes, the trigger gate, the read/draft/act ladder</li>
+<li><strong>F. Skills as Procedural Memory</strong> — bridge to <a href="../../context_engineering/slides/hermes_case_study.html">Hermes Agent</a></li>
+<li><strong>G. Wrap-up</strong> — key takeaways</li>
 </ul>
 </section>
 <section id="the-playbook-problem" class="slide level2">
@@ -665,6 +666,65 @@
 <div class="footer">
 <p>Source: <a href="https://agentskills.io/skill-creation/evaluating-skills">Evaluating skill output quality — agentskills.io</a></p>
 </div>
+</section>
+<section id="skill-smells-shifting-intelligence-left" class="slide level2 smaller">
+<h2>Skill Smells &amp; Shifting Intelligence Left</h2>
+<p>Revise a skill the moment you notice a <strong>smell</strong>:</p>
+<ul>
+<li><strong>&gt; 5,000 words</strong> — probably two skills, or reference material that belongs in <code>references/</code></li>
+<li><strong>Two teams could own it</strong> — not yet decomposed; split along team boundaries</li>
+<li><strong>You can’t write three test cases for it</strong> — the description is too vague</li>
+<li><strong>It references no other resource</strong> — likely just a long instruction that belongs in the system prompt</li>
+<li><strong>Description starts “a helpful skill for…”</strong> — name the trigger, inputs, and output instead</li>
+</ul>
+<div class="fragment">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Write software, not rules — “shift intelligence left”</strong></p>
+</div>
+<div class="callout-content">
+<p>Capitalised <code>ALWAYS DO X</code> imperatives become <strong>context debt</strong>: the model learns to ignore a wall of warnings, exactly as a developer skims boilerplate. Push deterministic logic <em>down</em> into <code>scripts/</code> where it’s tested once — don’t hope the model re-derives it every run.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="sourcing-skills-are-a-supply-chain" class="slide level2 smaller">
+<h2>Sourcing: Skills Are a Supply Chain</h2>
+<p>By 2026 there are tens of thousands of public skills. <strong>A skill is code that runs in your context</strong> — treat adoption like any dependency:</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 34%">
+<col style="width: 65%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Source</th>
+<th style="text-align: left;">Trust default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>First-party</strong> (the team that built the underlying tool)</td>
+<td style="text-align: left;">Trust by default; pin a version</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Org-curated</strong> (your own domain teams)</td>
+<td style="text-align: left;">Trust within the org; review on adoption</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Community</strong> (marketplaces, individual repos)</td>
+<td style="text-align: left;"><strong>Audit before adopting; pin aggressively</strong></td>
+</tr>
+</tbody>
+</table>
+<div class="fragment">
+<p>Three habits: <strong>prefer first-party</strong> for vendor-specific tools · <strong>pin</strong> everything you depend on · <strong>audit</strong> before adopting (a skill can run scripts — same supply-chain hygiene as any library). See <a href="../../security_guardrails/slides/input_output_guardrails.html">Guardrails</a> for the scanning angle.</p>
+</div>
 </section></section>
 <section>
 <section id="d.-skills-vs-tools-vs-mcp" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #FF7A5C)">
@@ -808,8 +868,172 @@
 </div>
 </section></section>
 <section>
-<section id="e.-skills-as-procedural-memory" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)">
-<h1>E. Skills as Procedural Memory</h1>
+<section id="e.-evaluating-skills" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
+<h1>E. Evaluating Skills</h1>
+<blockquote>
+<p>A skill without a test is a hope, not a capability.</p>
+</blockquote>
+</section>
+<section id="a-skill-can-subtract-capability" class="slide level2 smaller">
+<h2>A Skill Can Subtract Capability</h2>
+<p>You authored a skill. Does it actually <em>help</em>? Not always.</p>
+<p>When researchers benchmarked agent tasks in <strong>SkillsBench</strong>, ~<strong>19%</strong> (16 of 84 tasks) did <strong>worse</strong> <em>with</em> a skill than without one — a poorly-scoped skill burns tokens loading instructions that throw the model off track.</p>
+<div class="fragment">
+<p>Failures are predictable. Four modes:</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 18%">
+<col style="width: 42%">
+<col style="width: 39%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Mode</th>
+<th style="text-align: left;">What happens</th>
+<th style="text-align: left;">Surfaces in</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Trigger</strong></td>
+<td style="text-align: left;">Wrong skill fires, or the right one stays silent</td>
+<td style="text-align: left;">Routing logs</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Execution</strong></td>
+<td style="text-align: left;">Fires correctly, but wrong output / errant tool calls</td>
+<td style="text-align: left;">Output quality</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Token-budget</strong></td>
+<td style="text-align: left;">A bloated body crowds context, degrading <em>unrelated</em> turns</td>
+<td style="text-align: left;">Realistic co-load</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Regression</strong></td>
+<td style="text-align: left;">A new skill overlaps an old one, breaking prior routing</td>
+<td style="text-align: left;">The full library</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="fragment">
+<p>The first two show up on a <strong>single turn</strong>; the last two only appear when the <strong>whole library runs together</strong>.</p>
+<div class="footer">
+<p>Source: <a href="https://arxiv.org/abs/2602.12670">SkillsBench (arXiv:2602.12670)</a></p>
+</div>
+</div>
+</section>
+<section id="the-trigger-is-the-first-gate" class="slide level2 smaller">
+<h2>The Trigger Is the First Gate</h2>
+<p>A skill that never fires can’t help; one that fires too broadly injects noise. The trigger is the gate everything else depends on.</p>
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Production reality</strong></p>
+</div>
+<div class="callout-content">
+<p>Vercel’s analysis found a <strong>56% non-invocation rate</strong> for skills expected to fire consistently — and a passive <code>AGENTS.md</code> index of conventions <em>beat</em> the skill-based version outright.</p>
+</div>
+</div>
+</div>
+<div class="fragment">
+<p><strong>The lesson</strong> — reserve skills for <strong>narrow, action-specific</strong> workflows. Global, always-relevant context belongs in always-on docs (<code>AGENTS.md</code> / system prompt), not in a skill that has to <em>win a match</em> first. This is why <a href="#/the-description-is-the-invocation-logic">the description is the router</a>: write 3 positive and 3 negative triggers and aim for ~90% trigger accuracy.</p>
+<div class="footer">
+<p>Source: <a href="https://vercel.com/blog/agents-md-outperforms-skills-in-our-agent-evals">Vercel — AGENTS.md outperforms skills in our agent evals</a></p>
+</div>
+</div>
+</section>
+<section id="eval-driven-development" class="slide level2 smaller">
+<h2>Eval-Driven Development</h2>
+<p>Invert the workflow: write the eval cases <strong>before</strong> the <code>SKILL.md</code> body. Three JSON cases (input → expected tools → expected output) force a clear functional spec and surface description ambiguities early.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode numberSource json number-lines code-with-copy"><code class="sourceCode json"><span id="cb6-1"><a href=""></a><span class="fu">{</span></span>
+<span id="cb6-2"><a href=""></a>  <span class="dt">"input"</span><span class="fu">:</span> <span class="st">"I was charged twice for order #4521 last Tuesday"</span><span class="fu">,</span></span>
+<span id="cb6-3"><a href=""></a>  <span class="dt">"expected_skill"</span><span class="fu">:</span> <span class="st">"refund-processor"</span><span class="fu">,</span></span>
+<span id="cb6-4"><a href=""></a>  <span class="dt">"expected_tool_calls"</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb6-5"><a href=""></a>    <span class="fu">{</span><span class="dt">"tool"</span><span class="fu">:</span> <span class="st">"lookup_order"</span><span class="fu">,</span> <span class="dt">"args"</span><span class="fu">:</span> <span class="fu">{</span><span class="dt">"order_id"</span><span class="fu">:</span> <span class="st">"4521"</span><span class="fu">}}</span><span class="ot">,</span></span>
+<span id="cb6-6"><a href=""></a>    <span class="fu">{</span><span class="dt">"tool"</span><span class="fu">:</span> <span class="st">"check_duplicate_charge"</span><span class="fu">,</span> <span class="dt">"args"</span><span class="fu">:</span> <span class="fu">{</span><span class="dt">"order_id"</span><span class="fu">:</span> <span class="st">"4521"</span><span class="fu">}}</span></span>
+<span id="cb6-7"><a href=""></a>  <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb6-8"><a href=""></a>  <span class="dt">"rubric"</span><span class="fu">:</span> <span class="ot">[</span><span class="st">"acknowledges duplicate"</span><span class="ot">,</span> <span class="st">"cites order id"</span><span class="ot">,</span> <span class="st">"provides next step"</span><span class="ot">]</span></span>
+<span id="cb6-9"><a href=""></a><span class="fu">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="fragment">
+<p>Test the <strong>final output</strong> <em>and</em> the <strong>tool trajectory</strong> separately — an agent can reach the right answer via the wrong sequence of calls. Harmless for read-only skills; dangerous for ones that mutate state.</p>
+</div>
+</section>
+<section id="read-draft-act-ladder" class="slide level2 smaller">
+<h2>The Read → Draft → Act Ladder</h2>
+<p>A skill earns authority in tiers. It can’t graduate until it clears the gate below.</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 15%">
+<col style="width: 40%">
+<col style="width: 45%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Tier</th>
+<th style="text-align: left;">What it may do</th>
+<th style="text-align: left;">Gate to graduate</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Read-only</strong></td>
+<td style="text-align: left;">Fetch, query, describe</td>
+<td style="text-align: left;">LLM-as-judge eval; ~90% trigger accuracy</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Draft</strong></td>
+<td style="text-align: left;">Produce content for human review</td>
+<td style="text-align: left;">Golden set ≥ 20 cases + human approval</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Action-allowed</strong></td>
+<td style="text-align: left;">Execute irreversible operations</td>
+<td style="text-align: left;">Adversarial red-team; sustained <strong>pass^k</strong> + human sign-off</td>
+</tr>
+</tbody>
+</table>
+<div class="fragment">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Why pass^k, not pass@1</strong></p>
+</div>
+<div class="callout-content">
+<p><code>pass^k</code> requires success on <strong>every</strong> one of <em>k</em> runs — consistency, not a lucky single pass. On τ-bench, GPT-4o scored <strong>61% on pass@1 but ~25% on pass^8</strong>: single-run success badly over-predicts production reliability.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="fragment">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Never evaluate a skill in isolation</strong></p>
+</div>
+<div class="callout-content">
+<p>Production co-loads <strong>5–15 skills</strong> at once. A body that works perfectly alone can cause <a href="../../context_engineering/slides/sessions_and_memory.html">context rot</a> when co-loaded — which is exactly why the <a href="#/progressive-disclosure-three-levels">progressive-disclosure budget</a> (&lt; 5000-token body) is a hard rule, not a guideline. The general eval machinery for all this — judges, calibration, golden datasets — is <a href="../../ai_agents/slides/observability_and_evaluation.html">§2 Observability &amp; Evaluation</a>.</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<p>Sources: <a href="https://arxiv.org/abs/2406.12045">τ-bench (arXiv:2406.12045)</a> · <a href="https://research.trychroma.com/context-rot">Chroma — Context Rot</a></p>
+</div>
+</div>
+</section></section>
+<section>
+<section id="f.-skills-as-procedural-memory" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)">
+<h1>F. Skills as Procedural Memory</h1>
 <p>Where this connects back — and forward</p>
 </section>
 <section id="a-skill.md-is-procedural-memory-written-down" class="slide level2">
@@ -855,13 +1079,41 @@
 <p><strong><a href="../../context_engineering/slides/hermes_case_study.html">Hermes Agent</a></strong> opens one production system that ships exactly this loop: when it decides to capture a skill.</p>
 </blockquote>
 </div>
+</section>
+<section id="meta-skills-skills-that-write-skills" class="slide level2 smaller">
+<h2>Meta-Skills: Skills That Write Skills</h2>
+<p>The self-authoring frontier breaks into four buckets:</p>
+<ol type="1">
+<li class="fragment"><strong>Authoring</strong> — describe a workflow, get a draft <code>SKILL.md</code> (Anthropic’s <code>skill-creator</code>)</li>
+<li class="fragment"><strong>Assisted authoring from traces</strong> — watch a successful run, harvest it into a skill; you <em>review</em> instead of write</li>
+<li class="fragment"><strong>Improvement</strong> — feed an existing skill + its failing eval cases, get proposed edits</li>
+<li class="fragment"><strong>Library evolution</strong> — the agent notices it just solved a recurring problem with no skill, and proposes adding one (the pattern <a href="https://arxiv.org/abs/2305.16291">Voyager</a> used to grow its Minecraft skill library)</li>
+</ol>
+<div class="fragment">
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>The one governance rule</strong></p>
+</div>
+<div class="callout-content">
+<p><strong>Anything an agent writes enters at the <em>draft tier</em></strong> — no matter how confident the meta-skill is. It graduates the same <a href="#/read-draft-act-ladder">read → draft → act ladder</a> as any human-written skill. Keep a human scanning the diff for the first few edits; don’t point an agent at an empty folder and ask for fifty skills.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>Nous Research’s <strong><a href="../../context_engineering/slides/hermes_case_study.html">Hermes Agent</a></strong> is cited industry-wide as a worked example of exactly this loop — and it’s the production system we open next.</p>
+</div>
 </section></section>
 <section>
-<section id="f.-wrap-up" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
-<h1>F. Wrap-up</h1>
+<section id="g.-wrap-up" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
+<h1>G. Wrap-up</h1>
 
 </section>
-<section id="key-takeaways" class="slide level2">
+<section id="key-takeaways" class="slide level2 smaller">
 <h2>Key Takeaways</h2>
 <ul>
 <li>A <strong>skill</strong> is a named, retrievable bundle — capabilities <em>plus</em> the playbook for using them.</li>
@@ -869,6 +1121,7 @@
 <li>The <strong>description is the router</strong> — write it like a method signature, including negative space.</li>
 <li>Skills can ship <strong>scripts</strong>, not just prose: prose for <em>judgement</em>, scripts for <em>mechanics</em>.</li>
 <li>Skills, tools, and MCP <strong>compose</strong> — the <em>how</em>, the <em>what</em>, the <em>where</em>.</li>
+<li>A skill can <em>subtract</em> capability — <strong>evaluate</strong> it (trigger → execution → token-budget → regression) and graduate it through the <strong>read/draft/act</strong> ladder.</li>
 </ul>
 <div class="fragment">
 <div class="callout callout-important callout-titled callout-style-default">
@@ -882,6 +1135,72 @@
 <div class="callout-content">
 <p>Skills are how context engineering handles <em>procedural</em> knowledge — the part the agent learns from your team, not from its training data.</p>
 </div>
+</div>
+</div>
+</div>
+</section>
+<section id="skills-are-the-unit-of-improvement" class="slide level2 smaller">
+<h2>Skills Are the Unit of Improvement</h2>
+<p>When a new edge case appears, how do you ship the fix? Compare the options:</p>
+<table class="caption-top" style="width:100%;">
+<colgroup>
+<col style="width: 32%">
+<col style="width: 20%">
+<col style="width: 25%">
+<col style="width: 22%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Improvement style</th>
+<th style="text-align: left;">Cycle time</th>
+<th style="text-align: left;">Who can do it</th>
+<th style="text-align: left;">Context tax</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Model swap</td>
+<td style="text-align: left;">Days–weeks</td>
+<td style="text-align: left;">ML / platform team</td>
+<td style="text-align: left;">None (weights)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">System-prompt edit</td>
+<td style="text-align: left;">Minutes–hours</td>
+<td style="text-align: left;">Whoever owns the prompt</td>
+<td style="text-align: left;"><strong>Static</strong> — every turn pays</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Fine-tune</td>
+<td style="text-align: left;">Weeks–months</td>
+<td style="text-align: left;">ML team only</td>
+<td style="text-align: left;">None (weights)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>New / edited skill</strong></td>
+<td style="text-align: left;">Hours–days</td>
+<td style="text-align: left;"><strong>Any domain team</strong></td>
+<td style="text-align: left;"><strong>Dynamic</strong> — only matching turns pay</td>
+</tr>
+</tbody>
+</table>
+<div class="fragment">
+<p>A skill is a small, owned, testable unit of capability. The agent’s reach grows by <strong>editing one <code>SKILL.md</code></strong> — no monolithic prompt, no retraining.</p>
+</div>
+</section>
+<section id="one-line-mental-model" class="slide level2">
+<h2>One-Line Mental Model</h2>
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Where each primitive sits</strong></p>
+</div>
+<div class="callout-content">
+<p><strong>System prompt</strong> = instinct · <strong><code>AGENTS.md</code></strong> = project README · <strong>Tools / MCP</strong> = hands · <strong>RAG</strong> = library</p>
+<p><strong>Skills</strong> = the runbook an experienced colleague hands you on day one — that the AI never forgets.</p>
 </div>
 </div>
 </div>

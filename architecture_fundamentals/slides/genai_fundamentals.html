@@ -9,7 +9,7 @@
 <link href="genai_fundamentals_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.9.38">
 
-  <meta name="dcterms.date" content="2026-06-11">
+  <meta name="dcterms.date" content="2026-07-06">
   <title>Generative AI Fundamentals</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -207,7 +207,7 @@
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-06-11</p>
+  <p class="date">2026-07-06</p>
 </section>
 <section>
 <section id="what-is-generative-ai" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
@@ -318,9 +318,9 @@
 <section id="the-model-as-a-function" class="slide level2">
 <h2>The Model as a Function</h2>
 <div style="font-size: 1.1em; text-align: center; margin: 0.5em 0;">
-<p>Think of it this way, based on the data we have (corpus), <strong>the model is just a function:</strong></p>
+<p>Think of it this way: based on the data we have (the corpus), <strong>the model is just a probability function</strong> — it scores each candidate next word given the sentence:</p>
 </div>
-<p><span class="math display">\[f(\text{sentence}) = \frac{\text{count}(\text{sentence} + \text{next_word})}{\text{count}(\text{sentence})}\]</span></p>
+<p><span class="math display">\[P(\text{word} \mid \text{sentence}) = \frac{\text{count}(\text{sentence} + \text{word})}{\text{count}(\text{sentence})}\]</span></p>
 <p>Input: a sentence. Output: the most likely next word based purely on <strong>counting</strong>.</p>
 <div class="fragment">
 <div class="callout callout-note callout-titled callout-style-default">
@@ -385,7 +385,7 @@
 </section>
 <section id="words-got-meaning-neural-lms" class="slide level2">
 <h2>Words Got Meaning — Neural LMs</h2>
-<p>Remember our function <span class="math inline">\(f(\text{sentence}) \rightarrow \text{next_word}\)</span>?</p>
+<p>Remember our probability function <span class="math inline">\(P(\text{word} \mid \text{sentence})\)</span>?</p>
 <p>Instead of counting, a <strong>neural network</strong> learned to represent words as <strong>vectors</strong> — coordinates in a high-dimensional space where meaning is geometry.</p>
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
@@ -410,8 +410,8 @@
 <p><strong>Same Function, Better Implementation</strong></p>
 </div>
 <div class="callout-content">
-<p><strong>Statistical LMs (1948):</strong> <span class="math inline">\(f\)</span> = count frequencies → pick the most common next word</p>
-<p><strong>Neural LMs (2003):</strong> <span class="math inline">\(f\)</span> = understand meaning → pick the word that <strong>makes sense</strong> next</p>
+<p><strong>Statistical LMs (1948):</strong> <span class="math inline">\(P\)</span> = count frequencies → pick the most common next word</p>
+<p><strong>Neural LMs (2003):</strong> <span class="math inline">\(P\)</span> = understand meaning → pick the word that <strong>makes sense</strong> next</p>
 </div>
 </div>
 </div>
@@ -791,10 +791,8 @@ Across the hills where rivers flow...</code></pre>
 <div style="font-size: 1.2em; text-align: center; margin: 0.5em 0;">
 <p>You don’t need to retrain the model. <strong>Just show it examples in the prompt.</strong></p>
 </div>
-<div class="fragment">
 <p>GPT-3 (2020) demonstrated that a large enough model could adapt to a new task from a handful of examples — with no gradient updates and no retraining cost, only the per-call cost of the prompt tokens themselves.</p>
 <p>This was called <strong>In-Context Learning (ICL)</strong>, and it unlocked prompt engineering as a discipline.</p>
-</div>
 </section>
 <section id="zero-shot-vs-few-shot" class="slide level2">
 <h2>Zero-Shot vs Few-Shot</h2>

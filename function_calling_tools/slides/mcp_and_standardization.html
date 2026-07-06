@@ -9,7 +9,7 @@
 <link href="mcp_and_standardization_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.9.38">
 
-  <meta name="dcterms.date" content="2026-06-11">
+  <meta name="dcterms.date" content="2026-07-06">
   <title>MCP &amp; Standardization</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -207,7 +207,7 @@
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-06-11</p>
+  <p class="date">2026-07-06</p>
 </section>
 <section>
 <section id="a.-the-problem" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
@@ -221,7 +221,8 @@
 <li><strong>B. MCP Architecture</strong> — The Model Context Protocol</li>
 <li><strong>C. Resources vs Tools</strong> — Active agency vs passive context</li>
 <li><strong>D. Production-Grade Plugins</strong> — AST discovery, shadowing, and safety</li>
-<li><strong>E. Wrap-up</strong> — MCP vs Custom + production strategy</li>
+<li><strong>E. Consuming MCP Servers</strong> — Discovery, transports, debugging, safety</li>
+<li><strong>F. Wrap-up</strong> — MCP vs Custom + production strategy</li>
 </ul>
 </section>
 <section id="the-fragmentation-problem" class="slide level2">
@@ -776,8 +777,169 @@
 </div>
 </section></section>
 <section>
-<section id="e.-wrap-up" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
-<h1>E. Wrap-up</h1>
+<section id="e.-consuming-mcp-servers" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #FF7A5C)">
+<h1>E. Consuming MCP Servers</h1>
+<p>The other side of the protocol — using servers you didn’t write</p>
+</section>
+<section id="consumption-over-creation" class="slide level2">
+<h2>Consumption Over Creation</h2>
+<p>Sections A–D <strong>built</strong> servers. But most teams <strong>consume</strong> far more servers than they author — the way you install packages more often than you publish them.</p>
+<ul>
+<li class="fragment">The “USB port” cuts <strong>both ways</strong>: once a server speaks MCP, <em>any</em> client can plug into it — and you can plug into <em>any</em> server</li>
+<li class="fragment">Reach for an existing server before writing one — databases, filesystems, GitHub, Slack, and web search already ship as MCP servers</li>
+<li class="fragment">Your job shifts from <em>writing integrations</em> to <strong>wiring and governing</strong> them</li>
+</ul>
+<div class="fragment">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Build vs.&nbsp;consume</strong></p>
+</div>
+<div class="callout-content">
+<p>Authoring (A–D) and consuming are the two halves of the same ecosystem. The skills below are what make consuming <em>safe</em>.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="discovery-where-servers-come-from" class="slide level2">
+<h2>Discovery: Where Servers Come From</h2>
+<p>Three sources, in rough order of trust:</p>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Source</th>
+<th style="text-align: left;">Example</th>
+<th style="text-align: left;">Trust</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Public registry</strong></td>
+<td style="text-align: left;"><a href="https://registry.modelcontextprotocol.io"><code>registry.modelcontextprotocol.io</code></a></td>
+<td style="text-align: left;">Unvetted — audit before use</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Managed / remote (3rd-party)</strong></td>
+<td style="text-align: left;">Vendor-hosted endpoints (GitHub, Slack, …)</td>
+<td style="text-align: left;">Vendor-operated, still scope it</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Internal / private registry</strong></td>
+<td style="text-align: left;">Your org’s gateway of approved servers</td>
+<td style="text-align: left;">Governed — prefer this in prod</td>
+</tr>
+</tbody>
+</table>
+<div class="fragment">
+<blockquote>
+<p>Treat a public-registry server like any other third-party dependency: read what it does <strong>before</strong> you grant it your filesystem or credentials.</p>
+</blockquote>
+</div>
+</section>
+<section id="two-transports" class="slide level2">
+<h2>Two Transports</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><strong>stdio</strong> — local <em>(covered in Section B)</em></p>
+<ul>
+<li>Client spawns the server as a subprocess</li>
+<li>Talks over stdin/stdout — no network, no ports</li>
+<li>Simplest; best for local tools &amp; prototyping</li>
+</ul>
+</div><div class="column" style="width:50%;">
+<p><strong>Streamable HTTP</strong> — remote</p>
+<ul>
+<li>Client connects to a <strong>hosted endpoint</strong> over HTTP</li>
+<li>Fewer deps, always up to date, smaller client footprint</li>
+<li>Heavier burden on the server operator</li>
+</ul>
+</div></div>
+<div class="fragment">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Terminology</strong></p>
+</div>
+<div class="callout-content">
+<p>The current remote transport is <strong>Streamable HTTP</strong> (MCP spec <code>2025-03-26</code>), which replaced the older <strong>HTTP+SSE</strong> transport. You’ll still see “SSE” in older servers and docs.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="debug-the-transport-not-the-prompt" class="slide level2">
+<h2>Debug the Transport, Not the Prompt</h2>
+<p>When the agent hallucinates a parameter, calls the wrong tool, or can’t parse a result — <strong>look at the wire before you touch the system prompt.</strong></p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><strong>MCP Inspector</strong></p>
+<ul>
+<li>Official dev tool — a local web panel</li>
+<li>List a server’s tools &amp; schemas</li>
+<li>Fire test calls, inspect raw JSON-RPC</li>
+<li>No agent loop required</li>
+</ul>
+</div><div class="column" style="width:50%;">
+<p><strong>Browser DevTools</strong></p>
+<ul>
+<li>For HTTP-transport servers</li>
+<li>Trace request / response streams</li>
+<li>Check latencies and status codes</li>
+</ul>
+</div></div>
+<div class="fragment">
+<blockquote>
+<p>Most “the model is dumb” bugs are really a malformed tool schema or a transport error — visible in the Inspector, invisible in the prompt.</p>
+</blockquote>
+</div>
+</section>
+<section id="consuming-safely" class="slide level2 smaller">
+<h2>Consuming Safely</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><strong>✅ Do</strong></p>
+<ul>
+<li><strong>Audit</strong> public/open-source servers before attaching them to anything with file or credential access</li>
+<li><strong>Env-var credentials</strong> — never hardcode keys in prompts or config</li>
+<li><strong>Human-in-the-loop</strong> on tool inputs that write or spend</li>
+<li><strong>Audit-log</strong> every tool call</li>
+<li><strong>RAG-for-tools</strong> — load tools on demand, drop them when done, to keep context clean (<a href="../../function_calling_tools/slides/efficient_tool_calling.html">Efficient Tool Calling</a>)</li>
+</ul>
+</div><div class="column" style="width:50%;">
+<p><strong>❌ Don’t</strong></p>
+<ul>
+<li>Tie core logic to <strong>unverified</strong> public servers</li>
+<li>Point a server at <strong>production</strong> data — use dev / obfuscated data</li>
+<li>Grant <strong>write</strong> access when <strong>read-only</strong> will do</li>
+<li>Give <strong>broad</strong> scope — restrict to the one project / resource it needs</li>
+</ul>
+</div></div>
+<div class="fragment">
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>The consumer’s golden rule</strong></p>
+</div>
+<div class="callout-content">
+<p>A server you didn’t write runs with the access <em>you</em> grant it. Scope tight, prefer read-only, and keep a human in the loop on anything that writes or spends.</p>
+</div>
+</div>
+</div>
+</div>
+</section></section>
+<section>
+<section id="f.-wrap-up" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
+<h1>F. Wrap-up</h1>
 
 </section>
 <section id="mcp-vs-custom-when-to-use-which" class="slide level2">
@@ -845,7 +1007,7 @@
 </div>
 </div>
 <div class="footer">
-<p>Further reading: <a href="https://modelcontextprotocol.io/specification">MCP Specification</a> · <a href="https://www.anthropic.com/engineering/harness-design-long-running-apps">Anthropic — Harness Design for Long-Running Application Development</a> · <a href="https://cursor.com/blog/continually-improving-agent-harness">Cursor — Continually Improving Agent Harness</a></p>
+<p>Further reading: <a href="https://modelcontextprotocol.io/specification">MCP Specification</a> · <a href="https://modelcontextprotocol.io/docs/concepts/transports">MCP Transports</a> · <a href="https://github.com/modelcontextprotocol/inspector">MCP Inspector</a> · <a href="https://registry.modelcontextprotocol.io">MCP Registry</a> · <a href="https://www.anthropic.com/engineering/harness-design-long-running-apps">Anthropic — Harness Design for Long-Running Application Development</a></p>
 </div>
 
 </div>
