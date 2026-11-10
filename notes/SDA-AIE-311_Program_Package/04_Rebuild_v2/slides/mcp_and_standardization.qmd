@@ -1,0 +1,628 @@
+---
+title: "MCP & Standardization"
+subtitle: "SDA-AIE-311 — Session 3"
+description: "Model Context Protocol — standardising tool integrations across vendors; resources vs tools; consuming third-party servers safely."
+builds_on: ["structured_outputs_and_tool_use"]
+duration: 55
+date: today
+format: revealjs
+---
+
+# A. The Problem {.sdaia-dark background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)"}
+
+Vendor lock-in and the need for a standard
+
+## Agenda
+
+- **A. The Problem** — Why every framework has its own tool format
+- **B. MCP Architecture** — The Model Context Protocol
+- **C. Resources vs Tools** — Active agency vs passive context
+- **D. Production-Grade Plugins** — AST discovery, shadowing, and safety
+- **E. Consuming MCP Servers** — Discovery, transports, debugging, safety
+- **F. Server-Side Trust** — Authorisation, read/write split, trust boundaries <!-- SDA-AIE-311 ADD (G3) -->
+- **G. Wrap-up** — MCP vs Custom + production strategy
+
+## The Fragmentation Problem
+
+Every framework invented its own tool integration:
+
+:::: {.columns}
+
+::: {.column width="33%" .fragment .fade-up}
+**LangChain**
+
+```python
+@tool
+def calculate(expr: str):
+    """Evaluate math."""
+    return eval(expr)
+```
+:::
+
+::: {.column width="33%" .fragment .fade-up}
+**OpenAI**
+
+```python
+tools = [{
+  "type": "function",
+  "function": {
+    "name": "calculate",
+    ...
+  }
+}]
+```
+:::
+
+::: {.column width="34%" .fragment .fade-up}
+**Semantic Kernel**
+
+```python
+@kernel_function
+def calculate(expr: str):
+    """Evaluate math."""
+    return eval(expr)
+```
+:::
+
+::::
+
+. . .
+
+::: {.callout-important}
+## The Problem
+Write a tool once, rewrite it for every framework. No portability, no ecosystem.
+:::
+
+## The "USB" Analogy
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**🔌 Proprietary Cables**
+
+```python
+# 1. For OpenAI
+openai_tool = {
+  "type": "function",
+  "function": { ... }
+}
+
+# 2. For Claude
+claude_tool = {
+  "name": "my_tool",
+  "input_schema": { ... }
+}
+
+# 3. For LangChain...
+# 4. For Semantic Kernel...
+```
+:::
+
+::: {.column width="50%"}
+**✨ Universal Port (MCP)**
+
+```python
+# Define once...
+@mcp.tool()
+def my_tool(x: int) -> int:
+    """Useful tool"""
+    return x * 2
+
+# Connects to EVERYONE:
+# ✅ Claude Desktop
+# ✅ IDEs (Cursor/Windsurf)
+# ✅ Zed
+# ✅ Any MCP Client
+```
+
+:::
+
+::::
+
+**MCP** = one standard protocol, any client can connect to any server.
+
+## MCP Architecture {.smaller}
+
+::: {.flow .flow-col}
+::: {.nest}
+[MCP Host (Claude Desktop, IDE, Your App)]{.nest-label}
+
+::: {.nest-inner}
+MCP Client
+:::
+:::
+::: {.flow-arrow}
+&#8597;
+[stdio / SSE]{.s}
+:::
+::: {.nest}
+[MCP Server (Your Code)]{.nest-label}
+
+::: {.flow}
+::: {.flow-step}
+[Tools]{.t}
+[`@mcp.tool()`]{.s}
+:::
+::: {.flow-step}
+[Resources]{.t}
+[`@mcp.resource()`]{.s}
+:::
+::: {.flow-step}
+[Prompts]{.t}
+[`@mcp.prompt()`]{.s}
+:::
+:::
+:::
+:::
+
+| Component | Role |
+|-----------|------|
+| **Host** | The app where the AI lives (Claude, Cursor, your agent) |
+| **Client** | The connector inside the host that speaks MCP |
+| **Server** | Your code — exposes tools, resources, and prompts |
+
+# B. MCP in Practice {.sdaia-dark background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)"}
+
+Building with FastMCP
+
+## Setting Up a Server {.smaller}
+
+`FastMCP` makes it as easy as FastAPI:
+
+```python
+from mcp.server.fastmcp import FastMCP
+
+mcp = FastMCP("Research Assistant Tools")
+
+@mcp.tool()
+def calculate(operation: str, operand_a: float, operand_b: float) -> dict:
+    """Executes a calculation using the internal registry."""
+    return registry.execute("execute_calculation", {
+        "operation": operation,
+        "operand_a": operand_a,
+        "operand_b": operand_b
+    })
+
+if __name__ == "__main__":
+    mcp.run()  # Runs over stdio by default
+```
+
+- **`@mcp.tool()`** — registers a function as an MCP tool
+- Type hints become the schema automatically
+- Docstrings become descriptions
+
+## Wrapping Your Existing Registry {.smaller}
+
+The key insight: **your `ToolRegistry` is the shared kernel**. MCP is just one interface.
+
+::: {.flow}
+::: {.flow-step .accent-navy}
+[ToolRegistry]{.t}
+[Domain Logic]{.s}
+:::
+::: {.flow-arrow}
+&rarr;
+:::
+:::: {.flow-branch}
+::: {.flow-step .accent-teal}
+[MCP Server]{.t}
+[`@mcp.tool()`]{.s}
+:::
+::: {.flow-step .accent-purple}
+[REST API]{.t}
+[FastAPI]{.s}
+:::
+::: {.flow-step .accent-purple}
+[CLI]{.t}
+[argparse]{.s}
+:::
+::::
+:::
+
+MCP tools delegate to `registry.execute()` — all rate limiting, permissions, and error handling still apply.
+
+## Building an MCP Client
+
+```python
+import asyncio
+from mcp import ClientSession, StdioServerParameters
+from mcp.client.stdio import stdio_client
+
+async def run_agent():
+    server_params = StdioServerParameters(
+        command="python", args=["server.py"]
+    )
+    async with stdio_client(server_params) as (read, write):
+        async with ClientSession(read, write) as session:
+            await session.initialize()
+
+            # Discover tools
+            tools = await session.list_tools()
+
+            # Call a tool
+            result = await session.call_tool(
+                "calculate",
+                {"operation": "add", "operand_a": 10, "operand_b": 5}
+            )
+            print(result.content[0].text)
+
+asyncio.run(run_agent())
+```
+
+## The Stdio Transport
+
+::: {.lanes style="grid-template-columns: repeat(2, 1fr)"}
+[Client (`simple_agent.py`)]{.lane-actor}
+[Server (`server.py`)]{.lane-actor}
+[spawn process (`python server.py`)]{.lane-msg style="--from:1; --to:2"}
+[initialize request (via stdin)]{.lane-msg style="--from:1; --to:2"}
+[initialize response (via stdout)]{.lane-msg .reply style="--from:1; --to:2"}
+[list_tools request]{.lane-msg style="--from:1; --to:2"}
+[tools list response]{.lane-msg .reply style="--from:1; --to:2"}
+[call_tool("calculate", args)]{.lane-msg style="--from:1; --to:2"}
+[tool result]{.lane-msg .reply style="--from:1; --to:2"}
+:::
+
+**Stdio transport**: client spawns server as a subprocess. They communicate via stdin/stdout pipes. No network, no ports — simple and secure for local use.
+
+# C. Resources vs Tools {.sdaia-dark background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)"}
+
+Active agency vs passive context
+
+## Two Types of Capabilities {auto-animate="true"}
+
+| | **Tools** | **Resources** |
+|---|---|---|
+| **Nature** | Active — *do* things | Passive — *read* things |
+| **Examples** | Calculate, send email, query DB | Logs, config files, data feeds |
+| **LLM interaction** | Model requests execution | Model reads for context |
+| **Token cost** | Full tool-call cycle | Direct context injection |
+| **Decorator** | `@mcp.tool()` | `@mcp.resource()` |
+
+## Resources in Practice
+
+```python
+@mcp.resource("system://logs/recent")
+def get_recent_logs() -> str:
+    """Reads the last 10 lines of the application log."""
+    try:
+        with open("app.log", "r") as f:
+            lines = f.readlines()
+            return "".join(lines[-10:])
+    except FileNotFoundError:
+        return "No logs available."
+```
+
+The client can **read** `system://logs/recent` anytime — no tool call overhead.
+
+## Prompts: Saved Prompt Engineering
+
+```python
+@mcp.prompt()
+def review_code(code: str) -> str:
+    """Standard code review prompt using our security guidelines."""
+    return f"""Review the following code for:
+    1. Hardcoded secrets
+    2. SQL injection vulnerabilities
+    3. Path traversal risks
+
+    Code:
+    {code}
+    """
+```
+
+Prompts save **best-practice prompt engineering** into the server — users get consistent, high-quality interactions.
+
+## Three of MCP's Four Primitives
+
+We cover **tools**, **resources**, and **prompts** below. MCP also defines a fourth primitive — **sampling** (letting servers request completions from the client's model) — which we leave for module 06.
+
+
+::: {.nest-row}
+::: {.actor}
+MCP Client
+:::
+::: {.flow-arrow}
+&rarr;
+:::
+::: {.nest}
+[MCP Server]{.nest-label}
+
+::: {.flow}
+::: {.flow-step .accent-teal}
+[Tools]{.t}
+[Active Actions &middot; `call_tool`]{.s}
+:::
+::: {.flow-step .accent-purple}
+[Resources]{.t}
+[Passive Data &middot; `read_resource`]{.s}
+:::
+::: {.flow-step .accent-orange}
+[Prompts]{.t}
+[Saved Templates &middot; `get_prompt`]{.s}
+:::
+:::
+:::
+:::
+
+# D. Production-Grade Plugins {.sdaia-dark background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)"}
+
+Building extensible, decoupled, and safe tool engines
+
+## The Startup Trap: Naive Import Scans
+
+How most frameworks load plugins: scan a directory and `importlib.import_module()` everything.
+
+. . .
+
+**Why this breaks in production:**
+
+1. **Circular Import Locks:** A tool imports `model_tools` which imports `registry` which imports the tools. *Crash.*
+2. **Missing Dependencies:** A machine-learning tool requires `torch` or `fal-client`. If the user hasn't installed those, the entire agent application crashes at startup.
+
+. . .
+
+> Decoupled architectures need a way to **inspect** a module's capabilities before loading its dependencies.
+
+## The Solution: Static AST Discovery
+
+[`NousResearch/hermes-agent`](https://github.com/NousResearch/hermes-agent) solves this by using Python's **Abstract Syntax Tree (`ast`)** module.
+
+```python
+# tools/registry.py (simplified)
+def discover_builtin_tools(tools_dir):
+    for path in Path(tools_dir).glob("*.py"):
+        # 1. Parse raw file statically (no imports executed!)
+        source = path.read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        
+        # 2. Check if top-level has a "registry.register" call
+        if any(is_registry_register_call(node) for node in tree.body):
+            # 3. Only import matching modules
+            importlib.import_module(f"tools.{path.stem}")
+```
+
+. . .
+
+::: {.callout-note}
+## The AST Win
+By scanning syntax blocks without executing the file, optional tools with uninstalled dependencies never trigger imports or crashes at startup. They are silently ignored until needed.
+:::
+
+## Shadowing & Name Collisions
+
+When combining built-in tools, dynamic MCP servers, and custom plugins, **name collisions** are inevitable.
+
+. . .
+
+**The Threat:** A third-party plugin or dynamic MCP server registers a tool named `read_file`. It silently shadows the built-in, secure `read_file` and steals user data.
+
+. . .
+
+[`NousResearch/hermes-agent`](https://github.com/NousResearch/hermes-agent) implements **shadowing protection** ([`tools/registry.py`](https://github.com/NousResearch/hermes-agent/blob/main/tools/registry.py)):
+
+```python
+def register(self, name, toolset, schema, handler, override=False):
+    existing = self._tools.get(name)
+    if existing and existing.toolset != toolset:
+        if both_are_mcp(existing, toolset):
+            pass # Allow MCP-to-MCP overwrite
+        elif override:
+            logger.info(f"Tool {name} overridden by {toolset} (override=True)")
+        else:
+            logger.error(f"Shadowing REJECTED: {name} (toolset {toolset})")
+            return
+```
+
+. . .
+
+> Core tools remain immutable unless a developer explicitly opts in via `override=True`.
+
+# E. Consuming MCP Servers {.sdaia-dark background-gradient="linear-gradient(135deg, #1C355E, #FF7A5C)"}
+
+The other side of the protocol — using servers you didn't write
+
+## Consumption Over Creation
+
+Sections A–D **built** servers. But most teams **consume** far more servers than they author — the way you install packages more often than you publish them.
+
+::: {.incremental}
+- The "USB port" cuts **both ways**: once a server speaks MCP, *any* client can plug into it — and you can plug into *any* server
+- Reach for an existing server before writing one — databases, filesystems, GitHub, Slack, and web search already ship as MCP servers
+- Your job shifts from *writing integrations* to **wiring and governing** them
+:::
+
+. . .
+
+::: {.callout-note}
+## Build vs. consume
+Authoring (A–D) and consuming are the two halves of the same ecosystem. The skills below are what make consuming *safe*.
+:::
+
+## Discovery: Where Servers Come From
+
+Three sources, in rough order of trust:
+
+| Source | Example | Trust |
+|:-------|:--------|:------|
+| **Public registry** | [`registry.modelcontextprotocol.io`](https://registry.modelcontextprotocol.io) | Unvetted — audit before use |
+| **Managed / remote (3rd-party)** | Vendor-hosted endpoints (GitHub, Slack, …) | Vendor-operated, still scope it |
+| **Internal / private registry** | Your org's gateway of approved servers | Governed — prefer this in prod |
+
+. . .
+
+> Treat a public-registry server like any other third-party dependency: read what it does **before** you grant it your filesystem or credentials.
+
+## Two Transports
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**stdio** — local *(covered in Section B)*
+
+- Client spawns the server as a subprocess
+- Talks over stdin/stdout — no network, no ports
+- Simplest; best for local tools & prototyping
+:::
+
+::: {.column width="50%"}
+**Streamable HTTP** — remote
+
+- Client connects to a **hosted endpoint** over HTTP
+- Fewer deps, always up to date, smaller client footprint
+- Heavier burden on the server operator
+:::
+
+::::
+
+. . .
+
+::: {.callout-note}
+## Terminology
+The current remote transport is **Streamable HTTP** (MCP spec `2025-03-26`), which replaced the older **HTTP+SSE** transport. You'll still see "SSE" in older servers and docs.
+:::
+
+## Debug the Transport, Not the Prompt
+
+When the agent hallucinates a parameter, calls the wrong tool, or can't parse a result — **look at the wire before you touch the system prompt.**
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**MCP Inspector**
+
+- Official dev tool — a local web panel
+- List a server's tools & schemas
+- Fire test calls, inspect raw JSON-RPC
+- No agent loop required
+:::
+
+::: {.column width="50%"}
+**Browser DevTools**
+
+- For HTTP-transport servers
+- Trace request / response streams
+- Check latencies and status codes
+:::
+
+::::
+
+. . .
+
+> Most "the model is dumb" bugs are really a malformed tool schema or a transport error — visible in the Inspector, invisible in the prompt.
+
+## Consuming Safely {.smaller}
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**✅ Do**
+
+- **Audit** public/open-source servers before attaching them to anything with file or credential access
+- **Env-var credentials** — never hardcode keys in prompts or config
+- **Human-in-the-loop** on tool inputs that write or spend
+- **Audit-log** every tool call
+- **RAG-for-tools** — load tools on demand, drop them when done, to keep context clean ([Efficient Tool Calling](../slides/efficient_tool_calling.html))
+:::
+
+::: {.column width="50%"}
+**❌ Don't**
+
+- Tie core logic to **unverified** public servers
+- Point a server at **production** data — use dev / obfuscated data
+- Grant **write** access when **read-only** will do
+- Give **broad** scope — restrict to the one project / resource it needs
+:::
+
+::::
+
+. . .
+
+::: {.callout-important}
+## The consumer's golden rule
+A server you didn't write runs with the access *you* grant it. Scope tight, prefer read-only, and keep a human in the loop on anything that writes or spends.
+:::
+
+# F. Server-Side Trust <!-- SDA-AIE-311 ADD (G3) --> {.sdaia-dark background-gradient="linear-gradient(135deg, #1C355E, #FF7A5C)"}
+
+The server decides, not the client
+
+## Authorisation Lives on the Server {.smaller}
+
+<!-- SDA-AIE-311 ADD (G3) -->
+
+A client can *request* any tool it can see. Seeing a tool is not permission to use it.
+
+```python
+@mcp.tool()
+def refund_order(order_id: str, amount: float, ctx: Context) -> Result:
+    identity = ctx.require_authenticated()          # who is calling?
+    if not identity.allowed("billing.refund"):      # server-side check
+        audit.log(denied=identity, tool="refund_order")
+        return Result(error="not authorised for refunds")
+    return billing.refund(order_id, amount, actor=identity)
+```
+
+::: {.callout-important}
+## The client is a stranger
+The MCP client may be Claude Desktop, a colleague's script, or an agent that was prompt-injected. Authorisation enforced in the *client* is a suggestion; enforced in the *server* it is a control. Log every call — allowed and denied — with the identity that made it.
+:::
+
+## Split Read Tools from Write Tools {.smaller}
+
+<!-- SDA-AIE-311 ADD (G3) -->
+
+One more server-side decision: a read tool and a write tool on the same resource are **different risk classes** and should be different tools.
+
+| | `get_order(id)` (read) | `cancel_order(id)` (write) |
+|:--|:--|:--|
+| Side effects | none | state change, maybe money |
+| Idempotent replay | safe | dangerous — needs an idempotency key |
+| Auto-approved? | usually yes | approval gate / human step |
+| Scope granted to a guest agent | ✔ | ✘ |
+
+. . .
+
+Give agents the read scope by default; grant write scopes one at a time, per role. When a task needs both, expose them as two tools so the *graph or policy* — not the model's mood — decides when the write edge is reachable (you build exactly that in the [flow-engineering session](../slides/flow_engineering.html)).
+
+# G. Wrap-up {.sdaia-dark background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)"}
+
+## MCP vs Custom: When to Use Which
+
+| Feature | Custom Registry ([Structured Outputs & Tool Calling](../slides/structured_outputs_and_tool_use.html)) | MCP Server (this session) |
+|---------|----------------------------|----------------------|
+| **Control** | Total — you own the loop | Limited by the host/client |
+| **Interoperability** | Low — works only with your code | High — any MCP client |
+| **Complexity** | Higher — build the chat loop | Lower — just define functions |
+| **Best for** | Standalone products/apps | Plugins, extensions, integrations |
+
+## Production Strategy {.sdaia-dark background-color="#1C355E" .smaller}
+
+Build your core logic in the **Tool Registry** (domain layer). Then expose it via **multiple interfaces**:
+
+1. **MCP Interface** — for IDEs, Claude Desktop, other AI clients
+2. **API Interface** — for your web frontend (React, etc.)
+3. **CLI Interface** — for devops and admin scripts
+
+. . .
+
+::: {.fragment .fade-up}
+```
+                    ┌─── MCP Server ──── Claude, Cursor, IDEs
+                    │
+  ToolRegistry ─────┼─── REST API ───── Web Frontend
+  (shared kernel)   │
+                    └─── CLI ─────────── Admin Scripts
+```
+
+Your `registry.py` is the **shared kernel**. MCP is just one view into it.
+:::
+
+::: {.callout-tip}
+## Try It Yourself
+Wrap the `ToolRegistry` you built in Lab 1 in a FastMCP server, add one `@mcp.resource()` (e.g. a status endpoint), and write a stdio client that calls it. The code on the previous slides is enough scaffolding.
+:::
+
+::: {.footer}
+Further reading: [MCP Specification](https://modelcontextprotocol.io/specification) · [MCP Transports](https://modelcontextprotocol.io/docs/concepts/transports) · [MCP Inspector](https://github.com/modelcontextprotocol/inspector) · [MCP Registry](https://registry.modelcontextprotocol.io) · [Anthropic — Harness Design for Long-Running Application Development](https://www.anthropic.com/engineering/harness-design-long-running-apps)
+:::

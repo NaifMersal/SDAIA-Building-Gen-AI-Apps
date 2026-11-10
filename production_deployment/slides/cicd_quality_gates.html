@@ -9,7 +9,7 @@
 <link href="cicd_quality_gates_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.9.38">
 
-  <meta name="dcterms.date" content="2026-07-06">
+  <meta name="dcterms.date" content="2026-11-10">
   <title>CI/CD Pipelines &amp; Quality Gates</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -98,7 +98,7 @@
     code span.vs { color: #20794d; } /* VerbatimString */
     code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="cicd_quality_gates_files/libs/revealjs/dist/theme/quarto-05b633aaffd58596cc6573a610a4b559.css">
+  <link rel="stylesheet" href="cicd_quality_gates_files/libs/revealjs/dist/theme/quarto-98a181cbe320dee6f668343ff9832aea.css">
   <link href="cicd_quality_gates_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="cicd_quality_gates_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="cicd_quality_gates_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -190,9 +190,6 @@
       margin-right: 0; 
     }
   </style>
-  <script src="cicd_quality_gates_files/libs/quarto-diagram/mermaid.min.js"></script>
-  <script src="cicd_quality_gates_files/libs/quarto-diagram/mermaid-init.js"></script>
-  <link href="cicd_quality_gates_files/libs/quarto-diagram/mermaid.css" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MCA4MCI+DQogIDxkZWZzPg0KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYSIgeDE9Ii0xLjkxMSIgeDI9IjIuOTg1IiB5MT0iLS44NDEiIHkyPSIxLjQxNCIgZ3JhZGllbnRVbml0cz0ib2JqZWN0Qm91bmRpbmdCb3giPg0KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjOTlkNjMzIi8+DQogICAgICA8c3RvcCBvZmZzZXQ9Ii41IiBzdG9wLWNvbG9yPSIjM2M5Ii8+DQogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMyNzM0NzAiLz4NCiAgICA8L2xpbmVhckdyYWRpZW50Pg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYSIgaWQ9ImQiIHgxPSItMy41NjkiIHgyPSIxLjMyOCIgeTE9Ii0xLjYwNSIgeTI9Ii42NTEiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2EiIGlkPSJlIiB4MT0iLTMuMDQ3IiB4Mj0iMS44NDkiIHkxPSItLjkwNCIgeTI9IjEuMzUyIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0iZiIgeDE9Ii0yLjg5IiB4Mj0iMi4wMDciIHkxPSItMS4yOTIiIHkyPSIuOTY0Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0iZyIgeDE9Ii0yLjQiIHgyPSIyLjQ5NyIgeTE9Ii0xLjA2NiIgeTI9IjEuMTg5Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0iaCIgeDE9Ii0uOTkyIiB4Mj0iMi42NzkiIHkxPSItLjQxOCIgeTI9IjEuMjczIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0iaSIgeDE9Ii0xLjUxMiIgeDI9IjIuMTU5IiB5MT0iLS4xOTciIHkyPSIxLjQ5NSIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYSIgaWQ9ImoiIHgxPSItLjkxNCIgeDI9IjIuNzU4IiB5MT0iLjA3OSIgeTI9IjEuNzcxIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0iayIgeDE9Ii0zLjQwNSIgeDI9IjEuNDkzIiB5MT0iLTEuMDY4IiB5Mj0iMS4xODciLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2EiIGlkPSJsIiB4MT0iLjM0NyIgeDI9IjMuMjg1IiB5MT0iLjE5OSIgeTI9IjEuNTUyIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0ibSIgeDE9Ii0uOTA1IiB4Mj0iMi43NjciIHkxPSIuMDgzIiB5Mj0iMS43NzUiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2EiIGlkPSJuIiB4MT0iLTIuMTE5IiB4Mj0iMi43NzgiIHkxPSItLjQ3NiIgeTI9IjEuNzc5Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0ibyIgeDE9Ii01LjY0NCIgeDI9Ii40ODYiIHkxPSItMi45OTgiIHkyPSIuNzQxIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0icCIgeDE9Ii0zLjQ5NSIgeDI9IjIuNjM2IiB5MT0iLTEuNjg3IiB5Mj0iMi4wNTMiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2EiIGlkPSJxIiB4MT0iLTEuNDIyIiB4Mj0iMy4xNzUiIHkxPSItLjkyMyIgeTI9IjEuODgyIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0iciIgeDE9Ii0zLjMwNiIgeDI9IjIuODI1IiB5MT0iLTIuMDcyIiB5Mj0iMS42NjgiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2EiIGlkPSJzIiB4MT0iLTEuNjgzIiB4Mj0iMi45MTQiIHkxPSItMS4wODEiIHkyPSIxLjcyMyIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYSIgaWQ9InQiIHgxPSItMS4xNTgiIHgyPSIyLjUyMSIgeTE9Ii0uMjYxIiB5Mj0iMS45ODMiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImIiIHgxPSIuMjYxIiB4Mj0iLjYyNCIgeTE9IjMuNTYiIHkyPSItMS40NjkiIGdyYWRpZW50VW5pdHM9Im9iamVjdEJvdW5kaW5nQm94Ij4NCiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzZjZiIvPg0KICAgICAgPHN0b3Agb2Zmc2V0PSIuNSIgc3RvcC1jb2xvcj0iIzYyNThhNiIvPg0KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMjczNDcwIi8+DQogICAgPC9saW5lYXJHcmFkaWVudD4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJ1IiB4MT0iLjE2MyIgeDI9Ii41MjYiIHkxPSI0LjkyNCIgeTI9Ii0uMTAzIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNiIiBpZD0idiIgeDE9Ii4zODYiIHgyPSIuNjU4IiB5MT0iMS44MjUiIHkyPSItMS45NDUiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJ3IiB4MT0iLjI1MiIgeDI9Ii42MTUiIHkxPSI0LjE4MiIgeTI9Ii0uODQ1Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNiIiBpZD0ieCIgeDE9Ii40MTciIHgyPSIuNjg5IiB5MT0iMS45IiB5Mj0iLTEuODciLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJ5IiB4MT0iLjQ4NSIgeDI9Ii43MDMiIHkxPSIuOTU2IiB5Mj0iLTIuMDYiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJ6IiB4MT0iLjM3NyIgeDI9Ii42NDkiIHkxPSIyLjQ1NSIgeTI9Ii0xLjMxNCIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYiIgaWQ9IkEiIHgxPSIuMTk5IiB4Mj0iLjU2MiIgeTE9IjQuOTIyIiB5Mj0iLS4xMDUiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJCIiB4MT0iLjQzNyIgeDI9Ii43MDkiIHkxPSIxLjYyNSIgeTI9Ii0yLjE0NSIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYiIgaWQ9IkMiIHgxPSIuMjYxIiB4Mj0iLjYyNCIgeTE9IjQuMDU1IiB5Mj0iLS45NzIiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJEIiB4MT0iLjUiIHgyPSIuNSIgeTE9IjMuMDQ1IiB5Mj0iLTEuOTI3Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNiIiBpZD0iRSIgeDE9Ii41IiB4Mj0iLjUiIHkxPSI0LjkwMSIgeTI9Ii0uMDcyIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNiIiBpZD0iRiIgeDE9Ii41IiB4Mj0iLjUiIHkxPSIyLjQzNSIgeTI9Ii0xLjI5NiIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYiIgaWQ9IkciIHgxPSIuNSIgeDI9Ii41IiB5MT0iLjkzNCIgeTI9Ii0yLjA1Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNiIiBpZD0iSCIgeDE9Ii41IiB4Mj0iLjUiIHkxPSIzLjc4NSIgeTI9Ii0xLjE4NyIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYiIgaWQ9IkkiIHgxPSIuNSIgeDI9Ii41IiB5MT0iMS44MDkiIHkyPSItMS45MjEiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJKIiB4MT0iLjUiIHgyPSIuNSIgeTE9IjMuMDQ2IiB5Mj0iLTEuOTI4Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNiIiBpZD0iSyIgeDE9Ii41IiB4Mj0iLjUiIHkxPSIyLjc5NCIgeTI9Ii0yLjE3NyIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYyIgeDE9IjUuMDEiIHgyPSItMi4yNzciIHkxPSItMS4zODMiIHkyPSIyLjAzOSIgZ3JhZGllbnRVbml0cz0ib2JqZWN0Qm91bmRpbmdCb3giPg0KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmRiZDRkIi8+DQogICAgICA8c3RvcCBvZmZzZXQ9Ii41IiBzdG9wLWNvbG9yPSIjZjYzIi8+DQogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMyNzM0NzAiLz4NCiAgICA8L2xpbmVhckdyYWRpZW50Pg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYyIgaWQ9IkwiIHgxPSIyLjIzOSIgeDI9Ii0yLjEzNCIgeTE9Ii0uMDgyIiB5Mj0iMS45NzEiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2MiIGlkPSJNIiB4MT0iNi4wOTgiIHgyPSItMS4xOTEiIHkxPSItMS44OTMiIHkyPSIxLjUyOCIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYyIgaWQ9Ik4iIHgxPSIzLjM4NCIgeDI9Ii0yLjA4MSIgeTE9Ii0xLjA4OCIgeTI9IjEuNDc3Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iTyIgeDE9IjIuNzgiIHgyPSItMi42ODYiIHkxPSItLjgwNSIgeTI9IjEuNzYxIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iUCIgeDE9IjcuMDc0IiB4Mj0iLS4yMTIiIHkxPSItMi4zNTMiIHkyPSIxLjA2OSIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYyIgaWQ9IlEiIHgxPSI1LjA3NSIgeDI9Ii0yLjIxMSIgeTE9Ii0xLjQxNCIgeTI9IjIuMDA4Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iUiIgeDE9IjUuNzM2IiB4Mj0iLTEuNTUiIHkxPSItMi4xOTQiIHkyPSIxLjIyOCIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYyIgaWQ9IlMiIHgxPSIyLjA4MSIgeDI9Ii0xLjc4MSIgeTE9Ii0uMDQ3IiB5Mj0iMS45Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iVCIgeDE9Ii43MjkiIHgyPSItMi4zNjEiIHkxPSIuMTM1IiB5Mj0iMS42OTIiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2MiIGlkPSJVIiB4MT0iMi43MTciIHgyPSItMi40MzMiIHkxPSItLjg2OCIgeTI9IjEuNzI4Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iViIgeDE9IjEuNTE3IiB4Mj0iLTIuMzQ3IiB5MT0iLS4yNjIiIHkyPSIxLjY4NCIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYyIgaWQ9IlciIHgxPSIzLjU0NCIgeDI9Ii0xLjYwNiIgeTE9Ii0xLjI4NCIgeTI9IjEuMzEyIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iWCIgeDE9IjIuNjMxIiB4Mj0iLTEuMjMzIiB5MT0iLS4zMjQiIHkyPSIxLjYyMyIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYyIgaWQ9IlkiIHgxPSIyLjAwMyIgeDI9Ii0xLjg2IiB5MT0iLS4wMDciIHkyPSIxLjk0Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iWiIgeDE9IjQuMTI1IiB4Mj0iLTEuMDI1IiB5MT0iLTEuMDc3IiB5Mj0iMS41MTgiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2MiIGlkPSJhYSIgeDE9IjMuMDIyIiB4Mj0iLTIuMTI3IiB5MT0iLTEuMDIxIiB5Mj0iMS41NzQiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2MiIGlkPSJhYiIgeDE9IjQuNjgxIiB4Mj0iLS40NjkiIHkxPSItMS44NTciIHkyPSIuNzM4Ii8+DQogIDwvZGVmcz4NCiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMy44IDEpIj4NCiAgPHBhdGggZmlsbD0iIzNjOSIgZD0ibTM2LjA0MSAyNi41My0xMS40NDggNi42MTF2MTMuMjJsMTEuNDQ4IDYuNjEyIDExLjQ0Ni02LjYwOFYzMy4xNDFaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjYSkiIGQ9Ik03MS40NjQgMjAuOTF2Ny45MzJsLTYuODctMy45NjVaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjZCkiIGQ9Ik02NC4yNDkgNTIuOTdsNi44NjkgMy45NjV2LTcuOTNaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjZSkiIGQ9Im02OC4xIDQ2LjM1OSAtNi44NjkgMy45Njd2LTcuOTMyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI2YpIiBkPSJNNzIuMzkyIDM1LjM3djcuOTMybC02Ljg2OSAtMy45NjVaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjZykiIGQ9Ik01Ni42NTEgNTYuODQ3djcuOTMybC02Ljg2OSAtMy45NjVaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjaCkiIGQ9Im01Ny43OTQgNTEuNjQzIC05LjE2IC01LjI4NiA5LjE2IC01LjI5WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI2kpIiBkPSJtNTcuNzk1IDUyLjk3IC05LjE2IDUuMjlWNDcuNjg0WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI2opIiBkPSJtNTcuNzkyIDM5Ljc0OSAtOS4xNTggNS4yODZ2LTEwLjU3MloiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNrKSIgZD0ibTU4LjUgNzAuMzE4IC02Ljg2OCAzLjk2N3YtNy45MzJaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjbCkiIGQ9Im00Ny40ODcgNDYuMzYxIC0xMS40NDYgLTYuNjEyIDExLjQ0NiAtNi42MTFaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjbSkiIGQ9Im00Ni4zNDQgNjEuMDc3IC05LjE1OCA1LjI4NnYtMTAuNTcyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI24pIiBkPSJtNDUuMTk5IDc0LjAzNSAtNi44NjggMy45NjV2LTcuOTMyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI28pIiBkPSJtNzAuMDIxIDYxLjc3NSAtNi44NjkgMy45Njd2LTcuOTMyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3ApIiBkPSJtNjguMSAzMy4xNDIgLTYuODY5IDMuOTY3di03LjkzMloiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNxKSIgZD0iTTU3Ljc5NCAyNy44NTJ2MTAuNTc2bC05LjE2IC01LjI5WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3IpIiBkPSJNNDUuMjAyIDYyLjg5MXY3LjkzMmwtNi44NjkgLTMuOTY3WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3MpIiBkPSJtNDYuMzQzIDU5Ljc1NiAtOS4xNTcgLTUuMjg2IDkuMTU3IC01LjI5WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3QpIiBkPSJtMzYuMDQxIDM5Ljc1IDExLjQ0NiA2LjYxMiAtMTEuNDQ2IDYuNjA4WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI2IpIiBkPSJtNjkuMzM0IDE3LjAzMSAtNi44NjkgMy45NjV2LTcuOTNaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjdSkiIGQ9Im01OC4wODIgNS40NiAtNi44NzEgMy45Njd2LTcuOTMyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3YpIiBkPSJtNTcuNzk2IDI2LjUyOSAtOS4xNjIgNS4yODZWMjEuMjQxWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3cpIiBkPSJtNDUuMiAxNC41NDUgLTYuODY5IC0zLjk2NSA2Ljg2OSAtMy45NjdaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjeCkiIGQ9Ik00Ni4zNDQgMTkuNzQ0VjMwLjMxOWwtOS4xNTggLTUuMjg2WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3kpIiBkPSJNMzYuMDQxIDI2LjUzdjEzLjIyTDI0LjU5MyAzMy4xNDFaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjeikiIGQ9Im0zNC44OTcgMjMuNzA5IC05LjE1OCAtNS4yODYgOS4xNTggLTUuMjlaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjQSkiIGQ9Im0zMy43NSA3LjkzMiAtNi44NyAtMy45NjUgNi44NyAtMy45NjdaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjQikiIGQ9Im0yMy40NDkgMzEuODE2IC05LjE1OCAtNS4yOSA5LjE1OCAtNS4yODVaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjQykiIGQ9Ik0xOS43NiA2LjAzOXY3LjkzMmwtNi44NjkgLTMuOTY1WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI0QpIiBkPSJtNTYuNjQ3IDIyLjY1MSAtNi44NzEgLTMuOTY3IDYuODcxIC0zLjk2N1oiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNFKSIgZD0ibTQ1LjIgMy45NjcgLTYuODY5IDMuOTY1di03LjkzMloiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNGKSIgZD0ibTQ2LjM0NCAxOC40MTcgLTkuMTU4IDUuMjg2di0xMC41NjhaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjRykiIGQ9Im00Ny40ODcgMzMuMTQxIC0xMS40NDYgNi42MTF2LTEzLjIyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI0gpIiBkPSJtMzMuNzUzIDEyLjgxNCAtNi44NzEgMy45Njd2LTcuOTMyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI0kpIiBkPSJtMzQuODk2IDI1LjAzMyAtOS4xNTggNS4yODZ2LTEwLjU3NVoiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNKKSIgZD0ibTIyLjMgMTguNjg0IC02Ljg3IDMuOTY1di03LjkzWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI0spIiBkPSJtNy41NTYgMjQuNjM3IC02Ljg3IC0zLjk2NSA2Ljg3IC0zLjk2N1oiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNjKSIgZD0ibTMzLjc1MSA3OC4wMDEgLTYuODcxIC0zLjk2NSA2Ljg3MSAtMy45NjdaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjTCkiIGQ9Ik0zNi4wNDEgMzkuNzV2MTMuMjJsLTExLjQ0OCAtNi42MTJaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjTSkiIGQ9Ik0yMi4zIDY2Ljc2M3Y3LjkzMmwtNi44NyAtMy45NjZaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjTikiIGQ9Im0yMy40NDkgNDYuMzYyIC05LjE1OCA1LjI4NnYtMTAuNTc2WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI08pIiBkPSJtMjMuNDQ5IDMzLjE0MiAtOS4xNTggNS4yOXYtMTAuNThaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjUCkiIGQ9Ik05LjYxNiA1OS40MDF2Ny45M2wtNi44NzEgLTMuOTY1WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI1EpIiBkPSJNMTAuODUxIDI4Ljg5OXY3LjkzMmwtNi44NzEgLTMuOTY1WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI1IpIiBkPSJtNi44NzEgNDAuMDkzIC02Ljg3MSAzLjk2NXYtNy45M1oiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNTKSIgZD0ibTM0Ljg5NCA2Ni4zNjcgLTkuMTYgLTUuMjg2IDkuMTYgLTUuMjlaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjVCkiIGQ9Im0zNi4wNDEgMzkuNzUgLTExLjQ0OCA2LjYwOHYtMTMuMjJaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjVSkiIGQ9Im0zMy43NSA2Ny40MjUgLTYuODcxIDMuOTY3di03LjkzMloiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNWKSIgZD0ibTM0Ljg5MiA1NC40NjcgLTkuMTU3IDUuMjl2LTEwLjU4MloiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNXKSIgZD0ibTIyLjI5OSA2MC44MTQgLTYuODY5IDMuOTY1di03LjkzWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI1gpIiBkPSJNMjMuNDQ5IDQ3LjY4M3YxMC41NzNsLTkuMTU4IC01LjI4NloiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNZKSIgZD0iTTIzLjQ0OSAzNC40NTl2MTAuNTczbC05LjE1OCAtNS4yODNaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjWikiIGQ9Im0xMC44NSA1MC4zMjYgLTYuODcxIC0zLjk2NyA2Ljg3MSAtMy45NjVaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjYWEpIiBkPSJtNy4xNDUgMjYuNTMxIC02Ljg2OSAzLjk2NXYtNy45MzJaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjYWIpIiBkPSJtNy41NTYgNTMuNDUyIC02Ljg3MSAzLjk2NXYtNy45MzVaIi8+DQogIDwvZz4NCjwvc3ZnPg0K">
 
 </head>
@@ -207,7 +204,7 @@
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-07-06</p>
+  <p class="date">2026-11-10</p>
 </section>
 <section>
 <section id="a.-ai-cicd-is-different" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
@@ -279,181 +276,85 @@
 </ul>
 </div>
 </section>
-<section id="the-4-stage-ai-pipeline" class="slide level2">
+<section id="the-4-stage-ai-pipeline" class="slide level2 smaller">
 <h2>The 4-Stage AI Pipeline</h2>
-<div class="cell" data-fig-width="9.5" data-fig-height="4" data-layout-align="default">
-<div class="cell-output-display">
-<div>
-<p></p><figure class=""><p></p>
-<div>
-<svg width="912" height="384" viewbox="0.00 0.00 1235.70 173.00" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none; display: block; margin: auto auto auto auto">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 169)">
-<title>G</title>
-<g id="clust4" class="cluster">
-<title>cluster_deploy</title>
-<path fill="#f7f9fc" stroke="#1c355e" stroke-dasharray="5,2" d="M1043.28,-8C1043.28,-8 1207.7,-8 1207.7,-8 1213.7,-8 1219.7,-14 1219.7,-20 1219.7,-20 1219.7,-89 1219.7,-89 1219.7,-95 1213.7,-101 1207.7,-101 1207.7,-101 1043.28,-101 1043.28,-101 1037.28,-101 1031.28,-95 1031.28,-89 1031.28,-89 1031.28,-20 1031.28,-20 1031.28,-14 1037.28,-8 1043.28,-8"></path>
-<text text-anchor="middle" x="1125.49" y="-86.2" font-family="Arial Bold" font-size="12.00" fill="#1c355e">Stage 4: Deploy</text>
-</g>
-<g id="clust3" class="cluster">
-<title>cluster_eval</title>
-<path fill="#f7f9fc" stroke="#1c355e" stroke-dasharray="5,2" d="M570.74,-10C570.74,-10 1002.28,-10 1002.28,-10 1008.28,-10 1014.28,-16 1014.28,-22 1014.28,-22 1014.28,-145 1014.28,-145 1014.28,-151 1008.28,-157 1002.28,-157 1002.28,-157 570.74,-157 570.74,-157 564.74,-157 558.74,-151 558.74,-145 558.74,-145 558.74,-22 558.74,-22 558.74,-16 564.74,-10 570.74,-10"></path>
-<text text-anchor="middle" x="786.51" y="-142.2" font-family="Arial Bold" font-size="12.00" fill="#1c355e">Stage 3: Evaluate</text>
-</g>
-<g id="clust1" class="cluster">
-<title>cluster_build</title>
-<path fill="#f7f9fc" stroke="#1c355e" stroke-dasharray="5,2" d="M20,-36C20,-36 311.76,-36 311.76,-36 317.76,-36 323.76,-42 323.76,-48 323.76,-48 323.76,-117 323.76,-117 323.76,-123 317.76,-129 311.76,-129 311.76,-129 20,-129 20,-129 14,-129 8,-123 8,-117 8,-117 8,-48 8,-48 8,-42 14,-36 20,-36"></path>
-<text text-anchor="middle" x="165.88" y="-114.2" font-family="Arial Bold" font-size="12.00" fill="#1c355e">Stage 1: Build</text>
-</g>
-<g id="clust2" class="cluster">
-<title>cluster_test</title>
-<path fill="#f7f9fc" stroke="#1c355e" stroke-dasharray="5,2" d="M352.76,-36C352.76,-36 529.74,-36 529.74,-36 535.74,-36 541.74,-42 541.74,-48 541.74,-48 541.74,-117 541.74,-117 541.74,-123 535.74,-129 529.74,-129 529.74,-129 352.76,-129 352.76,-129 346.76,-129 340.76,-123 340.76,-117 340.76,-117 340.76,-48 340.76,-48 340.76,-42 346.76,-36 352.76,-36"></path>
-<text text-anchor="middle" x="441.25" y="-114.2" font-family="Arial Bold" font-size="12.00" fill="#1c355e">Stage 2: Test</text>
-</g>
-<!-- B1 -->
-<g id="node1" class="node">
-<title>B1</title>
-<path fill="white" stroke="#1c355e" stroke-width="2" d="M94.42,-91.4C94.42,-91.4 35.19,-91.4 35.19,-91.4 29.19,-91.4 23.19,-85.4 23.19,-79.4 23.19,-79.4 23.19,-62.6 23.19,-62.6 23.19,-56.6 29.19,-50.6 35.19,-50.6 35.19,-50.6 94.42,-50.6 94.42,-50.6 100.42,-50.6 106.42,-56.6 106.42,-62.6 106.42,-62.6 106.42,-79.4 106.42,-79.4 106.42,-85.4 100.42,-91.4 94.42,-91.4"></path>
-<text text-anchor="middle" x="64.81" y="-74.3" font-family="Arial" font-size="11.00" fill="#1c355e">Lint</text>
-<text text-anchor="middle" x="64.81" y="-61.1" font-family="Arial" font-size="11.00" fill="#1c355e">(ruff, mypy)</text>
-</g>
-<!-- B2 -->
-<g id="node2" class="node">
-<title>B2</title>
-<path fill="white" stroke="#1c355e" stroke-width="2" d="M194.38,-91.4C194.38,-91.4 155.69,-91.4 155.69,-91.4 149.69,-91.4 143.69,-85.4 143.69,-79.4 143.69,-79.4 143.69,-62.6 143.69,-62.6 143.69,-56.6 149.69,-50.6 155.69,-50.6 155.69,-50.6 194.38,-50.6 194.38,-50.6 200.38,-50.6 206.38,-56.6 206.38,-62.6 206.38,-62.6 206.38,-79.4 206.38,-79.4 206.38,-85.4 200.38,-91.4 194.38,-91.4"></path>
-<text text-anchor="middle" x="175.03" y="-74.3" font-family="Arial" font-size="11.00" fill="#1c355e">Docker</text>
-<text text-anchor="middle" x="175.03" y="-61.1" font-family="Arial" font-size="11.00" fill="#1c355e">build</text>
-</g>
-<!-- B1&#45;&gt;B2 -->
-<g id="edge1" class="edge">
-<title>B1-&gt;B2</title>
-<path fill="none" stroke="#1c355e" stroke-width="2" d="M106.72,-71C115.4,-71 124.57,-71 133.24,-71"></path>
-<polygon fill="#1c355e" stroke="#1c355e" stroke-width="2" points="133.52,-74.5 143.52,-71 133.52,-67.5 133.52,-74.5"></polygon>
-</g>
-<!-- B3 -->
-<g id="node3" class="node">
-<title>B3</title>
-<path fill="white" stroke="#1c355e" stroke-width="2" d="M296.91,-91.4C296.91,-91.4 255.3,-91.4 255.3,-91.4 249.3,-91.4 243.3,-85.4 243.3,-79.4 243.3,-79.4 243.3,-62.6 243.3,-62.6 243.3,-56.6 249.3,-50.6 255.3,-50.6 255.3,-50.6 296.91,-50.6 296.91,-50.6 302.91,-50.6 308.91,-56.6 308.91,-62.6 308.91,-62.6 308.91,-79.4 308.91,-79.4 308.91,-85.4 302.91,-91.4 296.91,-91.4"></path>
-<text text-anchor="middle" x="276.11" y="-74.3" font-family="Arial" font-size="11.00" fill="#1c355e">Push to</text>
-<text text-anchor="middle" x="276.11" y="-61.1" font-family="Arial" font-size="11.00" fill="#1c355e">registry</text>
-</g>
-<!-- B2&#45;&gt;B3 -->
-<g id="edge2" class="edge">
-<title>B2-&gt;B3</title>
-<path fill="none" stroke="#1c355e" stroke-width="2" d="M206.57,-71C214.9,-71 224.09,-71 232.95,-71"></path>
-<polygon fill="#1c355e" stroke="#1c355e" stroke-width="2" points="233.13,-74.5 243.13,-71 233.13,-67.5 233.13,-74.5"></polygon>
-</g>
-<!-- T1 -->
-<g id="node4" class="node">
-<title>T1</title>
-<path fill="white" stroke="#1c355e" stroke-width="2" d="M397.76,-91.4C397.76,-91.4 367.76,-91.4 367.76,-91.4 361.76,-91.4 355.76,-85.4 355.76,-79.4 355.76,-79.4 355.76,-62.6 355.76,-62.6 355.76,-56.6 361.76,-50.6 367.76,-50.6 367.76,-50.6 397.76,-50.6 397.76,-50.6 403.76,-50.6 409.76,-56.6 409.76,-62.6 409.76,-62.6 409.76,-79.4 409.76,-79.4 409.76,-85.4 403.76,-91.4 397.76,-91.4"></path>
-<text text-anchor="middle" x="382.76" y="-74.3" font-family="Arial" font-size="11.00" fill="#1c355e">Unit</text>
-<text text-anchor="middle" x="382.76" y="-61.1" font-family="Arial" font-size="11.00" fill="#1c355e">tests</text>
-</g>
-<!-- B3&#45;&gt;T1 -->
-<g id="edge8" class="edge">
-<title>B3-&gt;T1</title>
-<path fill="none" stroke="#1c355e" stroke-width="2" d="M308.79,-71C320.33,-71 333.46,-71 345.38,-71"></path>
-<polygon fill="#1c355e" stroke="#1c355e" stroke-width="2" points="345.46,-74.5 355.46,-71 345.46,-67.5 345.46,-74.5"></polygon>
-</g>
-<!-- T2 -->
-<g id="node5" class="node">
-<title>T2</title>
-<path fill="white" stroke="#1c355e" stroke-width="2" d="M514.73,-91.4C514.73,-91.4 458.77,-91.4 458.77,-91.4 452.77,-91.4 446.77,-85.4 446.77,-79.4 446.77,-79.4 446.77,-62.6 446.77,-62.6 446.77,-56.6 452.77,-50.6 458.77,-50.6 458.77,-50.6 514.73,-50.6 514.73,-50.6 520.73,-50.6 526.73,-56.6 526.73,-62.6 526.73,-62.6 526.73,-79.4 526.73,-79.4 526.73,-85.4 520.73,-91.4 514.73,-91.4"></path>
-<text text-anchor="middle" x="486.75" y="-74.3" font-family="Arial" font-size="11.00" fill="#1c355e">Integration</text>
-<text text-anchor="middle" x="486.75" y="-61.1" font-family="Arial" font-size="11.00" fill="#1c355e">tests</text>
-</g>
-<!-- T1&#45;&gt;T2 -->
-<g id="edge3" class="edge">
-<title>T1-&gt;T2</title>
-<path fill="none" stroke="#1c355e" stroke-width="2" d="M409.76,-71C417.99,-71 427.38,-71 436.69,-71"></path>
-<polygon fill="#1c355e" stroke="#1c355e" stroke-width="2" points="436.69,-74.5 446.69,-71 436.69,-67.5 436.69,-74.5"></polygon>
-</g>
-<!-- E1 -->
-<g id="node6" class="node">
-<title>E1</title>
-<path fill="white" stroke="#1c355e" stroke-width="2" d="M639.03,-91.4C639.03,-91.4 585.97,-91.4 585.97,-91.4 579.97,-91.4 573.97,-85.4 573.97,-79.4 573.97,-79.4 573.97,-62.6 573.97,-62.6 573.97,-56.6 579.97,-50.6 585.97,-50.6 585.97,-50.6 639.03,-50.6 639.03,-50.6 645.03,-50.6 651.03,-56.6 651.03,-62.6 651.03,-62.6 651.03,-79.4 651.03,-79.4 651.03,-85.4 645.03,-91.4 639.03,-91.4"></path>
-<text text-anchor="middle" x="612.5" y="-74.3" font-family="Arial" font-size="11.00" fill="#1c355e">Run AI</text>
-<text text-anchor="middle" x="612.5" y="-61.1" font-family="Arial" font-size="11.00" fill="#1c355e">Eval Suite</text>
-</g>
-<!-- T2&#45;&gt;E1 -->
-<g id="edge9" class="edge">
-<title>T2-&gt;E1</title>
-<path fill="none" stroke="#1c355e" stroke-width="2" d="M526.9,-71C538.63,-71 551.63,-71 563.84,-71"></path>
-<polygon fill="#1c355e" stroke="#1c355e" stroke-width="2" points="563.87,-74.5 573.87,-71 563.87,-67.5 563.87,-74.5"></polygon>
-</g>
-<!-- E2 -->
-<g id="node7" class="node">
-<title>E2</title>
-<polygon fill="#9b8ec0" stroke="#1c355e" stroke-width="2" points="765.86,-111.3 688.17,-71 765.86,-30.7 843.55,-71 765.86,-111.3"></polygon>
-<text text-anchor="middle" x="765.86" y="-74.3" font-family="Arial" font-size="11.00" fill="white">Score</text>
-<text text-anchor="middle" x="765.86" y="-61.1" font-family="Arial" font-size="11.00" fill="white">≥ threshold?</text>
-</g>
-<!-- E1&#45;&gt;E2 -->
-<g id="edge4" class="edge">
-<title>E1-&gt;E2</title>
-<path fill="none" stroke="#1c355e" stroke-width="2" d="M651.31,-71C659.6,-71 668.71,-71 678.06,-71"></path>
-<polygon fill="#1c355e" stroke="#1c355e" stroke-width="2" points="678.26,-74.5 688.26,-71 678.26,-67.5 678.26,-74.5"></polygon>
-</g>
-<!-- E3 -->
-<g id="node8" class="node">
-<title>E3</title>
-<path fill="#00c9a7" stroke="#1c355e" stroke-width="2" d="M979.79,-61C979.79,-61 916.17,-61 916.17,-61 910.17,-61 904.17,-55 904.17,-49 904.17,-49 904.17,-37 904.17,-37 904.17,-31 910.17,-25 916.17,-25 916.17,-25 979.79,-25 979.79,-25 985.79,-25 991.79,-31 991.79,-37 991.79,-37 991.79,-49 991.79,-49 991.79,-55 985.79,-61 979.79,-61"></path>
-<text text-anchor="middle" x="947.98" y="-39.7" font-family="Arial" font-size="11.00" fill="white">Gate: PASS</text>
-</g>
-<!-- E2&#45;&gt;E3 -->
-<g id="edge5" class="edge">
-<title>E2-&gt;E3</title>
-<path fill="none" stroke="#1c355e" stroke-width="2" d="M826.09,-61.79C848.13,-58.37 872.97,-54.5 894.38,-51.18"></path>
-<polygon fill="#1c355e" stroke="#1c355e" stroke-width="2" points="894.92,-54.63 904.27,-49.64 893.85,-47.72 894.92,-54.63"></polygon>
-<text text-anchor="middle" x="870.07" y="-59" font-family="Arial" font-size="10.00" fill="#1c355e">Yes</text>
-</g>
-<!-- E4 -->
-<g id="node9" class="node">
-<title>E4</title>
-<path fill="#ff7a5c" stroke="#1c355e" stroke-width="2" d="M987.08,-119.4C987.08,-119.4 908.89,-119.4 908.89,-119.4 902.89,-119.4 896.89,-113.4 896.89,-107.4 896.89,-107.4 896.89,-90.6 896.89,-90.6 896.89,-84.6 902.89,-78.6 908.89,-78.6 908.89,-78.6 987.08,-78.6 987.08,-78.6 993.08,-78.6 999.08,-84.6 999.08,-90.6 999.08,-90.6 999.08,-107.4 999.08,-107.4 999.08,-113.4 993.08,-119.4 987.08,-119.4"></path>
-<text text-anchor="middle" x="947.98" y="-102.3" font-family="Arial" font-size="11.00" fill="white">Gate: FAIL</text>
-<text text-anchor="middle" x="947.98" y="-89.1" font-family="Arial" font-size="11.00" fill="white">❌ Block deploy</text>
-</g>
-<!-- E2&#45;&gt;E4 -->
-<g id="edge6" class="edge">
-<title>E2-&gt;E4</title>
-<path fill="none" stroke="#1c355e" stroke-width="2" d="M826.09,-80.21C845.56,-83.23 867.22,-86.6 886.76,-89.64"></path>
-<polygon fill="#1c355e" stroke="#1c355e" stroke-width="2" points="886.35,-93.12 896.77,-91.19 887.42,-86.2 886.35,-93.12"></polygon>
-<text text-anchor="middle" x="870.07" y="-91" font-family="Arial" font-size="10.00" fill="#1c355e">No</text>
-</g>
-<!-- D1 -->
-<g id="node10" class="node">
-<title>D1</title>
-<path fill="white" stroke="#1c355e" stroke-width="2" d="M1097.97,-63.4C1097.97,-63.4 1058.05,-63.4 1058.05,-63.4 1052.05,-63.4 1046.05,-57.4 1046.05,-51.4 1046.05,-51.4 1046.05,-34.6 1046.05,-34.6 1046.05,-28.6 1052.05,-22.6 1058.05,-22.6 1058.05,-22.6 1097.97,-22.6 1097.97,-22.6 1103.97,-22.6 1109.97,-28.6 1109.97,-34.6 1109.97,-34.6 1109.97,-51.4 1109.97,-51.4 1109.97,-57.4 1103.97,-63.4 1097.97,-63.4"></path>
-<text text-anchor="middle" x="1078.01" y="-46.3" font-family="Arial" font-size="11.00" fill="#1c355e">Canary</text>
-<text text-anchor="middle" x="1078.01" y="-33.1" font-family="Arial" font-size="11.00" fill="#1c355e">10%</text>
-</g>
-<!-- E3&#45;&gt;D1 -->
-<g id="edge10" class="edge">
-<title>E3-&gt;D1</title>
-<path fill="none" stroke="#1c355e" stroke-width="2" d="M991.97,-43C1006.09,-43 1021.75,-43 1035.75,-43"></path>
-<polygon fill="#1c355e" stroke="#1c355e" stroke-width="2" points="1036.07,-46.5 1046.07,-43 1036.07,-39.5 1036.07,-46.5"></polygon>
-</g>
-<!-- D2 -->
-<g id="node11" class="node">
-<title>D2</title>
-<path fill="white" stroke="#1c355e" stroke-width="2" d="M1192.68,-63.4C1192.68,-63.4 1158.76,-63.4 1158.76,-63.4 1152.76,-63.4 1146.76,-57.4 1146.76,-51.4 1146.76,-51.4 1146.76,-34.6 1146.76,-34.6 1146.76,-28.6 1152.76,-22.6 1158.76,-22.6 1158.76,-22.6 1192.68,-22.6 1192.68,-22.6 1198.68,-22.6 1204.68,-28.6 1204.68,-34.6 1204.68,-34.6 1204.68,-51.4 1204.68,-51.4 1204.68,-57.4 1198.68,-63.4 1192.68,-63.4"></path>
-<text text-anchor="middle" x="1175.72" y="-46.3" font-family="Arial" font-size="11.00" fill="#1c355e">Full</text>
-<text text-anchor="middle" x="1175.72" y="-33.1" font-family="Arial" font-size="11.00" fill="#1c355e">rollout</text>
-</g>
-<!-- D1&#45;&gt;D2 -->
-<g id="edge7" class="edge">
-<title>D1-&gt;D2</title>
-<path fill="none" stroke="#1c355e" stroke-width="2" d="M1109.82,-43C1118.3,-43 1127.61,-43 1136.46,-43"></path>
-<polygon fill="#1c355e" stroke="#1c355e" stroke-width="2" points="1136.56,-46.5 1146.56,-43 1136.56,-39.5 1136.56,-46.5"></polygon>
-</g>
-</g>
-</svg>
+<div class="columns">
+<div class="column" style="width:24%;">
+<div class="center">
+<p><span class="pill">Stage 1: Build</span></p>
 </div>
-<p></p></figure><p></p>
+<div class="flow flow-col">
+<div class="flow-step">
+<p><span class="t">Lint</span> <span class="s">ruff, mypy</span></p>
+</div>
+<div class="flow-arrow">
+<p>↓</p>
+</div>
+<div class="flow-step">
+<p><span class="t">Docker build</span></p>
+</div>
+<div class="flow-arrow">
+<p>↓</p>
+</div>
+<div class="flow-step">
+<p><span class="t">Push to registry</span></p>
 </div>
 </div>
+</div><div class="column" style="width:24%;">
+<div class="center">
+<p><span class="pill">Stage 2: Test</span></p>
 </div>
+<div class="flow flow-col">
+<div class="flow-step">
+<p><span class="t">Unit tests</span></p>
+</div>
+<div class="flow-arrow">
+<p>↓</p>
+</div>
+<div class="flow-step">
+<p><span class="t">Integration tests</span></p>
+</div>
+</div>
+</div><div class="column" style="width:27%;">
+<div class="center">
+<p><span class="pill">Stage 3: Evaluate</span></p>
+</div>
+<div class="flow flow-col">
+<div class="flow-step">
+<p><span class="t">Run AI Eval Suite</span></p>
+</div>
+<div class="flow-arrow">
+<p>↓</p>
+</div>
+<div class="flow-step accent-purple">
+<p><span class="t">Score ≥ threshold?</span></p>
+</div>
+<div class="flow-arrow">
+<p>↓</p>
+</div>
+<div class="flow-step accent-teal">
+<p><span class="t">Yes · Gate: PASS</span></p>
+</div>
+<div class="flow-step accent-orange">
+<p><span class="t">No · Gate: FAIL</span> <span class="s">❌ Block deploy</span></p>
+</div>
+</div>
+</div><div class="column" style="width:24%;">
+<div class="center">
+<p><span class="pill">Stage 4: Deploy</span></p>
+</div>
+<div class="flow flow-col">
+<div class="flow-step">
+<p><span class="t">Canary 10%</span></p>
+</div>
+<div class="flow-arrow">
+<p>↓</p>
+</div>
+<div class="flow-step">
+<p><span class="t">Full rollout</span></p>
+</div>
+</div>
+</div></div>
 <p>Each stage gates the next: a failed lint never reaches test, a failed eval never reaches deploy. <strong>Stage 3 — the AI eval gate — is the new piece</strong>; the rest is standard CI.</p>
 </section></section>
 <section>
@@ -631,38 +532,9 @@
 </section>
 <section id="quality-gate-decision-flow" class="slide level2 smaller">
 <h2>Quality Gate Decision Flow</h2>
-<div class="cell" data-reveal="true" data-fig-width="10" data-layout-align="default">
-<div class="cell-output-display">
-<div>
-<p></p><figure class=""><p></p>
-<div>
-<pre class="mermaid mermaid-js">graph LR
-  R["evaluate()"] --&gt; K{"Keyword?"}
-  K --&gt;|Yes| L{"Latency?"}
-  L --&gt;|Yes| S{"Safety?"}
-  S --&gt;|Yes| SR{"Semantic&lt;br/&gt;(cosine)?"}
-  SR --&gt;|Yes| C{"LLM judge&lt;br/&gt;(Part 3)?"}
-  C --&gt;|Yes| PASS["PASSES"]
-  K --&gt;|No| FAIL["FAILS"]
-  L --&gt;|No| FAIL
-  S --&gt;|No| FAIL
-  SR --&gt;|No| FAIL
-  C --&gt;|No| FAIL
-
-  style R fill:#F0F4F8,stroke:#1C355E,color:#1C355E
-  style K fill:#9B8EC0,stroke:#1C355E,color:#1C355E
-  style L fill:#9B8EC0,stroke:#1C355E,color:#1C355E
-  style S fill:#9B8EC0,stroke:#1C355E,color:#1C355E
-  style SR fill:#9B8EC0,stroke:#1C355E,color:#1C355E
-  style C fill:#1C355E,stroke:#00C9A7,color:#fff
-  style PASS fill:#00C9A7,stroke:#1C355E,color:#1C355E
-  style FAIL fill:#FF7A5C,stroke:#1C355E,color:#1C355E
-</pre>
-</div>
-<p></p></figure><p></p>
-</div>
-</div>
-</div>
+<svg viewbox="0 0 1160 255" width="100%" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Quality gate decision flow: evaluate() feeds five gates in series — keyword, latency, safety, semantic cosine, and the LLM judge — and only a Yes at every gate reaches PASSES; a No at any gate short-circuits to a single FAILS outcome.">
+<defs> <marker id="gate-arrow" viewbox="0 0 10 10" refx="9" refy="5" markerwidth="6" markerheight="6" orient="auto-start-reverse"> <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--sdaia-navy)"></path> </marker> <marker id="gate-arrow-fail" viewbox="0 0 10 10" refx="9" refy="5" markerwidth="6" markerheight="6" orient="auto-start-reverse"> <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--sdaia-orange)"></path> </marker> </defs> <g fill="none" stroke="var(--sdaia-navy)" stroke-width="2.5" marker-end="url(#gate-arrow)"> <path d="M 132 62 H 151"></path> <path d="M 297 62 H 316"></path> <path d="M 462 62 H 481"></path> <path d="M 627 62 H 646"></path> <path d="M 817 62 H 836"></path> <path d="M 1007 62 H 1026"></path> </g> <g fill="none" stroke="var(--sdaia-orange)" stroke-width="2.5"> <path d="M 225 101 V 150"></path> <path d="M 390 101 V 150"></path> <path d="M 555 101 V 150"></path> <path d="M 732 101 V 150"></path> <path d="M 922 101 V 150"></path> <path d="M 225 150 H 922"></path> <path d="M 575 150 V 176" marker-end="url(#gate-arrow-fail)"></path> </g> <g font-size="13" fill="var(--muted)" font-family="inherit"> <g text-anchor="middle"> <text x="141" y="16">Yes</text> <text x="306" y="16">Yes</text> <text x="471" y="16">Yes</text> <text x="636" y="16">Yes</text> <text x="826" y="16">Yes</text> <text x="1016" y="16">Yes</text> </g> <text x="232" y="126">No</text> <text x="397" y="126">No</text> <text x="562" y="126">No</text> <text x="739" y="126">No</text> <text x="929" y="126">No</text> </g> <g stroke="var(--sdaia-navy)" stroke-width="2.5"> <rect x="0" y="25" width="130" height="74" rx="12" fill="var(--sdaia-code-bg)"></rect> <rect x="155" y="25" width="140" height="74" rx="12" fill="var(--sdaia-purple-on-dark)"></rect> <rect x="320" y="25" width="140" height="74" rx="12" fill="var(--sdaia-purple-on-dark)"></rect> <rect x="485" y="25" width="140" height="74" rx="12" fill="var(--sdaia-purple-on-dark)"></rect> <rect x="650" y="25" width="165" height="74" rx="12" fill="var(--sdaia-purple-on-dark)"></rect> <rect x="840" y="25" width="165" height="74" rx="12" fill="var(--sdaia-navy)"></rect> <rect x="1030" y="25" width="110" height="74" rx="12" fill="var(--sdaia-teal-on-dark)"></rect> <rect x="460" y="180" width="230" height="60" rx="12" fill="var(--sdaia-coral-on-dark)"></rect> </g> <g font-size="17" font-weight="700" text-anchor="middle" font-family="inherit"> <text x="65" y="68" fill="var(--sdaia-navy)">evaluate()</text> <text x="225" y="68" fill="#101820">Keyword?</text> <text x="390" y="68" fill="#101820">Latency?</text> <text x="555" y="68" fill="#101820">Safety?</text> <text x="732" y="56" fill="#101820">Semantic</text> <text x="732" y="80" fill="#101820">(cosine)?</text> <text x="922" y="56" fill="#ffffff">LLM judge</text> <text x="922" y="80" fill="#ffffff">(Part 3)?</text> <text x="1085" y="68" fill="#101820">PASSES</text> <text x="575" y="217" fill="#101820">FAILS</text> </g>
+</svg>
 <p>Every metric must report <code>success = True</code>. The four cheap deterministic gates run first; any <code>No</code> short-circuits to <strong>FAILS</strong>, so most regressions fail before the paid LLM-judge gate (Part 3) ever runs.</p>
 <p><strong>Note on thresholds:</strong> Defaults (keyword ≥ 0.70, latency ≤ 5000ms, semantic ≥ 0.40, relevancy ≥ 0.70, pass_rate ≥ 90%) are starting points — adjust per your golden dataset and quality requirements.</p>
 <div class="callout callout-note callout-style-simple">
@@ -712,30 +584,38 @@
 <h1>D. GitHub Actions Pipeline</h1>
 <p>Full YAML pipeline with AI evaluation gate</p>
 </section>
-<section id="pipeline-architecture" class="slide level2">
+<section id="pipeline-architecture" class="slide level2 smaller">
 <h2>Pipeline Architecture</h2>
-<div class="cell" data-reveal="true" data-fig-width="10" data-layout-align="default">
-<div class="cell-output-display">
-<div>
-<p></p><figure class=""><p></p>
-<div>
-<pre class="mermaid mermaid-js">graph TD
-    PR["Push / PR"] --&gt; L["Job: lint&lt;br/&gt;ruff + mypy"]
-    L --&gt; T["Job: test&lt;br/&gt;pytest unit + integration"]
-    T --&gt; E["Job: evaluate&lt;br/&gt;DeepEval golden dataset"]
-    E --&gt;|pass_rate ≥ 0.90| D["Job: deploy&lt;br/&gt;docker build + push + ECS deploy"]
-    E --&gt;|pass_rate &lt; 0.90| FAIL["❌ BLOCKED&lt;br/&gt;Comment on PR with report"]
-
-    style PR fill:#F0F4F8,stroke:#1C355E,color:#1C355E
-    style L fill:#9B8EC0,stroke:#1C355E,color:#1C355E
-    style T fill:#9B8EC0,stroke:#1C355E,color:#1C355E
-    style E fill:#9B8EC0,stroke:#1C355E,color:#1C355E
-    style D fill:#00C9A7,stroke:#1C355E,color:#1C355E
-    style FAIL fill:#FF7A5C,stroke:#1C355E,color:#1C355E
-</pre>
+<div class="flow flow-col">
+<div class="flow-step">
+<p><span class="t">Push / PR</span></p>
 </div>
-<p></p></figure><p></p>
+<div class="flow-arrow">
+<p>↓</p>
 </div>
+<div class="flow-step accent-purple">
+<p><span class="t">Job: lint</span> <span class="s">ruff + mypy</span></p>
+</div>
+<div class="flow-arrow">
+<p>↓</p>
+</div>
+<div class="flow-step accent-purple">
+<p><span class="t">Job: test</span> <span class="s">pytest unit + integration</span></p>
+</div>
+<div class="flow-arrow">
+<p>↓</p>
+</div>
+<div class="flow-step accent-purple">
+<p><span class="t">Job: evaluate</span> <span class="s">DeepEval golden dataset</span></p>
+</div>
+<div class="flow-arrow">
+<p>↓</p>
+</div>
+<div class="flow-step accent-teal">
+<p><span class="t">pass_rate ≥ 0.90 · Job: deploy</span> <span class="s">docker build + push + ECS deploy</span></p>
+</div>
+<div class="flow-step accent-orange">
+<p><span class="t">pass_rate &lt; 0.90 · ❌ BLOCKED</span> <span class="s">Comment on PR with report</span></p>
 </div>
 </div>
 </section>
@@ -852,64 +732,52 @@
 </section>
 <section id="bluegreen-deployment" class="slide level2">
 <h2>Blue/Green Deployment</h2>
-<div class="cell" data-reveal="true" data-fig-width="10" data-layout-align="default">
-<div class="cell-output-display">
-<div>
-<p></p><figure class=""><p></p>
-<div>
-<pre class="mermaid mermaid-js">graph LR
-    LB["Load&lt;br/&gt;Balancer"] --&gt;|100% traffic| BLUE["Blue (v1)&lt;br/&gt;Active"]
-    LB -.-&gt;|0% traffic| GREEN["Green (v2)&lt;br/&gt;Idle"]
-
-    subgraph "Deployment Steps"
-        S1["1. Deploy v2 to Green"]
-        S2["2. Run smoke tests on Green"]
-        S3["3. Switch LB: 100% → Green"]
-        S4["4. Keep Blue for 15 min"]
-        S5["5. Rollback: flip LB back"]
-    end
-
-    style LB fill:#F0F4F8,stroke:#1C355E,color:#1C355E
-    style BLUE fill:#1C355E,stroke:#00C9A7,color:#fff
-    style GREEN fill:#00C9A7,stroke:#1C355E,color:#1C355E
-    style S1 fill:#9B8EC0,stroke:#1C355E,color:#1C355E
-    style S2 fill:#9B8EC0,stroke:#1C355E,color:#1C355E
-    style S3 fill:#9B8EC0,stroke:#1C355E,color:#1C355E
-    style S4 fill:#9B8EC0,stroke:#1C355E,color:#1C355E
-    style S5 fill:#9B8EC0,stroke:#1C355E,color:#1C355E
-</pre>
+<div class="columns">
+<div class="column" style="width:46%;">
+<div class="flow">
+<div class="flow-step">
+<p><span class="t">Load Balancer</span></p>
 </div>
-<p></p></figure><p></p>
+<div class="flow-arrow">
+<p>→</p>
+</div>
+<div class="flow-branch">
+<div class="flow-step accent-navy">
+<p><span class="t">Blue (v1) · Active</span> <span class="s">100% traffic</span></p>
+</div>
+<div class="flow-step accent-teal">
+<p><span class="t">Green (v2) · Idle</span> <span class="s">0% traffic</span></p>
 </div>
 </div>
 </div>
+</div><div class="column" style="width:54%;">
+<div class="card-dark tight center">
+<p><strong>Deployment Steps</strong></p>
+</div>
+<div class="flow flow-col">
+<div class="flow-step accent-purple">
+<p><span class="t">1. Deploy v2 to Green</span></p>
+</div>
+<div class="flow-step accent-purple">
+<p><span class="t">2. Run smoke tests on Green</span></p>
+</div>
+<div class="flow-step accent-purple">
+<p><span class="t">3. Switch LB: 100% → Green</span></p>
+</div>
+<div class="flow-step accent-purple">
+<p><span class="t">4. Keep Blue for 15 min</span></p>
+</div>
+<div class="flow-step accent-purple">
+<p><span class="t">5. Rollback: flip LB back</span></p>
+</div>
+</div>
+</div></div>
 </section>
 <section id="canary-deployment-for-ai" class="slide level2">
 <h2>Canary Deployment for AI</h2>
-<div class="cell" data-reveal="true" data-fig-width="10" data-layout-align="default">
-<div class="cell-output-display">
-<div>
-<p></p><figure class=""><p></p>
-<div>
-<pre class="mermaid mermaid-js">graph TD
-    LB["Load Balancer"] --&gt;|90%| STABLE["v1 (Stable)&lt;br/&gt;Baseline metrics"]
-    LB --&gt;|10%| CANARY["v2 (Canary)&lt;br/&gt;Monitored closely"]
-    CANARY --&gt; M["Metrics&lt;br/&gt;Collector"]
-    M --&gt;|All good after 30min| FULL["Promote: 100% → v2"]
-    M --&gt;|Error rate spike| ROLL["Rollback: 0% → v2"]
-
-    style LB fill:#F0F4F8,stroke:#1C355E,color:#1C355E
-    style STABLE fill:#1C355E,stroke:#00C9A7,color:#fff
-    style CANARY fill:#FF7A5C,stroke:#1C355E,color:#1C355E
-    style M fill:#9B8EC0,stroke:#1C355E,color:#1C355E
-    style FULL fill:#00C9A7,stroke:#1C355E,color:#1C355E
-    style ROLL fill:#9B8EC0,stroke:#1C355E,color:#1C355E
-</pre>
-</div>
-<p></p></figure><p></p>
-</div>
-</div>
-</div>
+<svg viewbox="0 0 1120 410" width="100%" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Canary deployment: the load balancer sends 90 percent of traffic to the stable v1 and 10 percent to the canary v2; only the canary feeds a metrics collector, which either promotes v2 to 100 percent after 30 clean minutes or rolls it back to 0 percent on an error-rate spike.">
+<defs> <marker id="canary-arrow" viewbox="0 0 10 10" refx="9" refy="5" markerwidth="6" markerheight="6" orient="auto-start-reverse"> <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--sdaia-navy)"></path> </marker> </defs> <g fill="none" stroke="var(--sdaia-navy)" stroke-width="2.5" marker-end="url(#canary-arrow)"> <path d="M 182 145 H 230 V 70 H 276"></path> <path d="M 182 175 H 230 V 310 H 276"></path> <path d="M 522 310 H 556"></path> <path d="M 752 300 H 800 V 220 H 876"></path> <path d="M 752 320 H 800 V 340 H 876"></path> </g> <g font-size="14" fill="var(--muted)" text-anchor="middle" font-family="inherit"> <text x="253" y="60">90%</text> <text x="253" y="300">10%</text> <text x="995" y="176">All good after 30 min</text> <text x="995" y="396">Error rate spike</text> </g> <g stroke="var(--sdaia-navy)" stroke-width="2.5"> <rect x="10" y="125" width="170" height="70" rx="12" fill="var(--sdaia-code-bg)"></rect> <rect x="280" y="30" width="240" height="80" rx="12" fill="var(--sdaia-navy)"></rect> <rect x="280" y="270" width="240" height="80" rx="12" fill="var(--sdaia-coral-on-dark)"></rect> <rect x="560" y="270" width="190" height="80" rx="12" fill="var(--sdaia-purple-on-dark)"></rect> <rect x="880" y="185" width="230" height="70" rx="12" fill="var(--sdaia-teal-on-dark)"></rect> <rect x="880" y="305" width="230" height="70" rx="12" fill="var(--sdaia-purple-on-dark)"></rect> </g> <g font-size="18" font-weight="700" text-anchor="middle" font-family="inherit"> <text x="95" y="166" fill="var(--sdaia-navy)">Load Balancer</text> <text x="400" y="62" fill="#ffffff">v1 (Stable)</text> <text x="400" y="90" fill="#ffffff">Baseline metrics</text> <text x="400" y="302" fill="#101820">v2 (Canary)</text> <text x="400" y="330" fill="#101820">Monitored closely</text> <text x="655" y="302" fill="#101820">Metrics</text> <text x="655" y="330" fill="#101820">Collector</text> <text x="995" y="227" fill="#101820">Promote: 100% → v2</text> <text x="995" y="347" fill="#101820">Rollback: 0% → v2</text> </g>
+</svg>
 </section>
 <section id="ai-specific-rollback-triggers" class="slide level2 smaller">
 <h2>AI-Specific Rollback Triggers</h2>

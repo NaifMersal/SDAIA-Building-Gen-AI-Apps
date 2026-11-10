@@ -1,0 +1,932 @@
+---
+title: "Structured Outputs & Tool Calling"
+subtitle: "SDA-AIE-311 — Session 1"
+description: "Constraint sampling, JSON schemas, the tool-calling loop, and the agent loop pattern."
+builds_on: []
+duration: 75
+lab_duration: 90
+date: today
+format: revealjs
+---
+<!-- SDA-AIE-311 ADD (LangChain conversion) -->
+
+# A. The Problem — Free Text Is Unparseable {.sdaia-dark background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)"}
+
+You know how to prompt — but prompts return *text*
+
+## Agenda
+
+- **A. The Problem** — Why free text breaks in production
+- **B. Structured Outputs** — Constraint sampling to the rescue
+- **C. LLMs Are Frozen** — The knowledge limitation
+- **D. The Early Approach** — Prompt-engineering tool calls (and why it fails)
+- **E. The Trained Solution** — Fine-tuned formats and the API abstraction
+- **F. Schema Design** — Practical rules for reliable tool use
+- **G. Parallel Tool Execution** — Running independent tool calls concurrently
+- **H. Wrap-up** — Decision tree, key takeaways, and what's next
+
+## A Classification System You Might Build
+
+You want to classify customer feedback automatically.
+
+You know models can output JSON — so you ask for it:
+
+```python
+from langchain_openai import ChatOpenAI
+from langchain_core.messages import HumanMessage
+
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+
+response = llm.invoke([HumanMessage(content=(
+    f"Classify the sentiment of this text: '{text}'\n"
+    "Return JSON with keys: sentiment, confidence, reasoning."
+))])
+result = response.content   # a raw string
+```
+
+. . .
+
+This looks reasonable. You test it on ten examples. It works. You ship it.
+
+## Four Different Outputs, One Prompt
+
+Same prompt. Four real model outputs. All semantically correct.
+
+| Run | Output | Parseable? |
+|-----|--------|------------|
+| 1 | `{"sentiment": "positive", "confidence": 0.95, "reasoning": "..."}` | Yes ✓ |
+| 2 | `{"Sentiment": "Positive", "Confidence": "high"}` | Wrong keys |
+| 3 | `Sure! {"sentiment": "positive", "confidence": 0.9, "reasoning": "..."}` | Needs stripping |
+| 4 | `{"sentiment": "positive", "reasoning": "upbeat tone"}` | Missing field |
+
+
+. . .
+
+::: {.callout-important}
+## The Core Observation
+The model *tries* to comply — but nothing physically prevents it from straying.
+:::
+
+## What You Actually Need
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**What You're Getting**
+
+- Raw `str` from `response.content`
+- Inconsistent key casing
+- Missing or extra fields
+- Prose prefix before the JSON
+- `json.loads()` fails randomly
+
+→ **Hope-based parsing**
+:::
+
+::: {.column width="50%"}
+**What You Actually Need**
+
+- A typed `sentiment` field
+- A `float` confidence score
+- A `str` reasoning field
+- A guarantee these fields exist
+- Code that does `result.sentiment`
+
+→ **Guaranteed data**
+:::
+
+::::
+
+::: {.callout-note}
+The fix is not a better prompt. The fix is removing the model's freedom to choose the format at all.
+:::
+
+# B. Structured Outputs — Constraint Sampling {.sdaia-dark background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)"}
+
+Recall what you know about sampling — then constrain it
+
+## How Constraint Sampling Works
+
+Constraint sampling **zeros out** tokens that would violate the schema.
+
+| Position | Generating… | Valid tokens only |
+|----------|-------------|-------------------|
+| 1 | `{` | only `{` can open a JSON object |
+| 2–12 | `"sentiment"` | only valid field name in schema |
+| 13–14 | `": "` | structural JSON |
+| 15 | `"` | opening quote |
+| **16–23** | **`positive` / `negative` / `neutral`** | **only these 3 tokens have non-zero prob** |
+| 24+ | `", "confidence": 0.87, ...` | rest of schema follows |
+
+::: {.callout-tip}
+This is not post-processing. It happens *at sampling time* (often called **logit masking**) — an invalid token cannot be generated, because it has zero probability before the sample is drawn.
+:::
+
+::: {.notes}
+**Structure is enforced; semantic correctness is not.** The model can still output the wrong number in a valid `float` field, or pick the wrong enum value among the legal choices. Constraint sampling guarantees a parseable shape, not a correct answer.
+:::
+
+## The API Call with `with_structured_output` {.smaller}
+
+```python
+class SentimentResult(BaseModel):
+    sentiment: Literal["positive", "negative", "neutral"]
+    confidence: float
+    reasoning: str
+```
+
+```python
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+structured_llm = llm.with_structured_output(SentimentResult)
+
+result = structured_llm.invoke(
+    f"Classify the sentiment of: '{text}'"
+)   # returns a SentimentResult object directly
+```
+
+| | Before | After |
+|--|--------|-------|
+| **Access** | `response.content` | `result` (returned directly) |
+| **Type** | `str` | `SentimentResult` |
+| **Usage** | `json.loads(result)` | `result.sentiment` |
+| **Reliability** | Fails on edge cases | Guaranteed valid |
+
+
+::: {.callout-note}
+For details on provider support and configuration, see the [LangChain Structured Output Docs](https://python.langchain.com/docs/how_to/structured_output/).
+:::
+
+# C. LLMs Are Frozen — The Knowledge Problem {.sdaia-dark background-gradient="linear-gradient(135deg, #1C355E, #FF7A5C)"}
+
+Format solved. New problem: the model cannot look things up.
+
+
+## Three Concrete Failure Cases
+
+:::: {.columns}
+
+::: {.column width="33%"}
+**Live Prices**
+
+*"What is NVIDIA's stock price?"*
+
+The model will confidently give a number — from training data. That number is stale by months or years.
+:::
+
+::: {.column width="33%"}
+**Recent Events**
+
+*"What happened in the news today?"*
+
+The model cannot know. It will either say "I don't know" or hallucinate plausible-sounding events.
+:::
+
+::: {.column width="34%"}
+**Private Data**
+
+*"What is the status of order #9821?"*
+
+Your database was never in the training data. The model has no way to access it.
+:::
+
+::::
+
+::: {.callout-note}
+These are **structural limitations**, not bugs. A more capable model does not fix them. Access to live data does.
+:::
+
+## The Architectural Answer
+
+The solution is not a better model. It is a better *architecture*.
+
+::: {.lanes style="grid-template-columns: repeat(4, 1fr)"}
+[User]{.lane-actor}
+[LLM]{.lane-actor}
+[Your Code]{.lane-actor}
+[Live Data Source]{.lane-actor}
+["What is NVIDIA's stock price?"]{.lane-msg style="--from:1; --to:2"}
+[*I need live data — signal need*]{.lane-msg style="--from:2; --to:3"}
+[(structured signal) fetch_stock_price("NVDA")]{.lane-msg style="--from:2; --to:3"}
+[API call / database query]{.lane-msg style="--from:3; --to:4"}
+[`{"price": 142.50, "timestamp": "2026-02-23"}`]{.lane-msg .reply style="--from:3; --to:4"}
+[tool result: $142.50]{.lane-msg .reply style="--from:2; --to:3"}
+["NVIDIA is currently trading at $142.50."]{.lane-msg .reply style="--from:1; --to:2"}
+:::
+
+The LLM's job: **signal the need** for data. Your code: **fetch** it. The LLM: **answer** with real information.
+
+## The Remaining Question
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**What We Need**
+
+A reliable mechanism for the LLM to signal:
+
+1. *Which* function to call
+2. *What arguments* to pass
+3. In a form your code can parse
+
+Structured. Every time. Not occasionally.
+:::
+
+::: {.column width="50%"}
+**The Early Approach (Preview)**
+
+You already know how to get structured output from a model.
+
+What if you prompt-engineered a special action format?
+
+```
+System: When you need data, output:
+ACTION: search
+QUERY: <your query>
+```
+
+Let's try it.
+:::
+
+::::
+
+# D. The Early Approach — Prompt-Engineering Tool Calls {.sdaia-dark background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)"}
+
+The obvious idea — and why it fails
+
+## The Obvious Idea {.smaller}
+
+```python
+system_prompt = """You are a helpful assistant with access to a search tool.
+When you need to look up information, output EXACTLY this format:
+
+ACTION: search
+QUERY: <your search query>
+
+Do not add any other text before or after this format.
+"""
+
+from langchain_core.messages import SystemMessage, HumanMessage
+
+response = llm.invoke([
+    SystemMessage(content=system_prompt),
+    HumanMessage(content="What is NVIDIA's current stock price?")
+])
+```
+
+> [**MRKL (Karpas et al., 2022)**](https://arxiv.org/abs/2205.00445) — the action-only agent pattern; later refined by ReAct (with a reasoning scratchpad), then displaced by trained tool formats (next section).
+
+## Ships Clean. Fails Silently.
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**In testing — 20 queries, all clean**
+
+```
+ACTION: search
+QUERY: NVIDIA current stock price 2026
+```
+
+Parseable. Ship it.
+:::
+
+::: {.column width="50%"}
+**Production — week two**
+
+```
+I don't have real-time stock data,
+but NVIDIA was trading around $480
+in early 2024…
+```
+
+Parser finds no `ACTION:`. Falls through.
+:::
+
+::::
+
+. . .
+
+::: {.callout-important}
+## The Failure Changed Shape
+Section A's broken JSON raised `json.loads()` errors — loud, logged, easy to find.
+
+Here: **no parse error. No API call. Nothing logged.** The user reads a confident 2024 price. The system silently lies.
+:::
+
+
+
+# E. The Trained Solution — Fine-Tuned Format to API {.sdaia-dark background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)"}
+
+If the prompt can't enforce format, train it in
+
+## The Training Insight
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**The Prompt Approach**
+*(Section D)*
+
+The system message tells the model to output `ACTION: search`.
+
+The instruction competes with every other learned pattern in the model's weights.
+
+Result: inconsistent.
+:::
+
+::: {.column width="50%"}
+**The Training Approach**
+
+During supervised fine-tuning (SFT), thousands of examples show the model using a specific token-level format for tool calls.
+
+The format becomes a *learned behavior*, not an instruction.
+
+Result: reliable.
+:::
+
+::::
+
+
+## A Concrete Example — Llama 3.1's Format
+
+```
+<|python_tag|>{"name": "get_weather", "parameters": {"city": "Riyadh"}}<|eom_id|>
+```
+
+Token-by-token annotations:
+
+| Token | Role |
+|-------|------|
+| `<\|python_tag\|>` | Special token: "I am about to make a tool call" |
+| `{"name": "get_weather", ...}` | JSON payload constrained by fine-tuning |
+| `<\|eom_id\|>` | End-of-message: "tool call complete, stop generating" |
+
+. . .
+
+::: {.callout-note}
+This is not magic — it is the `ACTION: search` pattern, baked into fine-tuning data at massive scale. The model learned to produce this format reliably because it saw it thousands of times during training.
+:::
+
+## Every Major Model Has This Format
+
+::: {.incremental}
+| Model | Trigger Mechanism | Notes |
+|-------|------------------|-------|
+| **Llama 3.1** | `<\|python_tag\|>` special token | Open weights — format is public |
+| **GPT-4o** | Internal routing tokens | Abstracted behind the API |
+| **Claude** | Internal XML-like tags | `<function_calls>` format in weights |
+| **Mistral** | `[TOOL_CALLS]` token | Similar to Llama approach |
+| **Gemini** | Internal function call tokens | Abstracted behind the API |
+:::
+
+::: {.callout-tip}
+You don't need to know the internal format of any model. The OpenAI-compatible API abstracts all of it into a single unified interface.
+:::
+
+## The API Abstraction
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**Without the API**
+
+```python
+# Detect Llama's format manually
+if "<|python_tag|>" in content:
+    json_str = content.split(
+        "<|python_tag|>"
+    )[1].split("<|eom_id|>")[0]
+    call = json.loads(json_str)
+    # Now handle Claude's format...
+    # Now handle GPT's format...
+    # Now handle Mistral's format...
+```
+
+One parser per model. Brittle. Unscalable.
+:::
+
+::: {.column width="50%"}
+**With the API**
+
+```python
+# Same code for every model
+tool_call = response.tool_calls[0]
+name = tool_call["name"]
+args = tool_call["args"]   # already a dict
+```
+
+One interface. Works with every model.
+:::
+
+::::
+
+## Step 1 — Define the Tool (JSON Schema) {.smaller}
+
+```python
+calculator_schema = {
+    "type": "function",
+    "function": {
+        "name": "execute_calculation",
+        "description": (
+            "Executes arithmetic operations. Use when the user asks to "
+            "calculate percentages, rates, compound growth, or any "
+            "arithmetic. Example: '15% of 500' → multiply(500, 0.15)"
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "operation": {
+                    "type": "string",
+                    "enum": ["add", "subtract", "multiply", "divide", "pow"],
+                    "description": "The arithmetic operation to perform"
+                },
+                "operand_a": {"type": "number", "description": "First operand"},
+                "operand_b": {"type": "number", "description": "Second operand"}
+            },
+            "required": ["operation", "operand_a", "operand_b"]
+        }
+    }
+}
+```
+
+::: {.callout-note}
+`description` is a prompt to the model — it controls when this tool is selected. The `enum` on `operation` applies the same constraint-sampling mechanism as Section B.
+:::
+
+## Step 2 — API Call 1: Send Tool Definitions
+
+```python
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.1)  # low temp: more deterministic
+
+llm_with_tools = llm.bind_tools(
+    [calculator_schema],        # ← inject tool definitions
+    tool_choice="auto",         # ← model decides whether to call
+    parallel_tool_calls=True,   # ← allow multiple tools in a single response
+)
+response = llm_with_tools.invoke(messages)   # conversation so far
+```
+
+- **`tools`** — list of JSON Schema definitions; the model reads these as context
+- **`tool_choice="auto"`** — model can call a tool or respond directly
+- **`tool_choice="required"`** — forces a tool call (useful for testing)
+
+## Step 3 — Parse the Response {.smaller}
+
+The API response when the model wants to call a tool:
+
+```json
+{
+  "choices": [{
+    "message": {
+      "role": "assistant",
+      "content": null,
+      "tool_calls": [{
+        "id": "call_abc123",
+        "type": "function",
+        "function": {
+          "name": "execute_calculation",
+          "arguments": "{\"operation\": \"multiply\", \"operand_a\": 500, \"operand_b\": 0.15}"
+        }
+      }]
+    }
+  }]
+}
+```
+
+```python
+tool_call = response.tool_calls[0]        # LangChain gives plain dicts
+name     = tool_call["name"]              # "execute_calculation"
+args     = tool_call["args"]              # dict — already parsed
+tool_id  = tool_call["id"]                # "call_abc123" — keep this
+```
+
+::: {.callout-tip}
+LangChain parses `args` into a dict for you — but rare edge cases can still produce malformed tool arguments, so wrap tool execution in a `try/except`.
+:::
+
+## Step 4 — Execute and Feed Back
+
+```python
+# 1. Execute your local function
+result = execute_calculation(**args)   # {"success": True, "result": 75.0}
+
+# 2. Append the assistant's tool_call message first
+messages.append(response)              # AIMessage carrying tool_calls
+
+# 3. Append the tool result with the matching ID
+messages.append(ToolMessage(
+    content=json.dumps(result),
+    tool_call_id=tool_call["id"]       # ← must match tool_calls[0]["id"] exactly
+))
+```
+
+::: {.callout-important}
+`tool_call_id` is the linking key. The model uses it to match its request to your result. If the IDs don't match, the model cannot construct its final answer correctly.
+:::
+
+## Step 5 — API Call 2: Final Answer
+
+```python
+# Second call — model sees the tool result and responds to the user
+final_response = llm_with_tools.invoke(messages)  # user + tool_call + tool_result
+print(final_response.content)
+# → "15% of 500 is 75."
+```
+
+## The Agent Loop — Demystified {#the-agent-loop-demystified} <!-- SDA-AIE-311 ADD (anchor for Session 6) -->
+
+```python
+def run_agent(query: str, max_steps: int = 10) -> str:
+    messages = [HumanMessage(content=query)]
+
+    for step in range(max_steps):
+        response = llm_with_tools.invoke(messages)  # 1. Ask the LLM
+        messages.append(response)                   # 2. Add assistant msg
+
+        if response.tool_calls:                     # 3. If model wants to act...
+            for tc in response.tool_calls:
+                result = execute_tool(tc)
+                messages.append(ToolMessage(        # 4. Add tool result(s)
+                    content=str(result),
+                    tool_call_id=tc["id"]
+                ))
+        else:                                       # 5. If no tools, final answer
+            return response.content
+
+    return "Max steps reached"                      # Safety limit
+```
+
+# F. Schema Design {#f-schema-design .sdaia-dark background-gradient="linear-gradient(135deg, #1C355E, #FF7A5C)"}
+
+Practical rules for making tools fire reliably
+
+## The Description Field Is a Prompt
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**Weak description**
+
+```json
+"description": "Does math"
+```
+
+The model will call this for arithmetic — maybe. It will not call it for "what is 15% of 500?" because the description gives no hints about use cases.
+:::
+
+::: {.column width="50%"}
+**Strong description**
+
+```json
+"description": "Executes arithmetic
+operations. Use when the user asks
+to calculate percentages, rates,
+compound growth, or any arithmetic.
+Example: '15% of 500' →
+multiply(500, 0.15)"
+```
+
+Purpose + examples + edge cases = reliable triggering.
+:::
+
+::::
+
+::: {.callout-tip}
+Complete the sentence: *"Use this tool when the user wants to..."* — if your description doesn't finish that sentence clearly, the model will miss calls.
+:::
+
+## Enums Are the Single Biggest Win
+
+::: {.flow}
+::: {.flow-step}
+[User: 'add 5 and 3']{.t}
+:::
+::: {.flow-arrow}
+&rarr;
+:::
+::: {.flow-step}
+[Schema Type?]{.t}
+:::
+::: {.flow-arrow}
+&rarr;
+:::
+:::: {.flow-branch}
+::: {.flow-step .accent-orange}
+[Ambiguous output: 'plus', 'Add', 'addition']{.t}
+[String (free text)]{.s}
+:::
+::: {.flow-step .accent-teal}
+[Precise output: 'add']{.t}
+[Enum (constrained)]{.s}
+:::
+::::
+:::
+
+::: {.callout-note}
+Same constraint-sampling mechanism as Section B's `Literal["positive","negative","neutral"]` — now applied to tool parameters. One pattern, two applications.
+:::
+
+## Structuring Nested Parameters {.smaller}
+
+```python
+"parameters": {
+    "type": "object",
+    "properties": {
+        "location": {
+            "type": "object",
+            "properties": {
+                "city":    {"type": "string", "description": "City name in English"},
+                "country": {"type": "string", "enum": ["SA", "US", "UK", "AE"]}
+            },
+            "required": ["city"]          # ← required at the nested level too
+        },
+        "price_range": {
+            "type": "string",
+            "enum": ["budget", "mid", "luxury"]
+        }
+    },
+    "required": ["location"]              # ← required at the top level
+}
+```
+
+. . .
+
+> Apply `required` at every level of nesting. A missing required field causes a silent partial call that your code cannot handle cleanly.
+
+## Structured Error Returns
+
+**The tool always returns a dict. It never raises an uncaught exception.**
+
+```python
+def execute_calculation(operation, operand_a, operand_b):
+    try:
+        if operation == "divide" and operand_b == 0:
+            return {"success": False,
+                    "result": None,
+                    "error": "Division by zero is not allowed."}
+        # ... perform operation ...
+        return {"success": True, "result": answer, "error": None}
+    except Exception as e:
+        return {"success": False, "result": None,
+                "error": f"Calculation error: {str(e)}"}
+```
+
+. . .
+
+The LLM receives the structured error as a `tool` message and **explains it naturally** to the user — no stack traces exposed, conversation continues.
+
+
+## Schema Design Checklist {.smaller}
+
+::: {.incremental}
+| Principle | What to Do |
+|-----------|------------|
+| **Verb names** | `get_weather`, `execute_calculation`, `search_hotels` |
+| **Rich descriptions** | Purpose + examples + edge cases |
+| **Enums over strings** | Constrain values wherever a fixed set exists |
+| **Explicit `required`** | List every mandatory field at every nesting level |
+| **Nested objects** | Group related params into sub-objects, not flat strings |
+| **Structured errors** | `{success, result, error}` — always a dict, never an exception |
+| **Low temperature** | `temperature=0.1` for tool-calling calls |
+:::
+
+. . .
+
+::: {.callout-note}
+**Per-step latency mental model.** Every tool call is a separate HTTP round-trip — model → your code → external service → back. Budget one call ≈ one network hop's worth of latency, then add the model's time-to-first-token. [Observability & Evaluation](../slides/observability_and_evaluation.html) attributes cost and latency per agent step using exactly this accounting.
+:::
+
+. . .
+
+> Reliable schemas make the basic loop work. Next: how to make it *fast* when the model returns multiple tool calls in one turn.
+
+# G. Parallel Tool Execution {.sdaia-dark background-gradient="linear-gradient(135deg, #00C9A7, #1C355E)"}
+
+Independent tool calls don't need to wait in line
+
+## The Sequential Bottleneck
+
+Look back at the agent loop from Section E:
+
+```python
+for tc in response.tool_calls:
+    result = execute_tool(tc)              # ← blocks until done
+    messages.append(ToolMessage(content=str(result),
+                                tool_call_id=tc["id"]))
+```
+
+. . .
+
+Recall `parallel_tool_calls=True` from Step 2 — the **model** can request multiple tool calls in one response. But this `for` loop runs them **one at a time**. If the model returns 3 calls that each take 2 seconds, the user waits 6 seconds.
+
+. . .
+
+> The model already gave you permission to parallelize. The bottleneck is on your side.
+
+## The Mental Model: One Chef, No Idle Time
+
+There is only **one chef** (the Event Loop — async is single-threaded):
+
+::: {.incremental}
+- **Sequential** — Chef puts a dish in the oven, then **stands and stares at the oven** until it's done. Only then starts the next dish.
+- **Async** — Chef puts a dish in the oven, and while it's cooking (waiting for the API response), **immediately starts prepping the next dish**. No idle time.
+:::
+
+. . .
+
+> `await` is the moment the chef puts something in the oven and turns to the next task.
+> The chef never changes — **one thread, no idle waiting**.
+
+## The Sequential Problem
+
+When the model returns three tool calls in one response:
+
+```python
+# Sequential: 6+ seconds for 3 independent calls
+result_1 = execute_tool(response.tool_calls[0])   # ← blocks until done
+result_2 = execute_tool(response.tool_calls[1])   # ← only starts after #1
+result_3 = execute_tool(response.tool_calls[2])   # ← only starts after #2
+```
+
+. . .
+
+```python
+# Parallel: ~2 seconds — all 3 tools start at the same time
+results = await asyncio.gather(
+    execute_tool(response.tool_calls[0]),         # ← starts immediately
+    execute_tool(response.tool_calls[1]),         # ← starts immediately
+    execute_tool(response.tool_calls[2]),         # ← starts immediately
+)
+```
+
+**3x speedup**, same correctness.
+
+## asyncio.gather in Practice {.smaller}
+
+```python
+async def run_step(messages, llm_with_tools):
+    response = await llm_with_tools.ainvoke(messages)  # async version
+    calls = response.tool_calls or []
+
+    # Dispatch every tool call concurrently
+    results = await asyncio.gather(
+        *[execute_tool(call) for call in calls]
+    )
+
+    for call, result in zip(calls, results):
+        messages.append(ToolMessage(
+            content=json.dumps(result),
+            tool_call_id=call["id"],
+        ))
+    return messages
+```
+
+. . .
+
+::: {.callout-tip}
+## The One Rule
+`await` is what enables parallelism. A function that never uses `await` **blocks the entire event loop** — all other tasks wait. Use `ainvoke` (not `invoke`), and make `execute_tool` async too.
+:::
+
+::: {.callout-note}
+## Advanced: Blocking Libraries
+If a tool uses a blocking library like `requests.get()`, wrap it:
+`await loop.run_in_executor(None, blocking_fn)`. Otherwise it stalls every other task on the event loop.
+:::
+
+## When to Parallelize
+
+| Scenario | Parallelize? | Why |
+|:---------|:-------------|:----|
+| Two independent API lookups in one turn | **Yes** | No shared state — pure speedup |
+| Search the web, then summarize the results | **No** | Summarize depends on the search output |
+| Three database reads against different tables | **Yes** | No write conflict, no ordering |
+| Write a record, then read it back | **No** | Read depends on the write |
+
+. . .
+
+> **Rule:** Parallelize calls that share no **data dependencies**. You'll apply this same rule to multi-agent dispatch in [Patterns of Collaboration](../slides/patterns_of_collaboration.html).
+
+# H. Wrap-up {.sdaia-dark background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)"}
+
+Where to use each pattern, and what's next
+
+## The Decision Tree
+
+::: {.card-dark .tight .center}
+**Who orchestrates the next step?**
+:::
+
+:::: {.columns}
+
+::: {.column width="33%"}
+::: {.flow .flow-col}
+::: {.flow-step .accent-purple}
+[Structured Outputs]{.t}
+[Your code (one-shot)]{.s}
+:::
+::: {.flow-arrow}
+&darr;
+[Example]{.s}
+:::
+::: {.flow-step}
+[Extract entities]{.s}
+[Classify text]{.s}
+[Format reports]{.s}
+:::
+:::
+:::
+
+::: {.column width="33%"}
+::: {.flow .flow-col}
+::: {.flow-step .accent-teal}
+[Tool Calling]{.t}
+[The model (in a loop)]{.s}
+:::
+::: {.flow-arrow}
+&darr;
+[Example]{.s}
+:::
+::: {.flow-step}
+[Search database]{.s}
+[Call API]{.s}
+[Run calculation]{.s}
+:::
+:::
+:::
+
+::: {.column width="33%"}
+::: {.flow .flow-col}
+::: {.flow-step .accent-orange}
+[Standard Chat]{.t}
+[A human (turn-by-turn)]{.s}
+:::
+::: {.flow-arrow}
+&darr;
+[Example]{.s}
+:::
+::: {.flow-step}
+[Explain concept]{.s}
+[Write poem]{.s}
+[Brainstorm ideas]{.s}
+:::
+:::
+:::
+
+::::
+
+The axis isn't "data vs action" — tool calls also return data. The axis is **who decides what happens next**: your code pre-decides the schema, the model picks tools turn after turn, or the user keeps replying.
+
+## The System Prompt Is a Control Surface {.smaller}
+
+The final control surface of an agent is the **system prompt**.
+
+::: {.flow}
+::: {.flow-step .accent-navy}
+[ReAct Loop]{.t}
+[Identical Python Code]{.s}
+:::
+::: {.flow-arrow}
+&rarr;
+:::
+:::: {.flow-branch}
+::: {.flow-step .accent-purple}
+[Researcher Prompt]{.t}
+[+ Search Tools]{.s}
+:::
+::: {.flow-step .accent-orange}
+[Writer Prompt]{.t}
+[+ Writer Tools]{.s}
+:::
+::: {.flow-step .accent-teal}
+[Critic Prompt]{.t}
+[+ Critic Tools]{.s}
+:::
+::::
+:::
+
+::: {.callout-tip}
+A good prompt defines: **Role** + **Tool Instructions** + **Quality Bar** + **Failure Handling**.
+:::
+
+:::{.callout-note}
+**[Patterns of Collaboration](../slides/patterns_of_collaboration.html) preview:** Multi-agent systems are simply multiple instances of this exact ReAct loop, each with specialized prompts and toolsets.
+:::
+
+:::{.notes}
+- **Identical Python:** The underlying engine/ReAct loop remains constant.
+- **Prompt & Tool Configuration:** The system prompt and tool definitions alone dictate the agent's personality, goals, and style.
+:::
+
+
+## Key Takeaways {.smaller}
+
+1. **Free text is a format-contract problem** — instructions are suggestions; constraints are structural.
+2. **Structured Outputs enforce contracts at sampling time** — the model cannot produce an invalid token.
+3. **LLMs are frozen snapshots** — live data, recent events, and private data require an architectural solution.
+4. **Prompt-engineered tool formats are unreliable** — same root cause as unstructured text output.
+5. **Tool calling works because models are trained on a specific format** — the API abstracts this format away.
+6. **The two-call loop is the core protocol** — API Call 1 gets the tool request; your code executes; API Call 2 gets the answer. Wrap it in a `while` and you have an agent.
+7. **Schema quality determines tool reliability** — descriptions, enums, required fields, and structured errors are not optional.
+8. **Parallelize independent calls** — `asyncio.gather` collapses N sequential tool calls into one wall-clock wait.
+

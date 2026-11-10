@@ -9,7 +9,7 @@
 <link href="advanced_retrieval_query_processing_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.9.38">
 
-  <meta name="dcterms.date" content="2026-07-06">
+  <meta name="dcterms.date" content="2026-11-10">
   <title>Beyond Basic Search</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -98,7 +98,7 @@
     code span.vs { color: #20794d; } /* VerbatimString */
     code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="advanced_retrieval_query_processing_files/libs/revealjs/dist/theme/quarto-05b633aaffd58596cc6573a610a4b559.css">
+  <link rel="stylesheet" href="advanced_retrieval_query_processing_files/libs/revealjs/dist/theme/quarto-98a181cbe320dee6f668343ff9832aea.css">
   <link href="advanced_retrieval_query_processing_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="advanced_retrieval_query_processing_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="advanced_retrieval_query_processing_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -207,7 +207,7 @@
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-07-06</p>
+  <p class="date">2026-11-10</p>
 </section>
 <section>
 <section id="a.-why-simple-search-fails" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
@@ -483,27 +483,8 @@
 </section>
 <section id="the-two-stage-pattern" class="slide level2">
 <h2>The Two-Stage Pattern</h2>
-<div class="cell" data-reveal="true" data-fig-width="10" data-layout-align="default">
-<div class="cell-output-display">
-<div>
-<p></p><figure class=""><p></p>
-<div>
-<pre class="mermaid mermaid-js">sequenceDiagram
-    participant Query
-    participant BiEncoder as Bi-Encoder&lt;br/&gt;(Fast, Broad)
-    participant CrossEncoder as Cross-Encoder&lt;br/&gt;(Slow, Accurate)
-    participant LLM
-
-    Query-&gt;&gt;BiEncoder: "What is FlashAttention?"
-    BiEncoder--&gt;&gt;BiEncoder: Top 50 candidates (fast)
-    BiEncoder-&gt;&gt;CrossEncoder: 50 (query, doc) pairs
-    CrossEncoder--&gt;&gt;CrossEncoder: Score each pair
-    CrossEncoder-&gt;&gt;LLM: Top 5 re-ranked results
-</pre>
-</div>
-<p></p></figure><p></p>
-</div>
-</div>
+<div class="lanes" style="grid-template-columns: repeat(4, 1fr)">
+<p><span class="lane-actor">Query</span> <span class="lane-actor">Bi-Encoder (Fast, Broad)</span> <span class="lane-actor">Cross-Encoder (Slow, Accurate)</span> <span class="lane-actor">LLM</span> <span class="lane-msg" style="--from:1; --to:2">“What is FlashAttention?”</span> <span class="lane-msg reply" style="--from:2; --to:3">Top 50 candidates (fast)</span> <span class="lane-msg" style="--from:2; --to:3">50 (query, doc) pairs</span> <span class="lane-msg reply" style="--from:3; --to:4">Score each pair</span> <span class="lane-msg" style="--from:3; --to:4">Top 5 re-ranked results</span></p>
 </div>
 </section>
 <section id="code-reranker" class="slide level2">
@@ -573,33 +554,44 @@
 <h1>D. Adaptive Retrieval</h1>
 <p>Let evaluation drive a corrective action at query time</p>
 </section>
-<section id="corrective-rag-crag" class="slide level2">
+<section id="corrective-rag-crag" class="slide level2 smaller">
 <h2>Corrective RAG (CRAG)</h2>
 <p><a href="https://arxiv.org/abs/2401.15884">Corrective Retrieval-Augmented Generation</a> (Yan et al., 2024).</p>
-<div class="cell" data-reveal="true" data-fig-width="10" data-layout-align="default">
-<div class="cell-output-display">
-<div>
-<p></p><figure class=""><p></p>
-<div>
-<pre class="mermaid mermaid-js">flowchart LR
-    Q["Query"] --&gt; R["Retrieve&lt;br/&gt;Documents"]
-    R --&gt; E{"Evaluate&lt;br/&gt;Relevance"}
-    E -- "High&lt;br/&gt;Confidence" --&gt; P["Pass Through"]
-    E -- "Ambiguous" --&gt; F["Filter Noise&lt;br/&gt;+ Supplement"]
-    E -- "Incorrect" --&gt; W["Discard +&lt;br/&gt;Web Search"]
-    P &amp; F &amp; W --&gt; G["LLM&lt;br/&gt;Generation"]
-
-    style Q fill:#9B8EC0,stroke:#1C355E,color:#fff
-    style R fill:#00C9A7,stroke:#1C355E,color:#fff
-    style E fill:#FF7A5C,stroke:#1C355E,color:#fff
-    style P fill:#00C9A7,stroke:#1C355E,color:#fff
-    style F fill:#9B8EC0,stroke:#1C355E,color:#fff
-    style W fill:#FF7A5C,stroke:#1C355E,color:#fff
-    style G fill:#1C355E,stroke:#1C355E,color:#fff
-</pre>
+<div class="flow">
+<div class="flow-step accent-purple">
+<p><span class="t">Query</span></p>
 </div>
-<p></p></figure><p></p>
+<div class="flow-arrow">
+<p>→</p>
 </div>
+<div class="flow-step accent-teal">
+<p><span class="t">Retrieve</span> <span class="s">Documents</span></p>
+</div>
+<div class="flow-arrow">
+<p>→</p>
+</div>
+<div class="flow-step accent-orange">
+<p><span class="t">Evaluate</span> <span class="s">Relevance</span></p>
+</div>
+<div class="flow-arrow">
+<p>→</p>
+</div>
+<div class="flow-branch">
+<div class="flow-step accent-teal">
+<p><span class="t">Pass Through</span> <span class="s">High Confidence</span></p>
+</div>
+<div class="flow-step accent-purple">
+<p><span class="t">Filter Noise + Supplement</span> <span class="s">Ambiguous</span></p>
+</div>
+<div class="flow-step accent-orange">
+<p><span class="t">Discard + Web Search</span> <span class="s">Incorrect</span></p>
+</div>
+</div>
+<div class="flow-arrow">
+<p>→</p>
+</div>
+<div class="flow-step accent-navy">
+<p><span class="t">LLM</span> <span class="s">Generation</span></p>
 </div>
 </div>
 <p>The same <strong>relevance evaluation</strong> you learned to measure offline now runs <strong>online</strong> — a corrective action is taken based on confidence.</p>
@@ -883,37 +875,62 @@
 <span id="cb8-10"><a href=""></a>    queries.extend(response.strip().split(<span class="st">'</span><span class="ch">\n</span><span class="st">'</span>))</span>
 <span id="cb8-11"><a href=""></a>    <span class="cf">return</span> queries[:n <span class="op">+</span> <span class="dv">1</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="query-decomposition" class="slide level2">
+<section id="query-decomposition" class="slide level2 smaller">
 <h2>Query Decomposition</h2>
 <p>Complex questions contain <strong>multiple sub-questions</strong> — search for each separately.</p>
-<div class="cell" data-reveal="true" data-fig-width="10" data-layout-align="default">
-<div class="cell-output-display">
-<div>
-<p></p><figure class=""><p></p>
-<div>
-<pre class="mermaid mermaid-js">flowchart LR
-    A["Complex Query"] --&gt; B["Sub-Query 1"]
-    A --&gt; C["Sub-Query 2"]
-    A --&gt; D["Sub-Query 3"]
-    B --&gt; E["Results 1"]
-    C --&gt; F["Results 2"]
-    D --&gt; G["Results 3"]
-    E &amp; F &amp; G --&gt; H["Merge +&lt;br/&gt;Deduplicate"]
-    H --&gt; I["LLM&lt;br/&gt;Generation"]
-
-    style A fill:#9B8EC0,stroke:#1C355E,color:#fff
-    style B fill:#00C9A7,stroke:#1C355E,color:#fff
-    style C fill:#00C9A7,stroke:#1C355E,color:#fff
-    style D fill:#00C9A7,stroke:#1C355E,color:#fff
-    style E fill:#FF7A5C,stroke:#1C355E,color:#fff
-    style F fill:#FF7A5C,stroke:#1C355E,color:#fff
-    style G fill:#FF7A5C,stroke:#1C355E,color:#fff
-    style H fill:#9B8EC0,stroke:#1C355E,color:#fff
-    style I fill:#1C355E,stroke:#1C355E,color:#fff
-</pre>
+<div class="flow">
+<div class="flow-step accent-purple">
+<p><span class="t">Complex Query</span></p>
 </div>
-<p></p></figure><p></p>
+<div class="flow-arrow">
+<p>→</p>
 </div>
+<div class="flow-branch">
+<div class="flow">
+<div class="flow-step accent-teal">
+<p><span class="t">Sub-Query 1</span></p>
+</div>
+<div class="flow-arrow">
+<p>→</p>
+</div>
+<div class="flow-step accent-orange">
+<p><span class="t">Results 1</span></p>
+</div>
+</div>
+<div class="flow">
+<div class="flow-step accent-teal">
+<p><span class="t">Sub-Query 2</span></p>
+</div>
+<div class="flow-arrow">
+<p>→</p>
+</div>
+<div class="flow-step accent-orange">
+<p><span class="t">Results 2</span></p>
+</div>
+</div>
+<div class="flow">
+<div class="flow-step accent-teal">
+<p><span class="t">Sub-Query 3</span></p>
+</div>
+<div class="flow-arrow">
+<p>→</p>
+</div>
+<div class="flow-step accent-orange">
+<p><span class="t">Results 3</span></p>
+</div>
+</div>
+</div>
+<div class="flow-arrow">
+<p>→</p>
+</div>
+<div class="flow-step accent-purple">
+<p><span class="t">Merge +</span> <span class="s">Deduplicate</span></p>
+</div>
+<div class="flow-arrow">
+<p>→</p>
+</div>
+<div class="flow-step accent-navy">
+<p><span class="t">LLM</span> <span class="s">Generation</span></p>
 </div>
 </div>
 <p><strong>When to use:</strong> Multi-faceted questions, comparison queries, and “explain with examples” requests.</p>
@@ -997,30 +1014,44 @@
 </section>
 <section id="complete-pipeline" class="slide level2">
 <h2>Complete Pipeline</h2>
-<div class="cell" data-reveal="true" data-fig-width="10" data-layout-align="default">
-<div class="cell-output-display">
-<div>
-<p></p><figure class=""><p></p>
-<div>
-<pre class="mermaid mermaid-js">flowchart LR
-    A["Raw Query"] --&gt; B["Preprocess&lt;br/&gt;&amp; Expand"]
-    B --&gt; C["Semantic&lt;br/&gt;Search"]
-    B --&gt; D["Keyword&lt;br/&gt;Search"]
-    C &amp; D --&gt; E["RRF&lt;br/&gt;Fusion"]
-    E --&gt; F["Cross-Encoder&lt;br/&gt;Re-rank"]
-    F --&gt; G["Top-K to&lt;br/&gt;LLM"]
-
-    style A fill:#9B8EC0,stroke:#1C355E,color:#fff
-    style B fill:#9B8EC0,stroke:#1C355E,color:#fff
-    style C fill:#00C9A7,stroke:#1C355E,color:#fff
-    style D fill:#FF7A5C,stroke:#1C355E,color:#fff
-    style E fill:#9B8EC0,stroke:#1C355E,color:#fff
-    style F fill:#FF7A5C,stroke:#1C355E,color:#fff
-    style G fill:#1C355E,stroke:#1C355E,color:#fff
-</pre>
+<div class="flow">
+<div class="flow-step accent-purple">
+<p><span class="t">Raw Query</span></p>
 </div>
-<p></p></figure><p></p>
+<div class="flow-arrow">
+<p>→</p>
 </div>
+<div class="flow-step accent-purple">
+<p><span class="t">Preprocess</span> <span class="s">&amp; Expand</span></p>
+</div>
+<div class="flow-arrow">
+<p>→</p>
+</div>
+<div class="flow-branch">
+<div class="flow-step accent-teal">
+<p><span class="t">Semantic Search</span></p>
+</div>
+<div class="flow-step accent-orange">
+<p><span class="t">Keyword Search</span></p>
+</div>
+</div>
+<div class="flow-arrow">
+<p>→</p>
+</div>
+<div class="flow-step accent-purple">
+<p><span class="t">RRF</span> <span class="s">Fusion</span></p>
+</div>
+<div class="flow-arrow">
+<p>→</p>
+</div>
+<div class="flow-step accent-orange">
+<p><span class="t">Cross-Encoder</span> <span class="s">Re-rank</span></p>
+</div>
+<div class="flow-arrow">
+<p>→</p>
+</div>
+<div class="flow-step accent-navy">
+<p><span class="t">Top-K to</span> <span class="s">LLM</span></p>
 </div>
 </div>
 </section>

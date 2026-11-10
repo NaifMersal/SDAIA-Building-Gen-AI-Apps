@@ -1,0 +1,1518 @@
+---
+title: "Observability & Evaluation"
+subtitle: "SDA-AIE-311 — Session 12"
+description: "Tracing, loop detection, cost guards, DeepEval scoring, production metrics, and the quality flywheel."
+builds_on: ["patterns_of_collaboration"]
+duration: 90
+lab_duration: 60
+date: today
+format: revealjs
+---
+<!-- SDA-AIE-311 ADD (LangChain conversion) -->
+
+# A. What Makes a Good Agent? {#agent-quality-pillars .sdaia-dark background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)"}
+
+You cannot ship what you cannot trace
+
+## Agenda
+
+| Section | Topic |
+|:--------|:------|
+| **A** | What Makes a Good Agent? |
+| **B** | Structured Tracing |
+| **C** | Catching Loops |
+| **D** | Cost Tracking & Budgets |
+| **E** | From Traces to Production Metrics |
+| **F** | Evaluating Quality with DeepEval |
+| **G** | Closing the Loop: The Quality Flywheel |
+| **H** | Wrap-up & Lab Preview |
+
+## Traditional vs Agent Debugging
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**🖥️ Traditional Debugging**
+
+- Same input → **same output**
+- Stack trace shows **exact failure**
+- Unit tests with `assertEqual`
+- **Fixed cost** per execution
+- Errors **crash** the program
+:::
+
+::: {.column width="50%"}
+**🤖 Agent Debugging**
+
+- Same input → **different outputs**
+- Failure **emerges over many steps**
+- Subjective quality evaluation
+- **Variable cost** (1–50 LLM calls)
+- Errors silently **"reasoned away"**
+:::
+
+::::
+
+. . .
+
+::: {.callout-important}
+## The Core Problem
+An agent might technically succeed (no crash, produces an answer) while being **completely wrong**. Or it might spend $0.50 on a $0.02 question. You can't fix what you can't see.
+:::
+
+## The Four Pillars of Agent Quality
+
+:::: {.columns}
+
+::: {.column width="50%"}
+::: {.fragment}
+**🎯 Effectiveness**
+*Did it achieve the user's intent?*
+
+- Conversion vs. Task Success
+- Result quality & accuracy
+- Goal alignment
+:::
+
+::: {.fragment}
+**⚡ Efficiency**
+*Did it solve the problem **well**?*
+
+- Token consumption & Latency
+- Trajectory length (Step count)
+- Cost-to-value ratio
+:::
+:::
+
+::: {.column width="50%"}
+::: {.fragment}
+**🛡️ Robustness**
+*How does it handle adversity?*
+
+- Graceful failure vs. Hallucination
+- API timeouts & missing data
+- Edge case handling
+:::
+
+::: {.fragment}
+**🔒 Safety & Alignment**
+*The non-negotiable gate.*
+
+- No data leakage
+- Refusing harmful instructions
+- Staying within persona
+:::
+:::
+
+::::
+
+
+## Outside-In: Black Box → Glass Box
+
+A two-stage diagnostic process.
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**📦 Black Box (Outside-In)**
+
+*"Did the agent achieve the goal?"*
+
+- **KPIs:** Success Rate, CSAT
+- **Output:** Final response quality
+- **Decision:** If **Yes**, done. If **No**, open the box.
+:::
+
+::: {.column width="50%"}
+**🔬 Glass Box (Inside-Out)**
+
+*"Why did it fail?"*
+
+- **Trajectory:** Step-by-step logic
+- **Tools:** Params & Response handling
+- **RAG:** Retrieval performance
+- **Orchestration:** Multi-agent dynamics
+:::
+
+::::
+
+. . .
+
+> *"Move from 'the final answer is wrong' to 'it's wrong **because**...' That diagnostic power is the entire goal of agent evaluation."*
+
+## How Agents Fail: Acute vs Chronic
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**🔥 Acute Failures**  
+*Visible immediately in a single run*
+
+- 🤔 **Ambiguity** — Misunderstood task
+- 🔧 **Misuse** — Wrong tool/arguments
+- 🔁 **Infinite Loops** — Spinning in circles
+- 💬 **Hallucination** — Confident lies
+
+**→ Solved by Per-Run Tracing**
+:::
+
+::: {.column width="50%"}
+**📉 Chronic Failures**
+*Invisible in any single run*
+
+- ⚖️ **Bias** — Operationalized training biases
+- 🌍 **Drift** — Performance decay over time
+- 🤖 **Emergence** — Unexpected "proxy wars"
+- 🔇 **Regression** — Prompt edits tanking quality
+
+**→ Solved by Aggregated Eval**
+:::
+
+::::
+
+## Classifying Tool Errors {.smaller}
+
+Not every failure is the model's fault. **Mixing them is what turns dashboards into noise.** Cursor's three-bucket taxonomy:
+
+| Category | Whose fault? | Example | Treat as |
+|:---|:---:|:---|:---|
+| **Invalid arguments** | Model | Wrong types, hallucinated fields, bad schema | Glass-box quality bug |
+| **Unexpected environment** | Model | Right tool, right shape — but file missing, no permissions, stale state | Glass-box quality bug |
+| **Provider error** | Infrastructure | 5xx from the LLM provider, rate limit, dependency timeout | SLO / operational issue |
+
+. . .
+
+::: {.callout-tip}
+## Why the split matters
+The first two are **training and prompt signal** — they say "the agent is using the harness wrong" and feed into your eval set. The third is **operational signal** — it pages SRE. Conflating them means real quality regressions get drowned in flaky provider noise.
+:::
+
+. . .
+
+::: {.callout-important}
+## Same model, 10× fewer tool errors
+Cursor reports a **10× reduction** in tool-error rate from harness-side tuning alone — no model change. The taxonomy is what makes that improvement *measurable*.
+:::
+
+::: {.footer}
+Source: [Cursor — *Continually Improving Agent Harness* (2025)](https://cursor.com/blog/continually-improving-agent-harness)
+:::
+
+
+# B. Structured Tracing {#structured-tracing .sdaia-dark background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)"}
+
+Every step, captured and queryable
+
+## What a Good Trace Captures
+
+For **every step** in the agent loop:
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**📍 Identity**
+
+- Unique Trace ID per request
+- Step number
+- Agent name & model
+:::
+
+::: {.column width="50%"}
+**📊 Metrics**
+
+- Token usage (input / output)
+- Cost per step (USD)
+- Duration (milliseconds)
+:::
+
+::::
+
+. . .
+
+**📝 Content**
+
+- Agent's reasoning (LLM response text)
+- Tool calls (name + arguments) + Tool results
+
+## A Trace Data Model {.smaller}
+
+```{.python code-line-numbers="|1-5|7-13|15-22"}
+@dataclass
+class ToolCallRecord:
+    tool_name: str
+    tool_input: dict
+    tool_output: str
+    duration_ms: float
+
+@dataclass
+class AgentStep:
+    step_number: int
+    reasoning: Optional[str]
+    tool_calls: list[ToolCallRecord]
+    input_tokens: int = 0
+    output_tokens: int = 0
+    cost_usd: float = 0.0
+
+@dataclass
+class Trace:
+    trace_id: str
+    agent_name: str
+    steps: list[AgentStep]
+    status: str  # "running", "completed", "failed", "loop_detected"
+    total_cost_usd: float = 0.0
+```
+
+
+## Langfuse Setup 
+
+To get full visibility, we use a **two-layer strategy**:
+
+1.  **Auto-Trace (LangChain callbacks)**: Captures every raw LLM input/output.
+2.  **Structured Trace (@observe)**: Captures your agent's logical steps.
+
+```python
+from langchain_openai import ChatOpenAI
+from langfuse import observe
+from langfuse.langchain import CallbackHandler
+
+# 1. Zero-code: LangChain (ChatOpenAI) sends every run to Langfuse
+langfuse_handler = CallbackHandler()
+
+# 2. Structured: Wrap your agent methods to create a "Tree"
+@observe(as_type="agent")
+def run_agent(query):
+    # This becomes the parent span
+    return "Result"
+```
+## Enriching Traces with Context {.smaller}
+ 
+The `propagate_attributes` context manager allows you to inject rich metadata without polluting your function signatures.
+ 
+```python
+from langfuse import observe, propagate_attributes
+ 
+@observe(as_type="tool")
+def call_tool(name, args):
+    # 1. Propagate metadata and tags to this span and its children
+    with propagate_attributes(
+        metadata={"tool_version": "1.0.2", "user_id": "user_123"},
+        tags=["production", "critical-path"]
+    ):
+        result = execute(name, args)  # your tool dispatch
+
+    return result
+```
+
+::: {.callout-note}
+In our labs, we use a `SimpleObserver` that mirrors this API exactly—allowing you to switch to production Langfuse with a single import change.
+:::
+
+## Trace Output Example {.smaller}
+
+
+```
+============================================================
+TRACE SUMMARY: a1b2c3d4
+============================================================
+Agent: react_agent | Model: gpt-4o
+Status: completed
+Query: What is the population of the capital of France?
+
+Steps (3 total):
+------------------------------------------------------------
+  Step 1: 1200ms, $0.0085 -> search
+  Step 2:  980ms, $0.0062 -> search
+  Step 3:  450ms, $0.0031 (no tools)
+------------------------------------------------------------
+Total Tokens: 2847 input + 312 output = 3159
+Total Cost:   $0.0178
+Total Time:   2630ms
+
+Answer: The population of Paris is approximately 2.1 million.
+============================================================
+```
+
+. . .
+
+::: {.callout-tip}
+## Reading a Trace
+Look at **step count** (was 3 steps necessary?) and **cost per step** (which step was expensive?). These two signals reveal most agent problems.
+:::
+
+# C. Loop Detection {.sdaia-dark background-gradient="linear-gradient(135deg, #1C355E, #FF7A5C)"}
+
+Catching agents that spin in circles
+
+## The Infinite Loop Problem
+
+An agent calls `search("python tutorial")`, gets a result, then calls `search("python tutorial")` again. And again. And again.
+
+**Why it happens:**
+
+- Doesn't "understand" the result satisfied the query
+- Tool returns an error → retries same args
+- Ambiguous prompt → keeps trying variations
+
+::: {.callout-important}
+## 💸 Cost Impact
+A looping agent can burn through hundreds of API calls at $0.01–0.05 each.
+:::
+
+## Idempotent vs Polling Tools
+
+Two retry behaviors — same syntax, opposite meaning.
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**🔁 Idempotent**
+
+*Same call → same result.*
+Calling twice is equivalent to calling once.
+
+- `search("python tutorial")`
+- `read_file("/etc/hosts")`
+
+→ Safe to retry on failure. Repeating with identical args is a **red flag** — the agent is likely stuck.
+:::
+
+::: {.column width="50%"}
+**⏱️ Polling**
+
+*Same call → different result over time.*
+Repetition is the **whole point**.
+
+- `get_job_status(job_id)`
+- `check_payment_status("txn_42")`
+
+→ The agent is expected to call this repeatedly until state changes.
+:::
+
+::::
+
+::: {.callout-tip}
+## Schema Design Connection
+We must hint this retry behavior in the tool's schema description ([Schema Design](../slides/structured_outputs_and_tool_use.html#f-schema-design)) so the loop-detection logic can distinguish a stuck agent from a legitimate poll.
+:::
+
+## Three Detection Strategies
+
+Loops appear in two places — we need a different check for each:
+
+**Tool-Call Checks** — *before each tool executes*
+
+1. **Exact Match** — same tool + identical args
+2. **Fuzzy Match** — same tool + suspiciously similar args
+
+**Reasoning Check** — *after each LLM response*
+
+3. **Output Stagnation** — the agent keeps saying the same thing
+
+## Strategy 1: Exact Match {.smaller}
+
+**Same tool + identical arguments repeated N times.**
+
+```python
+# Before executing each tool call:
+count = tool_history.count(
+    (current_tool_name, current_args_string)
+)
+
+if count >= exact_threshold:
+    return LoopDetected(confidence=1.0)
+
+tool_history.append(
+    (current_tool_name, current_args_string)
+)
+```
+
+. . .
+
+::: {.callout-tip}
+## ✅ Confidence: 100%
+If the tool is *idempotent* (like a search), same call twice = always a loop.
+:::
+
+::: {.callout-note}
+## Polling Exception
+For tools like `check_job_status`, repeating calls are **expected**. Skip exact match detection for polling tools.
+:::
+
+## Strategy 2: Fuzzy Match — Concept {.smaller}
+
+**Similar (but not identical) tool calls — catches minor rephrasing.**
+
+We compare **argument strings only** (not the tool name), tokenised into word sets:
+
+```
+Jaccard(A, B) = |A ∩ B| / |A ∪ B|
+
+# Call 1: search("Paris population")
+args_A = {Paris, population}
+
+# Call 2: search("population of Paris")
+args_B = {population, of, Paris}
+
+Intersection = {Paris, population}        → 2
+Union        = {Paris, population, of}    → 3
+Jaccard = 2/3 = 0.67  ← Suspicious 🚩
+```
+
+. . .
+
+::: {.callout-note}
+## How Jaccard works
+Count the **shared words** divided by the **total unique words** across both sets.
+
+A score near **1.0** = almost identical.
+A score near **0.0** = completely different.
+:::
+
+## Strategy 2: Fuzzy Match — Threshold {.smaller}
+
+**Does this catch genuinely different queries too?** Let's check.
+
+```
+# A genuinely different call for comparison:
+args_A = {how, to, code, python}          → search("how to code python")
+args_B = {python, programming, tutorial}  → search("python programming tutorial")
+
+Intersection = {python}                   → 1
+Union        = {how, to, code, python,
+                programming, tutorial}    → 6
+Jaccard = 1/6 = 0.17  ← Different query ✅
+```
+
+. . .
+
+::: {.callout-tip}
+## Threshold: **0.8**
+- `0.67` ("Paris" rephrasing) → below threshold, but high enough to **log a warning**
+- `0.17` (different topic) → safely ignored
+- Set it at **0.8** to catch true rephrasings without flagging adjacent queries.
+:::
+
+## Strategy 3: Output Stagnation {.smaller}
+
+::: {.callout-important}
+## A different kind of loop
+Strategies 1 & 2 detect repeated **tool calls**. Stagnation detects when the agent's **reasoning text** is stuck — it runs after each LLM response, not before tool execution.
+:::
+
+. . .
+
+**What it looks like:**
+
+```
+Step 4: "I need to search for more info..."
+Step 5: "I need to search for more info..."
+Step 6: "I need to search for more info..."
+```
+
+The agent keeps producing nearly identical *reasoning*, even if it issues different tool calls.
+
+::: {.fragment}
+**How we detect it:**
+
+After each LLM response, we add the text to `output_history`.
+
+We then compute the average word overlap across the last N entries — a high score means the agent is thinking in circles.
+
+```python
+recent_outputs = output_history[-stagnation_window:]
+
+if avg_pairwise_word_overlap(recent_outputs) >= threshold:
+    return LoopDetected(strategy="stagnation")
+```
+:::
+
+## The Circuit Breaker Pattern {.smaller}
+
+Combine loop detection with the agent loop to **break** infinite cycles:
+
+```{.python code-line-numbers="|5-9|11-14"}
+for step in range(max_steps):
+    # ... get LLM response, extract tool calls ...
+
+    for tool_call in tool_calls:
+            # Check BEFORE executing
+            loop_check = loop_detector.check_tool_call(
+                tool_call["name"], str(tool_call["args"])
+            )
+
+            if loop_check.is_looping:
+                # Inject warning into conversation instead of executing
+                messages.append(ToolMessage(
+                    content=f"LOOP DETECTED: {loop_check.message}",
+                    tool_call_id=tool_call["id"],
+                ))
+                break  # Skip remaining tool calls this step
+```
+
+. . .
+
+::: {.callout-tip}
+The agent receives the loop warning **as if it were a tool result** — it can then change strategy on the next step.
+:::
+
+# D. Cost Tracking {.sdaia-dark background-gradient="linear-gradient(135deg, #00C9A7, #1C355E)"}
+
+Monitoring spend per query
+
+## Why Track Cost?
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**😰 Without tracking:**
+
+- "Our AI bill was $500 this month"
+- "Some queries are expensive but we don't know which"
+- No budget enforcement
+- Runaway agents go undetected
+:::
+
+::: {.column width="50%"}
+**✅ With tracking:**
+
+- "Query X cost $2.30 (15 steps)"
+- "Average cost: $0.12/query"
+- Budget alerts per query
+- Loop detection saves money
+:::
+
+::::
+
+## Cost Tracking with LangChain {.smaller}
+
+LangChain (ChatOpenAI) reports **token usage on every response**:
+
+```python
+from langchain_openai import ChatOpenAI
+
+llm = ChatOpenAI(model="gpt-4o", temperature=0)
+
+response = llm.invoke(messages)
+
+usage = response.usage_metadata  # token counts for this call
+cost = (
+    usage["input_tokens"] * 2.50 / 1_000_000      # gpt-4o input $/1M
+    + usage["output_tokens"] * 10.00 / 1_000_000  # gpt-4o output $/1M
+)
+print(f"This step cost: ${cost:.4f}")
+```
+
+## Budget Guardrails {.smaller}
+
+Enforce per-query and daily limits.
+
+```{.python code-line-numbers="|6-10|12-22"}
+from datetime import date
+from threading import Lock
+
+from src.exceptions import TokenBudgetExceeded
+
+class BudgetGuard:
+    """Enforce daily API spend limits."""
+
+    def __init__(self, daily_limit_usd: float):
+        self.daily_limit = daily_limit_usd
+        self._daily_spend: dict[str, float] = {}
+        self._lock = Lock()
+
+    def check_and_charge(self, cost_usd: float) -> bool:
+        """Returns True if allowed, raises TokenBudgetExceeded otherwise."""
+        with self._lock:
+            day_key = date.today().isoformat()
+            day_spend = self._daily_spend.get(day_key, 0)
+
+            if day_spend + cost_usd > self.daily_limit:
+                raise TokenBudgetExceeded(f"Daily budget ${self.daily_limit} reached")
+
+            self._daily_spend[day_key] = day_spend + cost_usd
+            return True
+```
+
+
+
+## Routing to a Cheaper Tier: the Other Cost Lever <!-- SDA-AIE-311 ADD (G4) --> {.smaller}
+
+Tracking tells you where money goes. Routing moves it.
+
+A budget guard **stops** spend; a router **reduces** it. Route routine intent to a cheap model and reserve the expensive one for hard steps:
+
+```python
+ROUTER_TABLE = {          # intent -> model tier
+    "status_query":  "openrouter/anthropic/claude-haiku-4-5",   # "where is my order?"
+    "policy_qa":     "openrouter/anthropic/claude-haiku-4-5",
+    "dispute":       "openrouter/anthropic/claude-sonnet-4-5",  # reasoning needed
+    "refund_write":  "openrouter/anthropic/claude-sonnet-4-5",
+}
+
+def pick_model(state: dict) -> str:
+    return ROUTER_TABLE.get(state["intent"], DEFAULT_MODEL)
+```
+
+. . .
+
+- The router itself should be **cheap or free**: a rule table, an embedding classifier, or one tiny-model call — never a big-model decision
+- Route on *classified intent*, not on raw user text you paste into a prompt
+- Log the tier chosen per step — routing without per-tier cost attribution just moves the blind spot
+
+| Lever | Section | Question it answers |
+|:--------|:---|:--------------------------------------------------|
+| Loop detection | §C | are we spending on a stuck agent? |
+| Cost tracking | §D | where did the money go? |
+| Budget guard | §D | should this run continue at all? |
+| **Model routing** | §D | does this step need the expensive model? |
+
+# E. From Traces to Production Metrics {.sdaia-dark background-gradient="linear-gradient(135deg, #FF7A5C, #1C355E)"}
+
+Per-run traces (B–D) tell you what happened in *one* request. Now we aggregate across millions of runs.
+
+## Two Dashboards: System vs Quality {.smaller}
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**⚙️ System Metrics** — *first-order, derived from trace attributes*
+
+| Metric | Source |
+|---|---|
+| Latency P50 / P99 (Percentiles) | `duration_ms` |
+| Error Rate | `error=true` spans |
+| Tokens / task | `token_count` |
+| Cost / run | tokens × pricing |
+
+→ Watched by **SRE (Site Reliability Engineering) / DevOps**
+:::
+
+::: {.column width="50%"}
+::: {.fragment}
+**🎯 Quality Metrics** — *second-order, generated by LLM judges*
+
+| Metric | LLM Judge |
+|---|---|
+| Correctness | LLM-as-Judge |
+| Trajectory adherence | Comparison to ideal |
+| Safety & responsibility | Classifier / LLM Judge |
+
+→ Watched by **Product / DS (Data Science) / AgentOps**
+:::
+:::
+
+::::
+
+. . .
+
+::: {.callout-tip}
+## Two example alerts
+- 🛠️ `P99 latency > 3s for 5 min` → **engineering** investigates
+- 📉 `Helpfulness dropped 10% over 24h` → system is fine, **output quality** is degrading
+:::
+
+## Derive Your Own Metric: [Cursor's Keep Rate](https://cursor.com/blog/continually-improving-agent-harness) {.smaller}
+
+Benchmarks measure a frozen task set. **Real production demands a metric tailored to your product's actual value.**
+
+::: {.callout-note appearance="simple"}
+**Goodhart's Law** — *"when a measure becomes a target, it ceases to be a good measure."* Public benchmarks (MMLU, SWE-bench) saturate and get gamed once labs optimize for them — which is exactly why you need a product-specific metric they can't train against.
+:::
+
+::: {.callout-tip}
+## Case Study: Cursor's "Keep Rate"
+
+$$\text{Keep Rate} = \frac{\text{Agent-generated code remaining in codebase after interval } \Delta t}{\text{Total agent-generated code inserted}}$$
+
+User keeps it → Keep Rate goes up. User deletes or rewrites it → Keep Rate drops. This measures what survives contact with the user.
+:::
+
+. . .
+
+:::: {.columns}
+::: {.column width="50%"}
+::: {.cardbox .navy}
+**🧪 Lab Benchmarks**  
+*e.g., SWE-bench / TaskCompletion*
+
+Did the agent produce a passing output **in the static lab environment**?
+:::
+:::
+
+::: {.column width="50%"}
+::: {.cardbox .teal}
+**🚀 Derived Production Metrics**  
+*e.g., Keep Rate*
+
+Did the agent produce work the user actually **shipped, kept, and built upon**?
+:::
+:::
+::::
+
+
+## Generalizing: Find Your "Keep Rate"
+
+The key to a production metric is measuring **post-action retention or behavior** instead of static outputs. What is your agent's equivalent?
+
+. . .
+
+:::: {.columns}
+::: {.column width="50%"}
+::: {.cardbox}
+**💻 Coding & Chat Agents**
+
+- **Coding Agents:** **Keep rate** (code edit retained in repo after $N$ days)
+- **Chat Agents:** **Suggestion-followed rate** / thumbs-up 👍 ratio
+:::
+:::
+
+::: {.column width="50%"}
+::: {.cardbox .purple}
+**⚙️ Workflow & Draft Agents**
+
+- **Workflow Agents:** **Task-not-redone rate** (does a human repeat/fix the step?)
+- **Email / Draft Agents:** **Edit-distance** from agent draft to final sent version
+:::
+:::
+::::
+
+. . .
+
+::: {.callout-note}
+## Crucial Agent Takeaway
+This custom, product-specific metric is the agent analogue of standard quality alerts. Once defined, it becomes the north-star metric that your training, prompts, and orchestration/harness should continuously optimize toward.
+:::
+
+
+## Prometheus Metrics — Design Table
+
+| Metric Name | Type | Labels | Measures |
+|---|---|---|---|
+| `agent_requests_total` | Counter | model, cache_hit, status | Every completed request |
+| `agent_request_latency_ms` | Histogram | — | Latency distribution |
+| `agent_tokens_total` | Counter | model, token_type | Input/output tokens |
+| `agent_cost_usd_total` | Counter | model | Cumulative spend |
+
+**API reminder:** `Counter` → only up (`inc`). `Gauge` → up/down (`inc`/`dec`/`set`). `Histogram` → `observe(value)`.
+
+## Exposing the /metrics Endpoint
+
+```python
+# FastAPI integration
+from prometheus_client import make_asgi_app
+from fastapi import FastAPI
+
+app = FastAPI()
+
+# Mount Prometheus metrics at /metrics
+metrics_app = make_asgi_app()
+app.mount("/metrics", metrics_app)
+
+# Now Prometheus can scrape:
+# GET http://api:8000/metrics
+# → # HELP agent_requests_total ...
+# → agent_requests_total{model="gpt-4o",cache_hit="false"} 1423
+```
+
+## Sampling & Privacy in Production {.smaller}
+
+**📊 Dynamic Sampling — the 10/100 rule**
+
+Full traces on every request is prohibitively expensive and adds latency. Instead:
+
+- **DEBUG-level traces** in development
+- **INFO-level + sampling** in production:
+  - Trace **10%** of successful requests
+  - Trace **100%** of all errors
+
+Statistical visibility on the happy path. Full diagnostic detail on every failure.
+
+. . .
+
+::: {.callout-important}
+## 🔐 Privacy Warning
+User inputs in traces often contain **PII (Personally Identifiable Information)**. Scrub **before** long-term storage — once it lands in a store, you've created a compliance problem.
+
+→ See [Guardrails — PII redaction](../slides/input_output_guardrails.html#pii-redaction) (Presidio + regex).
+:::
+
+## From Traces to Test Cases {.smaller}
+
+The previous slide's 10/100 sampling gives you a representative *trace* pool. The next question: **how does that pool become an eval dataset?**
+
+::: {.flow}
+::: {.flow-step .accent-navy}
+[📥 Production]{.t}
+[Traces]{.s}
+:::
+::: {.flow-arrow}
+&rarr;
+:::
+::: {.flow-step .accent-purple}
+[📊 10/100]{.t}
+[Sample]{.s}
+:::
+::: {.flow-arrow}
+&rarr;
+:::
+::: {.flow-step .accent-orange}
+[🔍 Semantic]{.t}
+[Dedup]{.s}
+:::
+::: {.flow-arrow}
+&rarr;
+:::
+::: {.flow-step .accent-teal}
+[🔐 PII]{.t}
+[Scrub]{.s}
+:::
+::: {.flow-arrow}
+&rarr;
+:::
+::: {.flow-step}
+[🏆 Golden]{.t}
+[Dataset]{.s}
+:::
+:::
+
+. . .
+
+::: {.callout-note appearance="simple"}
+**Reuse the 10/100 pool** — same data, new purpose. The previous slide gathered it for observability; here we curate it for evaluation.
+:::
+
+. . .
+
+- **Semantic deduplication** — real users ask the same question thousands of times. Cosine similarity above ~0.9 between query embeddings collapses near-duplicates, so your eval set keeps **boundary cases**, not popularity. Treat the threshold as a starting heuristic, not a constant.
+- **PII scrubbing** — same constraint as tracing. Route mined traces through [Guardrails — PII redaction](../slides/input_output_guardrails.html#pii-redaction) (Presidio + regex) before they land in your committed dataset.
+
+. . .
+
+::: {.callout-tip}
+## Synthetic vs. mined
+Hand-written test sets drift from production. Mined cases stay honest — and every new user query becomes a candidate test case.
+:::
+
+# F. Evaluating Quality with DeepEval {#evaluating-with-deepeval .sdaia-dark background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)"}
+
+Production metrics catch *system* problems. Now we need offline checks that catch *quality* regressions before they ship.
+
+## The Evaluation Problem
+
+**How do you know if your agent is any good?**
+
+::: {.incremental}
+- ❌ **Manual review** doesn't scale
+- ❌ **String matching** can't evaluate free-text
+- ❌ **Unit tests** check format, not quality
+- ❌ **Custom LLM judges** are hard to calibrate
+:::
+
+. . .
+
+::: {.callout-tip}
+## ✅ The Solution: DeepEval
+An open-source framework with **50+ research-backed metrics** for LLM and agent evaluation.
+
+Integrates with **pytest** for CI/CD (Continuous Integration / Continuous Deployment) workflows.
+:::
+
+## Why DeepEval for Agents?
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**❌ Traditional Metrics Fail**
+
+| Metric | Problem |
+|:-------|:--------|
+| BLEU/ROUGE | Word overlap, not meaning |
+| Accuracy | Binary, no nuance |
+| Precision/Recall | Not for open-ended output |
+:::
+
+::: {.column width="50%"}
+**✅ DeepEval Approach**
+
+- **LLM-as-a-Judge** with calibrated prompts
+- Agentic metrics: task completion, tool correctness
+- Component-level evaluation via tracing
+:::
+
+::::
+
+## DeepEval Agent Metrics
+
+| Metric | What It Measures | Mode |
+|:-------|:-----------------|:----:|
+| **TaskCompletionMetric** | Did the agent accomplish the task? | **Traced** |
+| **ToolCorrectnessMetric** | Were the right tools called? | Standalone |
+| **StepEfficiencyMetric** | Was the execution path optimal? | **Traced** |
+| **PlanQualityMetric** | Was the agent's plan logical? | **Traced** |
+| **PlanAdherenceMetric** | Did the agent follow its plan? | **Traced** |
+
+. . .
+
+> **Standalone** = evaluate a fixed dataset. **Traced** = requires `@observe` to inspect internal reasoning.
+
+## A Step Toward Agent-as-Judge
+
+Traced metrics evaluate the **trajectory**, not just the final answer — a step toward [**Agent-as-a-Judge** (Zhuge et al., 2024)](https://arxiv.org/abs/2410.10934).
+
+. . .
+
+::: {.callout-note}
+## What full Agent-as-Judge adds
+A full Agent-as-Judge goes further: the judge itself *uses tools* to verify each step — **re-run a search**, **check a fact**, **inspect intermediate state** — instead of trusting the trace at face value.
+:::
+
+## Traces & Spans {.smaller}
+
+One user query = one **Trace**. Each step inside it = a **Span**.
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**📦 Trace** — *the whole journey*
+
+> *Receipts for an entire shopping trip.*
+
+One per request · unique ID · contains many spans.
+:::
+
+::: {.column width="50%"}
+**🔬 Span** — *one step of the journey*
+
+> *One item on the receipt.*
+
+One LLM call / tool / function · records timing, inputs, and outputs · nested under a parent.
+:::
+
+::::
+
+. . .
+
+<svg viewBox="0 0 1120 440" width="100%" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="One trace holds a tree of spans: a supervisor agent root span whose children are a sub-span hierarchy (a worker agent calling an LLM and a search tool in sequence) and a final LLM answer span.">
+  <defs>
+    <marker id="span-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--sdaia-navy)"/>
+    </marker>
+    <marker id="span-arrow-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--sdaia-purple)"/>
+    </marker>
+  </defs>
+  <g stroke="var(--sdaia-navy)" stroke-width="2.5">
+    <rect x="20" y="40" width="1080" height="360" rx="18" fill="var(--sdaia-code-bg)" stroke-dasharray="10 7"/>
+    <rect x="330" y="120" width="440" height="240" rx="14" fill="#ffffff" stroke="var(--sdaia-purple)"/>
+  </g>
+  <g fill="none" stroke="var(--sdaia-navy)" stroke-width="2.5" marker-end="url(#span-arrow)">
+    <path d="M 252 230 H 351"/>
+    <path d="M 517 215 L 576 191"/>
+    <path d="M 517 245 L 576 269"/>
+    <path d="M 660 224 V 256" stroke-dasharray="3 4"/>
+    <path d="M 150 277 V 380 H 960 V 279"/>
+  </g>
+  <g fill="none" stroke="var(--sdaia-purple)" stroke-width="2.5" stroke-dasharray="8 6" marker-end="url(#span-arrow-p)">
+    <path d="M 772 293 L 836 262"/>
+  </g>
+  <g font-size="14" fill="var(--muted)" text-anchor="middle" font-family="inherit">
+    <text x="302" y="216">parent&#8594;child</text>
+    <text x="250" y="370">parent&#8594;child</text>
+    <text x="548" y="174">child</text>
+    <text x="548" y="292">child</text>
+    <text x="718" y="245">sequence</text>
+  </g>
+  <g stroke="var(--sdaia-navy)" stroke-width="2.5">
+    <rect x="50" y="185" width="200" height="90" rx="12" fill="var(--sdaia-navy)"/>
+    <rect x="355" y="195" width="160" height="70" rx="12" fill="var(--sdaia-purple)"/>
+    <rect x="580" y="160" width="160" height="62" rx="12" fill="var(--sdaia-orange)"/>
+    <rect x="580" y="262" width="160" height="62" rx="12" fill="var(--sdaia-teal)"/>
+    <rect x="840" y="185" width="240" height="90" rx="12" fill="var(--sdaia-orange)"/>
+  </g>
+  <g font-size="16" font-weight="700" text-anchor="middle" font-family="inherit">
+    <text x="150" y="220" fill="#ffffff">&#129302; Supervisor Agent</text>
+    <text x="150" y="246" fill="#ffffff">(root span)</text>
+    <text x="435" y="236" fill="#101820">&#129302; Worker Agent</text>
+    <text x="660" y="198" fill="#101820">&#128172; LLM</text>
+    <text x="660" y="300" fill="#101820">&#128295; search()</text>
+    <text x="960" y="220" fill="#101820">&#128172; LLM</text>
+    <text x="960" y="246" fill="#101820">(Final Answer)</text>
+  </g>
+  <g font-family="inherit">
+    <text x="52" y="76" font-size="17" font-weight="700" fill="var(--sdaia-navy)">&#128230; TRACE</text>
+    <text x="160" y="76" font-size="15" fill="var(--muted)">(one per user request)</text>
+    <text x="350" y="150" font-size="14" font-weight="700" fill="var(--sdaia-purple)">sub-span hierarchy</text>
+  </g>
+</svg>
+
+
+## Unified Tracing with @observe
+
+`@observe` is the standard pattern for leading tracing libraries like Langfuse and DeepEval. The decorator surface is near-identical — only the keyword name differs:
+
+```python
+# Pick your vendor; the lab uses SimpleObserver which mirrors both.
+from langfuse import observe         # ➜ @observe(as_type="agent")
+from deepeval.tracing import observe # ➜ @observe(type="agent")
+
+@observe(as_type="agent")  # or type="agent" for DeepEval
+async def run(self, query):
+    ...
+    return answer
+```
+
+::: {.callout-note appearance="simple"}
+Same shape, different kwarg. Code written against one library transfers with a single keyword change (`as_type` vs `type`).
+:::
+
+
+
+
+## Evaluation with Test Cases {.smaller}
+
+```{.python code-line-numbers="|1-4|6-12|14-17"}
+from deepeval import evaluate
+from deepeval.test_case import LLMTestCase, ToolCall
+from deepeval.metrics import TaskCompletionMetric, ToolCorrectnessMetric
+
+test_case = LLMTestCase(
+    input='What is the capital of France?', # The prompt/query being tested
+    actual_output='Paris is the capital of France.', # The actual output from your agent
+    expected_output='Paris', # The ideal "ground truth" answer
+    # Tools actually called by the agent
+    tools_called=[ToolCall(name='search', input_parameters={'query': 'capital of France'})],
+    # Tools the agent WAS EXPECTED to call
+    expected_tools=[ToolCall(name='search', input_parameters={'query': 'capital of France'})]
+)
+
+evaluate(
+    test_cases=[test_case],
+    metrics=[TaskCompletionMetric(), ToolCorrectnessMetric()]
+)
+```
+
+[Read more: DeepEval Test Cases Documentation](https://deepeval.com/docs/evaluation-test-cases)
+
+## The CRUD Challenge {.smaller}
+
+::: {.callout-warning}
+## You cannot run `execute_payment` against prod during nightly eval
+Replay-style evaluation works for read-only agents. For agents with **mutating tools**, naive replay corrupts state — and skipping the tool changes what the agent sees mid-trajectory, so you're no longer testing the same agent.
+:::
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**The problem**
+
+- Tools may **CREATE / UPDATE / DELETE** state — payments, user records, file writes
+- Re-running the trace **mutates production again**
+- Skipping the tool **breaks the trajectory** the agent is supposed to navigate
+:::
+
+::: {.column width="50%"}
+**Mitigations**
+
+1. **Tag tools** — label `passive` (search, retrieval) vs `active` (CRUD) in trace metadata; handle them differently in the harness
+2. **Snapshot tool I/O in traces** — record the actual response at runtime, replay from the snapshot during eval (no live call)
+3. **Timestamped DB queries** for retrieval agents — pin the corpus to *the moment the trace ran* so index drift doesn't skew scores
+4. **Mock APIs** — dedicated isolated endpoints for genuine mutations that can't be snapshotted
+:::
+
+::::
+
+. . .
+
+::: {.callout-important}
+This is why your tracer must capture **tool inputs *and* outputs verbatim** (recall section B's `ToolCallRecord`). Your eval harness depends on those snapshots.
+:::
+
+## Three Tiers of Evaluation
+
+Different failure modes deserve different evaluators. **Use the cheapest tier that catches the failure.**
+
+| Tier | Cost | Speed | Best For |
+|:-----|:----:|:-----:|:---------|
+| **String / embedding**<br><small>(ROUGE, BERTScore)</small> | \$ | Fast | Retrieval relevance, regression trends |
+| **LLM-as-a-Judge** | \$\$\$ | Slow | Plan quality, summary fidelity, tone |
+| **Human review** | \$\$\$\$ | Slowest | Nuanced ethics, domain accuracy, golden-set creation |
+
+::: {.callout-note}
+## Trend over absolute
+A specific BERTScore of `0.8` doesn't *mean* the answer is "good". Real value is in **tracking changes** — if main averages 0.8 and a new commit drops it to 0.6, you've automatically detected a regression.
+:::
+
+## Pairwise LLM Judging Beats Absolute Scoring
+
+:::: {.columns}
+
+::: {.column width="50%"}
+::: {.callout-caution}
+## ❌ Absolute Scoring (1–5)
+*Noisy, subjective, and hard to calibrate.*
+
+Moving an average from **3.8 to 4.0** is often just noise — within LLM judge variance. It's too easy to "game" the numbers.
+:::
+
+::: {.fragment}
+::: {.callout-tip}
+## ✅ Pairwise Comparison
+*Binary choice forces a definitive signal.*
+
+Forces a head-to-head choice. Aggregate to a **win / loss / tie** rate.
+A high win rate is the most reliable signal of improvement.
+:::
+:::
+
+::: {.fragment}
+**Workflow:** `v1 vs v2` → **"New agent wins 67% of battles"** 🏆
+:::
+
+:::
+
+::: {.column width="50%"}
+
+::: {.fragment}
+```text
+Evaluate which response is more helpful:
+
+[Query] "My order #12345 hasn't arrived."
+
+[A] "Out for delivery, arrive by 5 PM."
+[B] "On the truck. Be there by 5."
+
+Compare correctness and tone. 
+Return JSON: { "winner": "A"|"B"|"tie", "rationale": "..." }
+```
+:::
+
+::: {.fragment}
+::: {.callout-note appearance="simple"}
+It is far easier for an LLM to decide "A > B" than to decide if A is exactly a "4" or a "5".
+:::
+:::
+:::
+
+::::
+
+::: {.notes}
+Aggregating these head-to-head wins into a ranking is **Elo / arena-style** scoring — the same approach LMSYS Chatbot Arena uses to rank frontier models.
+:::
+
+## The SME-to-Judge Pipeline {.smaller}
+
+Before we can calibrate a judge, we need a high-quality rubric. **But where does that rubric come from?**
+
+Domain experts (lawyers, support leads, ops) hold the ground truth — but they aren't prompt engineers. Bridge the gap with a structured pipeline:
+
+::: {.flow}
+::: {.flow-step .accent-navy}
+[1️⃣ User Acceptance Trace]{.t}
+[Review]{.s}
+:::
+::: {.flow-arrow}
+&rarr;
+[Force SME<br/>justification]{.s}
+:::
+::: {.flow-step .accent-teal}
+[2️⃣ Justification]{.t}
+[Clustering]{.s}
+:::
+::: {.flow-arrow}
+&rarr;
+[Failure<br/>vectors]{.s}
+:::
+::: {.flow-step .accent-purple}
+[3️⃣ Rubric]{.t}
+[Co-Design]{.s}
+:::
+::: {.flow-arrow}
+&rarr;
+[Binary<br/>criteria]{.s}
+:::
+::: {.flow-step .accent-orange}
+[4️⃣ Few-Shot]{.t}
+[Anchoring]{.s}
+:::
+::: {.flow-arrow}
+&rarr;
+:::
+::: {.flow-step}
+[✅ SME-Anchored]{.t}
+[Judge Prompt]{.s}
+:::
+:::
+
+. . .
+
+::: {.callout-tip}
+## Four practical rules
+1. **Forced justification on 👎** — never ship a thumbs-down without a mandatory text reason. *"It cited the 2023 return window instead of the 2024 policy."*
+2. **Justification clustering** — LLM-summarize SME comments into recurring failure categories
+3. **Rubric co-design** — convert each category into a binary judge question. *"Does the response reference the 2024 policy window? Yes/No"*
+4. **Human few-shots** — embed the actual SME-labeled traces *with their written rationales* as few-shots in the judge prompt
+:::
+
+. . .
+
+> With SME-anchored rubrics in hand, the judge has something concrete to calibrate against →
+
+## Calibrating the LLM Judge — The Loop
+
+Calibrate against **expert labels** before trusting the judge to gate releases.
+
+**Calibration loop** — the judge's "training loop":
+
+1. **Curate** 100–300 *tricky* I/O pairs (boundary cases, hallucinations)
+2. **Label** with experts using the target rubric
+3. **Iterate prompt** — clarify rubric, add few-shots, use other techniques...
+4. **Re-score** until LLM judge–human agreement is reached
+
+. . .
+
+**Measure agreement:**
+
+- **Spearman's ρ** — for ordinal scores (1–5 ratings)
+- **Cohen's κ** — for categorical labels (pass/fail, A/B/tie)
+
+::: {.callout-caution appearance="simple"}
+**15–20% rule:** if the judge disagrees with humans on more than 15–20% of cases, the prompt is unstable — keep iterating before CI.
+:::
+
+## Calibrating the LLM Judge — Reading Agreement
+
+| ρ / κ | Interpretation |
+|:---:|:---|
+| **> 0.8** | Ready to gate releases |
+| **0.6–0.8** | Workable, watch edges |
+| **0.4–0.6** | Iterate rubric & few-shots |
+| **< 0.4** | Rethink the metric |
+
+::: {.callout-note appearance="simple"}
+Table values are **chance-corrected** (κ / ρ). The 15–20% rule on the previous slide is **raw agreement** — a cheaper screening check, not the release gate.
+:::
+
+. . .
+
+::: {.callout-note appearance="simple"}
+**ML Analogy:** calibration set ≈ **training set** · prompt + rubric ≈ **weights** · agreement ≈ **validation loss** · golden dataset ≈ **held-out test set**.
+:::
+
+## LLM Judges in Production — Biases & Mitigations
+
+A calibrated judge is necessary but not sufficient. Production pipelines wrap it with **bias mitigation** before trusting any score.
+
+::: {.callout-caution}
+## ⚠️ Common biases & their fixes
+- **Positional** — favors whichever answer comes first → *swap and aggregate*
+- **Verbosity** — rewards long answers → *state in rubric that length ≠ quality*
+- **Self-preference** — prefers its own model family → *committee of 3 judges, take median*
+- **Silent failures** — require `rationale` *before* score
+:::
+
+```python
+# Mitigate positional bias
+score_AB = judge(q, A, B)
+score_BA = judge(q, B, A)  # swap
+final    = aggregate(score_AB, score_BA)
+```
+
+## LLM Judges in Production — The Golden Dataset
+
+The other half: a **frozen test set** that the judge is never calibrated against.
+
+::: {.callout-important}
+## 📚 The Golden Dataset
+**200–500** human-verified examples covering common queries, known regressions, and adversarial cases.
+
+Treat it as a **held-out test set** — never calibrate the judge against it.
+:::
+
+. . .
+
+::: {.callout-tip}
+## How it gates CI
+- Every Pull Request (PR) runs the calibrated judge against the Golden Dataset
+- Track per-metric **baselines**; a drop (e.g. faithfulness `0.9 → 0.8`) **blocks the merge**
+- Surface the judge's *rationale* on failure — engineers debug fast
+:::
+
+## Evaluation Results Dashboard
+
+
+```
+======================================================================
+Test Case                      Task Comp  Tool Correct  Step Eff  Overall
+---------------------------------------------------------------------
+What is the capital of France?    PASS        PASS         -      PASS
+Compare Python and JavaScript     PASS        PASS       0.85     PASS
+Latest AI research trends         FAIL        PASS       0.62     FAIL
+Population of Tokyo metro         PASS        PASS       0.91     PASS
+Explain quantum computing         PASS        FAIL       0.78     FAIL
+---------------------------------------------------------------------
+PASS RATE: 60% (3/5)
+Average Step Efficiency: 0.79
+======================================================================
+```
+
+. . .
+
+::: {.callout-tip}
+"It feels better" → "Task completion improved from **72% to 89%** after fixing the plan prompt."
+:::
+
+## CI/CD Integration
+
+```python
+# test_agent.py - runs in your CI pipeline
+import pytest
+from deepeval import assert_test
+from deepeval.metrics import TaskCompletionMetric
+
+def test_agent_factual_queries():
+    test_case = LLMTestCase(
+        input="What is the capital of France?",
+        actual_output=agent.run("What is..."),
+        expected_output="Paris"
+    )
+    assert_test(test_case,
+                [TaskCompletionMetric(threshold=0.8)])
+```
+
+::: {.callout-tip}
+## Best Practice
+Run the **calibrated judge** against the **Golden Dataset** on every PR.
+
+Gate merges on **per-metric baselines** (e.g. block if `faithfulness` drops below `0.9`).
+
+Surface the judge's *rationale* on failure — debugging gets a head start.
+:::
+
+# G. Closing the Loop: The Quality Flywheel {#quality-flywheel .sdaia-dark background-gradient="linear-gradient(135deg, #00C9A7, #9B8EC0)"}
+
+Every failure makes the system smarter
+
+## The Agent Quality Flywheel
+
+Evaluation is not a one-off — it's a **self-reinforcing system**. Four phases, looping forever:
+
+::: {.cycle}
+::: {.cycle-step .accent-navy}
+[1️⃣ Define Quality]{.t}
+[(Four Pillars)]{.s}
+:::
+::: {.cycle-arrow}
+&rarr;
+:::
+::: {.cycle-step .accent-purple}
+[2️⃣ Instrument]{.t}
+[(Traces + Logs)]{.s}
+:::
+::: {.cycle-arrow}
+&darr;
+:::
+::: {.cycle-step .accent-orange}
+[3️⃣ Evaluate]{.t}
+[(DeepEval + LLM Judges)]{.s}
+:::
+::: {.cycle-arrow}
+&larr;
+:::
+::: {.cycle-step .accent-teal}
+[4️⃣ Feedback]{.t}
+[(Capture Failures)]{.s}
+:::
+::: {.cycle-arrow}
+&uarr;
+:::
+:::
+
+. . .
+
+::: {.callout-tip}
+## Concrete loop in practice
+Production trace → user clicks 👎 → review queue → human annotates → appended to `test_cases.json` → **fails CI on next run until fixed**.
+
+Every production failure becomes a permanent regression test. **This is how you catch the chronic failures from Section A** — drift, bias, silent regression — that no individual run will ever reveal.
+:::
+
+## Human-in-the-Loop (HITL): The Reviewer Pattern
+
+*Automation grades the test, but humans write the rubric.*
+
+**🔬 Reviewer Pattern** — *the Glass Box audit UI*
+
+| Left Panel | Right Panel |
+|:---|:---|
+| Conversation | Reasoning |
+| User input | Tool calls + results |
+| Final answer | Step-by-step thoughts |
+
+**Tag inline** — [bad plan]{.pill} [tool misuse]{.pill} [hallucination]{.pill}
+
+**Signal fast** — 👍 / 👎 · sliders · short comments
+
+> Every signal carries the **full trace**.
+
+## Human-in-the-Loop (HITL): The Interruption Pattern
+
+*…and humans approve the irreversible actions.*
+
+:::: {.columns}
+
+::: {.column width="55%"}
+**⏸️ Interruption Pattern** — *pausing for irreversible actions*
+
+::: {.qbox}
+::: {.qtitle}
+⏸️ Pending Approval
+:::
+```yaml
+tool: execute_payment
+args: { amount: $500, to: "acct_X" }
+```
+
+**[ [Approve]{style="color: #00C9A7;"} ]** &nbsp;&nbsp; **[ [Reject]{style="color: #FF7A5C;"} ]**
+:::
+:::
+
+::: {.column width="45%"}
+**What each button does**
+
+- ✅ **Approve** → resumes the loop where it paused
+- ❌ **Reject** → triggers a **re-plan** with the rejection reason injected as feedback
+:::
+
+::::
+
+. . .
+
+::: {.callout-note appearance="simple"}
+Human-in-the-Loop (HITL) provides a **calibrated benchmark**, not absolute ground truth — humans disagree too.
+:::
+
+# H. Wrap-up {.sdaia-dark background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)"}
+
+## Key Takeaways
+
+:::: {.columns}
+
+::: {.column width="50%"}
+### Observability
+
+1. **Four Pillars** frame quality: effectiveness, efficiency, robustness, safety
+2. **Acute vs Chronic** failures need different defenses
+3. **Tracing is non-negotiable** — Glass Box opens only when Black Box fails
+4. **Loop detection + budget guards** stop runaway agents
+:::
+
+::: {.column width="50%"}
+### Evaluation
+
+5. **System vs Quality** dashboards serve different teams
+6. **Three tiers** — string → LLM-judge → human; use the cheapest that catches the failure
+7. **Pairwise judging** beats absolute 1–5 scoring
+8. **Flywheel + Human-in-the-Loop (HITL)** turn every failure into a permanent regression test with LLM judges
+:::
+
+::::

@@ -1,0 +1,119 @@
+---
+title: "Tawseel Integration"
+subtitle: "SDA-AIE-311 — Session 13 · Capstone Orientation"
+description: "Where the course chain lands: the Tawseel Engineering Kit, offline mode, the nine labs, and the capstone contract."
+builds_on: ["observability_and_evaluation"]
+duration: 40
+lab_duration: 0
+date: today
+format: revealjs
+---
+
+# A. The Capstone in One Slide <!-- SDA-AIE-311 NEW (G6) --> {.sdaia-dark background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)"}
+
+Everything so far, on one system
+
+## Rafeeq, over Tawseel {.smaller}
+
+**Tawseel (توصيل)** is a fictional Saudi last-mile logistics company — the course's build target *(fictional build target; all company, customer and order data is synthetic)*. **Rafeeq (رفيق)** is its delivery-operations agent, and it is *your* capstone: the kit ships the environment, the data, the tests, and the rubric — you ship the agent behaviour.
+
+Everything you built this week maps onto one repo:
+
+| Course session | Tawseel kit counterpart |
+|:-----------------------------|:-----------------------------------------|
+| Tool use, MCP | 16 governed tools · 4 MCP servers (orders, logistics, billing, customer) *(kit inventory — count the files yourself: `ls mcp_servers/`)* |
+| Sessions & memory (PDPL) | thread checkpoints, scoped long-term memory, `forget_customer` erasure |
+| Retrieval for agents | versioned bilingual KB (2026.2 current, 2026.1 superseded) |
+| Reasoning + collaboration | ReAct / Plan-and-Execute / Reflection + supervisor vs agents-as-tools |
+| Flow engineering | `flows/refund_flow.py` — rules as gates, no rule in a prompt |
+| Security & red-teaming | 78-payload bilingual attack corpus, CI gate: zero open high-severity |
+| Observability & cost | trace tree, cost by model/component/intent, routing + cache levers |
+
+# B. The Kit Runs Offline <!-- SDA-AIE-311 NEW (G6) --> {.sdaia-dark background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)"}
+
+No API key, no network, deterministic
+
+## Three Commands {.smaller}
+
+The kit's core engineering decision: a deterministic **stub model**, dependency-free vector store, and hashing embeddings. Every lab and every test runs with no spend and no network. Live mode is one environment variable, reserved for the capstone demo.
+
+```bash
+cd capstone/tawseel
+python scripts/doctor.py     # preflight checks (7/8 on this machine — the 1 skip is Docker, not needed offline)
+make data                    # regenerate the synthetic Saudi dataset
+make test-offline            # unit + security suites — no key, no network
+```
+
+::: {.callout-important}
+## Why this matters for grading
+`make test-offline` is deterministic: the same run always gives the same result. When your capstone change breaks something, the failure points at your change — no flaky model or network noise to blame. Numbers you quote in your report are *(measured)* by a command anyone can re-run.
+:::
+
+## What Ships Green {.smaller}
+
+Verified before delivery — the harness is sound, so a low score is a real gap to close:
+
+| Check | Result at ship *(reported: kit README — re-measure in class; this machine measured 2026-09-14: doctor 7/8 (Docker absent), unit 92/92, security 38/39 on Windows / 39/39 on Linux)* |
+|:-----------------------------------------|:-----------|
+| `scripts/doctor.py` | 8/8 |
+| unit + security suites (`run_without_pytest.py`) | 92/92 · 39/39 |
+| TawseelBench — 60 scenarios in the τ-bench format (request → policy → state → tools → expected state change → pass/fail) | 100% *offline reference target* |
+| Red-team suite — 78 payloads | 0 open high-severity |
+
+. . .
+
+::: {.callout-note}
+The 100% figures are the **offline reference target** — a deterministic model of what a competent agent should do, proving the harness works. Your agent will score lower. *That gap is the assignment.* `evaluations/KNOWN_GAPS.md` lists what was left open on purpose.
+:::
+
+# C. The Nine Labs <!-- SDA-AIE-311 NEW (G6) --> {.sdaia-dark background-gradient="linear-gradient(135deg, #1C355E, #FF7A5C)"}
+
+An optional instructor track — one per module
+
+## Lab Shape {.smaller}
+
+Every lab is the same contract: `start/` has the graded pieces replaced by `TODO(lab N.x)` markers; `solution/` imports the real `src/rafeeq/**` package; `solution/verify.py` prints a PASS/FAIL checklist with no network.
+
+```bash
+export PYTHONPATH=src
+python labs/lab07/solution/verify.py   # PASS/FAIL, offline
+```
+
+Labs 1, 2, 4, 7, 8, 9 run fully offline (stdlib). Labs 5–6 need `langgraph`; lab 3's live-MCP path needs `mcp` + `langchain-mcp-adapters` — its offline tool-catalogue path needs neither. `make doctor` reports per-lab status.
+
+::: {.callout-tip}
+## The two labs that mirror this course most directly
+**lab02** — the three reasoning patterns with a measured cost/step comparison (the table from Session 6, built by you). **lab07** — the refund flow moved from prompt rules to deterministic gates (the graph from Session 7, made real).
+:::
+
+# D. The Capstone Contract <!-- SDA-AIE-311 NEW (G6) --> {.sdaia-dark background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)"}
+
+Checklist, rubric, proof
+
+## How It Is Graded {.smaller}
+
+In `capstone/`: `README.md` (brief), `checklist.md` (every line has a **proving command**), `rubric.md` (100 points), `templates/`, `grading/` (instructor sheet + model security report).
+
+The rubric rewards what this course taught:
+
+1. **Bounded, flow-engineered core** — termination ≤ `MAX_STEPS` on adversarial input, 100%
+2. **Routing accuracy** ≥ 90% · zero cross-customer leakage (hard gate)
+3. **Red-team report** in the seven-part finding shape — attack → vulnerability → trajectory → business impact → detection → mitigation → retest — with **0 open high-severity** in CI
+4. **Cost cut ≥ 40%** per contact (cache + routing levers, measured in `BENCHMARKS.md`)
+5. **Write-tool retries = 0** (hard gate — retry only calls that are safe to repeat, i.e. reads; a repeated write could double-charge)
+
+::: {.callout-important}
+## Every number you report must be reproducible
+Tag it *(measured)* with the command that produced it, or *(reported)* with a URL, or *(course threshold)* with the design rationale. The rubric treats an untagged number as an unproven claim.
+:::
+
+## Key Takeaways {.smaller}
+
+- The kit is the exam: deterministic, offline, and already green — close the gap it documents
+- Prove every claim with a command; the checklist tells you which one
+- Rules live in graphs and gates, budgets live in edges, PII never leaves its scope
+- **The agents are commodity. The harness is the product.**
+
+::: {.footer}
+Tawseel Engineering Kit: `capstone/tawseel/` (vendored unmodified) · docs: `docs/OFFLINE_MODE.md`, `docs/TAWSEELBENCH.md`, `docs/SECURITY_MODEL.md` · Tawseel and Rafeeq are fictional; all data synthetic.
+:::

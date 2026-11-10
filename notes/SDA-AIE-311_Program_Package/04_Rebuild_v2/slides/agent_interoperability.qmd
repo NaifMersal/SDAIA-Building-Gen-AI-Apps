@@ -1,0 +1,410 @@
+---
+title: "Agent Interoperability"
+subtitle: "SDA-AIE-311 — Session 8"
+description: "Open standards beyond the harness — A2A agent-to-agent, A2UI generative UI, and AP2/UCP agent commerce."
+builds_on: ["patterns_of_collaboration", "mcp_and_standardization"]
+duration: 50
+date: today
+format: revealjs
+---
+
+# A. From In-Process to Distributed Agents {.sdaia-dark background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)"}
+
+When your specialists live on someone else's machine
+
+## Agenda
+
+- **A. From In-Process to Distributed Agents** — the contract problem
+- **B. A2A** — Agent-to-Agent: cards, registries, expose & connect
+- **C. A2UI** — agents that return *interface*, not JSON
+- **D. Agent Commerce** — UCP & AP2: the brain and the wallet
+- **E. Wrap-up** — the interoperability stack
+
+## Recall: Separate Histories Need a Contract
+
+In [Patterns of Collaboration](../slides/patterns_of_collaboration.html) we split one agent into a team. When specialists keep **separate, private histories**, only their outputs cross — and that hand-off needs a **contract**.
+
+. . .
+
+So far every specialist has lived in **your** process: same codebase, same runtime, same memory. This session asks the next question:
+
+::: {.callout-important}
+## What if the specialist isn't yours?
+What if the best "Real-time Compliance" or "Logistics" agent was built by another team — in another language, on another framework, running on another machine?
+:::
+
+## Internal vs. Distributed
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**Internal sub-agents** *(Session 1)*
+
+- Share one runtime and memory
+- In-process function calls
+- Low latency, simple state
+- You own and maintain all of them
+:::
+
+::: {.column width="50%"}
+**Distributed agents**
+
+- Live across **network boundaries**
+- Built by different teams / frameworks / languages
+- Communicate over the wire
+- You **consume** them, you don't own them
+:::
+
+::::
+
+. . .
+
+> The moment a specialist crosses a network boundary, "just call the function" stops working. You need a shared protocol.
+
+## The Fragmentation Tax
+
+You *could* hand-build a wrapper for every external specialist — a custom subagent for Salesforce, another for ServiceNow, another for an internal HR system.
+
+::: {.incremental}
+- Each speaks a different payload shape, transport, and auth scheme
+- Each upstream API change breaks **your** bespoke bridge — a permanent **maintenance tax**
+- "Build vs. buy": every wrapper you own is leverage you *don't* spend on your actual product
+:::
+
+. . .
+
+> This is the same **N×M problem** MCP solved for *tools* ([MCP & Standardization](../slides/mcp_and_standardization.html)) — now one level up, for *agents*.
+
+## Tool vs. Collaborator: The GOTO Problem {.smaller}
+
+Why not just wrap a remote agent as one more **tool**?
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**A tool is fire-and-forget**
+
+- **Bounded** domain
+- One well-formed request → one response
+- No memory of the exchange
+:::
+
+::: {.column width="50%"}
+**An agent is a collaborator**
+
+- **Unbounded** domain — crooked walls, ambiguity
+- May pause, ask for clarification, resume
+- Carries multi-turn state
+:::
+
+::::
+
+. . .
+
+::: {.callout-important}
+## The GOTO problem
+Force a collaborator into a fire-and-forget tool wrapper and control flow can **leave and never cleanly return** — the agent stalls waiting for input your orchestrator never expected to give. We need a protocol built for *pausing, negotiating, and resuming*.
+:::
+
+# B. A2A — Agent-to-Agent {.sdaia-dark background-gradient="linear-gradient(135deg, #1C355E, #FF7A5C)"}
+
+A lingua franca for agents across boundaries
+
+## A2A: The Standard for the Virtual Workforce
+
+**A2A** is an open protocol for one agent to discover and delegate to another — **agnostic to** how each was built.
+
+::: {.incremental}
+- Introduced by Google (2025); **donated to the Linux Foundation** — vendor-neutral governance
+- Backed by 150+ organizations (Microsoft, AWS, Salesforce, SAP, ServiceNow, …)
+- Abstracts away transport, framework, language, and payload differences
+:::
+
+. . .
+
+> Just as HTTP standardized the web, A2A standardizes the **virtual workforce** — your orchestrator can "hire" any A2A-compliant specialist, anywhere.
+
+## The Agent Card
+
+Every A2A agent publishes an **Agent Card** — the machine-readable "CV" of the AI world:
+
+| Field | What it declares |
+|:------|:-----------------|
+| **Capabilities / Skills** | What tasks the agent can perform |
+| **Service endpoint** | Where to reach it |
+| **Auth requirements** | How to authenticate |
+| **Interaction schemas** | How to talk to it over A2A |
+
+. . .
+
+> Convention: served at `https://<host>/.well-known/agent-card.json`, so any client can discover an agent the way browsers discover a site's metadata.
+
+## Discovery: Registries
+
+Once an agent has a card, it becomes a **discoverable service** in a registry:
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**Public marketplaces**
+
+- A global "talent agency" of agents
+- List a specialist; license it to thousands of orchestrators
+:::
+
+::: {.column width="50%"}
+**Private enterprise registries**
+
+- Governed, internal catalog
+- Share a specialist across departments without leaving the security boundary
+:::
+
+::::
+
+. . .
+
+::: {.callout-note}
+## Same pattern, one level up
+Public / managed / private — the **same trust hierarchy** as MCP server discovery. Prefer governed registries in production.
+:::
+
+## Two Motions: Expose & Connect
+
+<svg viewBox="0 0 1120 360" width="100%" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Triangle: your orchestrator discovers through a registry, which resolves to a remote specialist; the orchestrator can also delegate to that specialist directly.">
+  <defs>
+    <marker id="a2a-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--sdaia-navy)"/>
+    </marker>
+  </defs>
+  <g fill="none" stroke="var(--sdaia-navy)" stroke-width="2.5" marker-end="url(#a2a-arrow)">
+    <path d="M 250 226 L 445 114"/>
+    <path d="M 660 114 L 855 226"/>
+    <path d="M 332 285 H 786"/>
+  </g>
+  <g font-size="15" fill="var(--muted)" text-anchor="middle" font-family="inherit">
+    <text x="280" y="150">discover</text>
+    <text x="832" y="150">resolve</text>
+    <text x="560" y="270">delegate (direct)</text>
+  </g>
+  <g stroke="var(--sdaia-navy)" stroke-width="2.5">
+    <rect x="400" y="20" width="300" height="90" rx="12" fill="var(--sdaia-purple)"/>
+    <rect x="20" y="230" width="310" height="110" rx="12" fill="var(--sdaia-navy)"/>
+    <rect x="790" y="230" width="310" height="110" rx="12" fill="var(--sdaia-teal)"/>
+  </g>
+  <g font-size="19" font-weight="700" text-anchor="middle" font-family="inherit">
+    <text x="550" y="72" fill="#101820">Registry</text>
+    <text x="175" y="278" fill="#ffffff">Your Orchestrator</text>
+    <text x="175" y="308" fill="#ffffff">(A2A Client)</text>
+    <text x="945" y="278" fill="#101820">Remote Specialist</text>
+    <text x="945" y="308" fill="#101820">(A2A Server)</text>
+  </g>
+</svg>
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**Expose** (supply side)
+
+1. Define the **Agent Card**
+2. Add an **executor** — translates A2A requests into your framework's calls
+3. Publish an **A2A endpoint**
+:::
+
+::: {.column width="50%"}
+**Connect** (demand side)
+
+- **Direct** — point at a known endpoint
+- **Via registry** — discover, then resolve the endpoint dynamically
+:::
+
+::::
+
+# C. A2UI — Agent-to-UI {.sdaia-dark background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)"}
+
+Agents that return *interface*, not JSON
+
+## The Communication Gap
+
+Ask a colleague *"How did Q4 perform by region?"* and they sketch a chart and circle the outliers. They don't hand you a spreadsheet.
+
+. . .
+
+Yet agents return **raw JSON** — and *you* build the chart: import a library, configure axes, manage state. That context-switch breaks the flow.
+
+. . .
+
+> **A2UI** lets an agent return a complete, interactive **interface** as its output — not just data.
+
+## A2UI: Declarative UI Intent {.smaller}
+
+Running LLM-generated *code* in your app is a security nightmare (injection, XSS). A2UI avoids it entirely:
+
+::: {.incremental}
+- The agent emits **declarative UI intent** — a portable JSON description of *what* to render, not executable code and not fixed pixels
+- The **client** renders it using its own trusted **component catalog** (React, Flutter, Lit, Angular…)
+- The catalog defines what's available; the agent only **composes** from it
+:::
+
+. . .
+
+::: {.callout-note}
+## Sheet music, not a recording
+The agent writes the score (intent); each client's renderer "plays" it natively. Because the agent can only reference catalog components, it **cannot inject arbitrary code** — that separation is what makes it safe.
+:::
+
+## Two Patterns — and When
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**LLM generates the UI** *(default)*
+
+- Model owns the layout, adapts to intent
+- "Compare these regions" and "show trends" get *different* interfaces
+- Flexible, conversational
+:::
+
+::: {.column width="50%"}
+**Tool returns a fixed UI** *(template)*
+
+- One tool call, no tokens spent on layout
+- Fully predictable output
+- Best when the layout is deterministic from inputs
+:::
+
+::::
+
+. . .
+
+::: {.callout-tip}
+## Pick by who owns the layout
+Intent-driven (LLM) when the view should adapt; input-driven (template) when every dashboard should look identical. *Emerging standard — Google open project, stabilising through 2026.*
+:::
+
+# D. Agent Commerce {.sdaia-dark background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)"}
+
+UCP & AP2 — the brain and the wallet
+
+## From Reading to Spending
+
+MCP, A2A, and A2UI are mostly about **reading and reasoning**. The next frontier is agents that take **actions with real-world financial weight**.
+
+. . .
+
+::: {.callout-important}
+## A different risk class
+You won't paste your card number into a prompt and say *"go wild."* Commerce needs **authorization, auditability, and hard guardrails** — exactly the concerns from the [security module](../slides/input_output_guardrails.html).
+:::
+
+## UCP & AP2: The Brain and the Wallet {.smaller}
+
+*Your AI orders dinner for the apartment. Two protocols split the job:*
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**UCP — Universal Commerce Protocol**
+
+The **brain**: discover, cart, order.
+
+- "The HTTP of commerce" — every merchant publishes menu, options, and pricing in one machine language
+- Standard schemas: discover products → build cart → track order
+:::
+
+::: {.column width="50%"}
+**AP2 — Agent Payments Protocol**
+
+The **wallet**: pay, safely.
+
+- Three signed **Mandates**: **Intent** (what you want) → **Cart** (what the agent assembled) → **Payment** (what gets charged)
+- A cryptographic "permission slip" proving a human approved *this* purchase
+:::
+
+::::
+
+. . .
+
+> **Guardrail in action:** you sign *"up to $25 at the taco place."* The agent presents a signed mandate for an $18.50 order — try to charge $50 and the protocol rejects it.
+
+## How Settlement Happens {.smaller}
+
+| | **UCP** | **AP2** |
+|:--|:--------|:--------|
+| **Role** | Decides *what* to buy, builds the cart | Handles *how* to pay, without leaking card details |
+| **Integrates with** | Any merchant / business provider | Payment networks |
+| **Guarantees** | Unified schema, discovery | Authorization, auditability, accountability |
+
+. . .
+
+::: {.callout-note}
+## Related: x402
+A complementary settlement path revives the long-dormant **HTTP 402 "Payment Required"**: the server returns a price, the agent pays (often stablecoins) and retries with cryptographic proof — machine-to-machine, no human in the loop. *Emerging; AP2 announced Sept 2025, UCP early 2026.*
+:::
+
+# E. Wrap-up {.sdaia-dark background-gradient="linear-gradient(135deg, #1C355E, #FF7A5C)"}
+
+## The Interoperability Stack
+
+<svg viewBox="0 0 1120 420" width="100%" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Hub diagram: your agent logic sits at the centre, exchanging with MCP tools, A2A agents, an A2UI interface and AP2 or UCP commerce.">
+  <defs>
+    <marker id="stack-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--sdaia-navy)"/>
+    </marker>
+  </defs>
+  <g fill="none" stroke="var(--sdaia-navy)" stroke-width="2.5" marker-end="url(#stack-arrow)" marker-start="url(#stack-arrow)">
+    <path d="M 284 102 L 386 168"/>
+    <path d="M 284 318 L 386 252"/>
+    <path d="M 734 168 L 836 102"/>
+    <path d="M 734 252 L 836 318"/>
+  </g>
+  <g stroke="var(--sdaia-navy)" stroke-width="2.5">
+    <rect x="390" y="150" width="340" height="120" rx="12" fill="var(--sdaia-navy)"/>
+    <rect x="30" y="30" width="250" height="90" rx="12" fill="var(--sdaia-teal)"/>
+    <rect x="30" y="300" width="250" height="90" rx="12" fill="var(--sdaia-orange)"/>
+    <rect x="840" y="30" width="250" height="90" rx="12" fill="var(--sdaia-purple)"/>
+    <rect x="840" y="300" width="250" height="90" rx="12" fill="var(--sdaia-cyan)"/>
+  </g>
+  <g font-size="19" font-weight="700" text-anchor="middle" font-family="inherit">
+    <text x="560" y="197" fill="#ffffff">Agent Logic</text>
+    <text x="560" y="227" fill="#ffffff">(your orchestrator)</text>
+    <text x="155" y="68" fill="#101820">MCP</text>
+    <text x="155" y="96" fill="#101820">Tools</text>
+    <text x="155" y="338" fill="#101820">A2A</text>
+    <text x="155" y="366" fill="#101820">Agents</text>
+    <text x="965" y="68" fill="#101820">A2UI</text>
+    <text x="965" y="96" fill="#101820">Interface</text>
+    <text x="965" y="338" fill="#101820">AP2 / UCP</text>
+    <text x="965" y="366" fill="#101820">Commerce</text>
+  </g>
+</svg>
+
+One orchestrator, four open standards — **tools**, **agents**, **interface**, and **commerce**.
+
+## From Builder to Orchestrator
+
+| Standard | Connects you to | Maturity |
+|:---------|:----------------|:---------|
+| **MCP** | Tools & data sources | Established |
+| **A2A** | Other agents (the virtual workforce) | Established, 150+ orgs |
+| **A2UI** | Human users, via generative UI | Emerging (2025–26) |
+| **AP2 / UCP** | Merchants & payment rails | Emerging (2025–26) |
+
+. . .
+
+::: {.callout-tip}
+## The thesis
+Adopting open standards moves you from **wiring fragile bespoke bridges** to **orchestrating high-value intent**. Spend your tokens on the product, not the plumbing.
+:::
+
+## Key Takeaways
+
+1. **Distributed ≠ internal** — once a specialist crosses a network boundary, you need a protocol, not a function call
+2. **A2A** standardizes the virtual workforce — Agent Cards, registries, expose & connect
+3. **Tool vs. collaborator** — fire-and-forget vs. multi-turn negotiation (the GOTO problem)
+4. **A2UI** returns *interface*, not JSON — safe because it's declarative, not executable
+5. **Commerce** needs guardrails — UCP is the brain, AP2 the cryptographically-signed wallet
+6. **Verify before you build on it** — A2A is established; A2UI/AP2/UCP are emerging and moving fast
+
+::: {.footer}
+Sources: [A2A Protocol](https://a2a-protocol.org/latest/) · [A2A — Linux Foundation](https://insights.linuxfoundation.org/project/agent2agent-a2a-protocol) · [A2UI — Google Developers Blog](https://developers.googleblog.com/a2ui-v0-9-generative-ui/) · [AP2 — Google Cloud Blog](https://cloud.google.com/blog/products/ai-machine-learning/announcing-agents-to-payments-ap2-protocol) · [UCP — Google Developers Blog](https://developers.googleblog.com/under-the-hood-universal-commerce-protocol-ucp/)
+:::

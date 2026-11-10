@@ -9,7 +9,7 @@
 <link href="optimization_production_architecture_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.9.38">
 
-  <meta name="dcterms.date" content="2026-07-06">
+  <meta name="dcterms.date" content="2026-11-10">
   <title>Production Optimization</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -98,7 +98,7 @@
     code span.vs { color: #20794d; } /* VerbatimString */
     code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="optimization_production_architecture_files/libs/revealjs/dist/theme/quarto-05b633aaffd58596cc6573a610a4b559.css">
+  <link rel="stylesheet" href="optimization_production_architecture_files/libs/revealjs/dist/theme/quarto-98a181cbe320dee6f668343ff9832aea.css">
   <link href="optimization_production_architecture_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="optimization_production_architecture_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="optimization_production_architecture_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -190,9 +190,6 @@
       margin-right: 0; 
     }
   </style>
-  <script src="optimization_production_architecture_files/libs/quarto-diagram/mermaid.min.js"></script>
-  <script src="optimization_production_architecture_files/libs/quarto-diagram/mermaid-init.js"></script>
-  <link href="optimization_production_architecture_files/libs/quarto-diagram/mermaid.css" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MCA4MCI+DQogIDxkZWZzPg0KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYSIgeDE9Ii0xLjkxMSIgeDI9IjIuOTg1IiB5MT0iLS44NDEiIHkyPSIxLjQxNCIgZ3JhZGllbnRVbml0cz0ib2JqZWN0Qm91bmRpbmdCb3giPg0KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjOTlkNjMzIi8+DQogICAgICA8c3RvcCBvZmZzZXQ9Ii41IiBzdG9wLWNvbG9yPSIjM2M5Ii8+DQogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMyNzM0NzAiLz4NCiAgICA8L2xpbmVhckdyYWRpZW50Pg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYSIgaWQ9ImQiIHgxPSItMy41NjkiIHgyPSIxLjMyOCIgeTE9Ii0xLjYwNSIgeTI9Ii42NTEiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2EiIGlkPSJlIiB4MT0iLTMuMDQ3IiB4Mj0iMS44NDkiIHkxPSItLjkwNCIgeTI9IjEuMzUyIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0iZiIgeDE9Ii0yLjg5IiB4Mj0iMi4wMDciIHkxPSItMS4yOTIiIHkyPSIuOTY0Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0iZyIgeDE9Ii0yLjQiIHgyPSIyLjQ5NyIgeTE9Ii0xLjA2NiIgeTI9IjEuMTg5Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0iaCIgeDE9Ii0uOTkyIiB4Mj0iMi42NzkiIHkxPSItLjQxOCIgeTI9IjEuMjczIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0iaSIgeDE9Ii0xLjUxMiIgeDI9IjIuMTU5IiB5MT0iLS4xOTciIHkyPSIxLjQ5NSIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYSIgaWQ9ImoiIHgxPSItLjkxNCIgeDI9IjIuNzU4IiB5MT0iLjA3OSIgeTI9IjEuNzcxIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0iayIgeDE9Ii0zLjQwNSIgeDI9IjEuNDkzIiB5MT0iLTEuMDY4IiB5Mj0iMS4xODciLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2EiIGlkPSJsIiB4MT0iLjM0NyIgeDI9IjMuMjg1IiB5MT0iLjE5OSIgeTI9IjEuNTUyIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0ibSIgeDE9Ii0uOTA1IiB4Mj0iMi43NjciIHkxPSIuMDgzIiB5Mj0iMS43NzUiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2EiIGlkPSJuIiB4MT0iLTIuMTE5IiB4Mj0iMi43NzgiIHkxPSItLjQ3NiIgeTI9IjEuNzc5Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0ibyIgeDE9Ii01LjY0NCIgeDI9Ii40ODYiIHkxPSItMi45OTgiIHkyPSIuNzQxIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0icCIgeDE9Ii0zLjQ5NSIgeDI9IjIuNjM2IiB5MT0iLTEuNjg3IiB5Mj0iMi4wNTMiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2EiIGlkPSJxIiB4MT0iLTEuNDIyIiB4Mj0iMy4xNzUiIHkxPSItLjkyMyIgeTI9IjEuODgyIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0iciIgeDE9Ii0zLjMwNiIgeDI9IjIuODI1IiB5MT0iLTIuMDcyIiB5Mj0iMS42NjgiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2EiIGlkPSJzIiB4MT0iLTEuNjgzIiB4Mj0iMi45MTQiIHkxPSItMS4wODEiIHkyPSIxLjcyMyIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYSIgaWQ9InQiIHgxPSItMS4xNTgiIHgyPSIyLjUyMSIgeTE9Ii0uMjYxIiB5Mj0iMS45ODMiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImIiIHgxPSIuMjYxIiB4Mj0iLjYyNCIgeTE9IjMuNTYiIHkyPSItMS40NjkiIGdyYWRpZW50VW5pdHM9Im9iamVjdEJvdW5kaW5nQm94Ij4NCiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzZjZiIvPg0KICAgICAgPHN0b3Agb2Zmc2V0PSIuNSIgc3RvcC1jb2xvcj0iIzYyNThhNiIvPg0KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMjczNDcwIi8+DQogICAgPC9saW5lYXJHcmFkaWVudD4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJ1IiB4MT0iLjE2MyIgeDI9Ii41MjYiIHkxPSI0LjkyNCIgeTI9Ii0uMTAzIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNiIiBpZD0idiIgeDE9Ii4zODYiIHgyPSIuNjU4IiB5MT0iMS44MjUiIHkyPSItMS45NDUiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJ3IiB4MT0iLjI1MiIgeDI9Ii42MTUiIHkxPSI0LjE4MiIgeTI9Ii0uODQ1Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNiIiBpZD0ieCIgeDE9Ii40MTciIHgyPSIuNjg5IiB5MT0iMS45IiB5Mj0iLTEuODciLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJ5IiB4MT0iLjQ4NSIgeDI9Ii43MDMiIHkxPSIuOTU2IiB5Mj0iLTIuMDYiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJ6IiB4MT0iLjM3NyIgeDI9Ii42NDkiIHkxPSIyLjQ1NSIgeTI9Ii0xLjMxNCIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYiIgaWQ9IkEiIHgxPSIuMTk5IiB4Mj0iLjU2MiIgeTE9IjQuOTIyIiB5Mj0iLS4xMDUiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJCIiB4MT0iLjQzNyIgeDI9Ii43MDkiIHkxPSIxLjYyNSIgeTI9Ii0yLjE0NSIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYiIgaWQ9IkMiIHgxPSIuMjYxIiB4Mj0iLjYyNCIgeTE9IjQuMDU1IiB5Mj0iLS45NzIiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJEIiB4MT0iLjUiIHgyPSIuNSIgeTE9IjMuMDQ1IiB5Mj0iLTEuOTI3Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNiIiBpZD0iRSIgeDE9Ii41IiB4Mj0iLjUiIHkxPSI0LjkwMSIgeTI9Ii0uMDcyIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNiIiBpZD0iRiIgeDE9Ii41IiB4Mj0iLjUiIHkxPSIyLjQzNSIgeTI9Ii0xLjI5NiIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYiIgaWQ9IkciIHgxPSIuNSIgeDI9Ii41IiB5MT0iLjkzNCIgeTI9Ii0yLjA1Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNiIiBpZD0iSCIgeDE9Ii41IiB4Mj0iLjUiIHkxPSIzLjc4NSIgeTI9Ii0xLjE4NyIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYiIgaWQ9IkkiIHgxPSIuNSIgeDI9Ii41IiB5MT0iMS44MDkiIHkyPSItMS45MjEiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJKIiB4MT0iLjUiIHgyPSIuNSIgeTE9IjMuMDQ2IiB5Mj0iLTEuOTI4Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNiIiBpZD0iSyIgeDE9Ii41IiB4Mj0iLjUiIHkxPSIyLjc5NCIgeTI9Ii0yLjE3NyIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYyIgeDE9IjUuMDEiIHgyPSItMi4yNzciIHkxPSItMS4zODMiIHkyPSIyLjAzOSIgZ3JhZGllbnRVbml0cz0ib2JqZWN0Qm91bmRpbmdCb3giPg0KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmRiZDRkIi8+DQogICAgICA8c3RvcCBvZmZzZXQ9Ii41IiBzdG9wLWNvbG9yPSIjZjYzIi8+DQogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMyNzM0NzAiLz4NCiAgICA8L2xpbmVhckdyYWRpZW50Pg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYyIgaWQ9IkwiIHgxPSIyLjIzOSIgeDI9Ii0yLjEzNCIgeTE9Ii0uMDgyIiB5Mj0iMS45NzEiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2MiIGlkPSJNIiB4MT0iNi4wOTgiIHgyPSItMS4xOTEiIHkxPSItMS44OTMiIHkyPSIxLjUyOCIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYyIgaWQ9Ik4iIHgxPSIzLjM4NCIgeDI9Ii0yLjA4MSIgeTE9Ii0xLjA4OCIgeTI9IjEuNDc3Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iTyIgeDE9IjIuNzgiIHgyPSItMi42ODYiIHkxPSItLjgwNSIgeTI9IjEuNzYxIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iUCIgeDE9IjcuMDc0IiB4Mj0iLS4yMTIiIHkxPSItMi4zNTMiIHkyPSIxLjA2OSIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYyIgaWQ9IlEiIHgxPSI1LjA3NSIgeDI9Ii0yLjIxMSIgeTE9Ii0xLjQxNCIgeTI9IjIuMDA4Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iUiIgeDE9IjUuNzM2IiB4Mj0iLTEuNTUiIHkxPSItMi4xOTQiIHkyPSIxLjIyOCIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYyIgaWQ9IlMiIHgxPSIyLjA4MSIgeDI9Ii0xLjc4MSIgeTE9Ii0uMDQ3IiB5Mj0iMS45Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iVCIgeDE9Ii43MjkiIHgyPSItMi4zNjEiIHkxPSIuMTM1IiB5Mj0iMS42OTIiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2MiIGlkPSJVIiB4MT0iMi43MTciIHgyPSItMi40MzMiIHkxPSItLjg2OCIgeTI9IjEuNzI4Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iViIgeDE9IjEuNTE3IiB4Mj0iLTIuMzQ3IiB5MT0iLS4yNjIiIHkyPSIxLjY4NCIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYyIgaWQ9IlciIHgxPSIzLjU0NCIgeDI9Ii0xLjYwNiIgeTE9Ii0xLjI4NCIgeTI9IjEuMzEyIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iWCIgeDE9IjIuNjMxIiB4Mj0iLTEuMjMzIiB5MT0iLS4zMjQiIHkyPSIxLjYyMyIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYyIgaWQ9IlkiIHgxPSIyLjAwMyIgeDI9Ii0xLjg2IiB5MT0iLS4wMDciIHkyPSIxLjk0Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iWiIgeDE9IjQuMTI1IiB4Mj0iLTEuMDI1IiB5MT0iLTEuMDc3IiB5Mj0iMS41MTgiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2MiIGlkPSJhYSIgeDE9IjMuMDIyIiB4Mj0iLTIuMTI3IiB5MT0iLTEuMDIxIiB5Mj0iMS41NzQiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2MiIGlkPSJhYiIgeDE9IjQuNjgxIiB4Mj0iLS40NjkiIHkxPSItMS44NTciIHkyPSIuNzM4Ii8+DQogIDwvZGVmcz4NCiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMy44IDEpIj4NCiAgPHBhdGggZmlsbD0iIzNjOSIgZD0ibTM2LjA0MSAyNi41My0xMS40NDggNi42MTF2MTMuMjJsMTEuNDQ4IDYuNjEyIDExLjQ0Ni02LjYwOFYzMy4xNDFaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjYSkiIGQ9Ik03MS40NjQgMjAuOTF2Ny45MzJsLTYuODctMy45NjVaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjZCkiIGQ9Ik02NC4yNDkgNTIuOTdsNi44NjkgMy45NjV2LTcuOTNaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjZSkiIGQ9Im02OC4xIDQ2LjM1OSAtNi44NjkgMy45Njd2LTcuOTMyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI2YpIiBkPSJNNzIuMzkyIDM1LjM3djcuOTMybC02Ljg2OSAtMy45NjVaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjZykiIGQ9Ik01Ni42NTEgNTYuODQ3djcuOTMybC02Ljg2OSAtMy45NjVaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjaCkiIGQ9Im01Ny43OTQgNTEuNjQzIC05LjE2IC01LjI4NiA5LjE2IC01LjI5WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI2kpIiBkPSJtNTcuNzk1IDUyLjk3IC05LjE2IDUuMjlWNDcuNjg0WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI2opIiBkPSJtNTcuNzkyIDM5Ljc0OSAtOS4xNTggNS4yODZ2LTEwLjU3MloiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNrKSIgZD0ibTU4LjUgNzAuMzE4IC02Ljg2OCAzLjk2N3YtNy45MzJaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjbCkiIGQ9Im00Ny40ODcgNDYuMzYxIC0xMS40NDYgLTYuNjEyIDExLjQ0NiAtNi42MTFaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjbSkiIGQ9Im00Ni4zNDQgNjEuMDc3IC05LjE1OCA1LjI4NnYtMTAuNTcyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI24pIiBkPSJtNDUuMTk5IDc0LjAzNSAtNi44NjggMy45NjV2LTcuOTMyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI28pIiBkPSJtNzAuMDIxIDYxLjc3NSAtNi44NjkgMy45Njd2LTcuOTMyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3ApIiBkPSJtNjguMSAzMy4xNDIgLTYuODY5IDMuOTY3di03LjkzMloiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNxKSIgZD0iTTU3Ljc5NCAyNy44NTJ2MTAuNTc2bC05LjE2IC01LjI5WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3IpIiBkPSJNNDUuMjAyIDYyLjg5MXY3LjkzMmwtNi44NjkgLTMuOTY3WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3MpIiBkPSJtNDYuMzQzIDU5Ljc1NiAtOS4xNTcgLTUuMjg2IDkuMTU3IC01LjI5WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3QpIiBkPSJtMzYuMDQxIDM5Ljc1IDExLjQ0NiA2LjYxMiAtMTEuNDQ2IDYuNjA4WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI2IpIiBkPSJtNjkuMzM0IDE3LjAzMSAtNi44NjkgMy45NjV2LTcuOTNaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjdSkiIGQ9Im01OC4wODIgNS40NiAtNi44NzEgMy45Njd2LTcuOTMyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3YpIiBkPSJtNTcuNzk2IDI2LjUyOSAtOS4xNjIgNS4yODZWMjEuMjQxWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3cpIiBkPSJtNDUuMiAxNC41NDUgLTYuODY5IC0zLjk2NSA2Ljg2OSAtMy45NjdaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjeCkiIGQ9Ik00Ni4zNDQgMTkuNzQ0VjMwLjMxOWwtOS4xNTggLTUuMjg2WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3kpIiBkPSJNMzYuMDQxIDI2LjUzdjEzLjIyTDI0LjU5MyAzMy4xNDFaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjeikiIGQ9Im0zNC44OTcgMjMuNzA5IC05LjE1OCAtNS4yODYgOS4xNTggLTUuMjlaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjQSkiIGQ9Im0zMy43NSA3LjkzMiAtNi44NyAtMy45NjUgNi44NyAtMy45NjdaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjQikiIGQ9Im0yMy40NDkgMzEuODE2IC05LjE1OCAtNS4yOSA5LjE1OCAtNS4yODVaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjQykiIGQ9Ik0xOS43NiA2LjAzOXY3LjkzMmwtNi44NjkgLTMuOTY1WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI0QpIiBkPSJtNTYuNjQ3IDIyLjY1MSAtNi44NzEgLTMuOTY3IDYuODcxIC0zLjk2N1oiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNFKSIgZD0ibTQ1LjIgMy45NjcgLTYuODY5IDMuOTY1di03LjkzMloiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNGKSIgZD0ibTQ2LjM0NCAxOC40MTcgLTkuMTU4IDUuMjg2di0xMC41NjhaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjRykiIGQ9Im00Ny40ODcgMzMuMTQxIC0xMS40NDYgNi42MTF2LTEzLjIyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI0gpIiBkPSJtMzMuNzUzIDEyLjgxNCAtNi44NzEgMy45Njd2LTcuOTMyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI0kpIiBkPSJtMzQuODk2IDI1LjAzMyAtOS4xNTggNS4yODZ2LTEwLjU3NVoiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNKKSIgZD0ibTIyLjMgMTguNjg0IC02Ljg3IDMuOTY1di03LjkzWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI0spIiBkPSJtNy41NTYgMjQuNjM3IC02Ljg3IC0zLjk2NSA2Ljg3IC0zLjk2N1oiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNjKSIgZD0ibTMzLjc1MSA3OC4wMDEgLTYuODcxIC0zLjk2NSA2Ljg3MSAtMy45NjdaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjTCkiIGQ9Ik0zNi4wNDEgMzkuNzV2MTMuMjJsLTExLjQ0OCAtNi42MTJaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjTSkiIGQ9Ik0yMi4zIDY2Ljc2M3Y3LjkzMmwtNi44NyAtMy45NjZaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjTikiIGQ9Im0yMy40NDkgNDYuMzYyIC05LjE1OCA1LjI4NnYtMTAuNTc2WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI08pIiBkPSJtMjMuNDQ5IDMzLjE0MiAtOS4xNTggNS4yOXYtMTAuNThaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjUCkiIGQ9Ik05LjYxNiA1OS40MDF2Ny45M2wtNi44NzEgLTMuOTY1WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI1EpIiBkPSJNMTAuODUxIDI4Ljg5OXY3LjkzMmwtNi44NzEgLTMuOTY1WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI1IpIiBkPSJtNi44NzEgNDAuMDkzIC02Ljg3MSAzLjk2NXYtNy45M1oiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNTKSIgZD0ibTM0Ljg5NCA2Ni4zNjcgLTkuMTYgLTUuMjg2IDkuMTYgLTUuMjlaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjVCkiIGQ9Im0zNi4wNDEgMzkuNzUgLTExLjQ0OCA2LjYwOHYtMTMuMjJaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjVSkiIGQ9Im0zMy43NSA2Ny40MjUgLTYuODcxIDMuOTY3di03LjkzMloiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNWKSIgZD0ibTM0Ljg5MiA1NC40NjcgLTkuMTU3IDUuMjl2LTEwLjU4MloiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNXKSIgZD0ibTIyLjI5OSA2MC44MTQgLTYuODY5IDMuOTY1di03LjkzWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI1gpIiBkPSJNMjMuNDQ5IDQ3LjY4M3YxMC41NzNsLTkuMTU4IC01LjI4NloiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNZKSIgZD0iTTIzLjQ0OSAzNC40NTl2MTAuNTczbC05LjE1OCAtNS4yODNaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjWikiIGQ9Im0xMC44NSA1MC4zMjYgLTYuODcxIC0zLjk2NyA2Ljg3MSAtMy45NjVaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjYWEpIiBkPSJtNy4xNDUgMjYuNTMxIC02Ljg2OSAzLjk2NXYtNy45MzJaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjYWIpIiBkPSJtNy41NTYgNTMuNDUyIC02Ljg3MSAzLjk2NXYtNy45MzVaIi8+DQogIDwvZz4NCjwvc3ZnPg0K">
 
 </head>
@@ -207,7 +204,7 @@
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-07-06</p>
+  <p class="date">2026-11-10</p>
 </section>
 <section>
 <section id="a.-prototype-to-production" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
@@ -617,30 +614,9 @@
 </section>
 <section id="semantic-cache-flow" class="slide level2">
 <h2>Semantic Cache Flow</h2>
-<div class="cell" data-reveal="true" data-fig-width="10" data-layout-align="default">
-<div class="cell-output-display">
-<div>
-<p></p><figure class=""><p></p>
-<div>
-<pre class="mermaid mermaid-js">graph TD
-    Q["New Query"] --&gt; E["Embed Query\n(sentence-transformers)"]
-    E --&gt; S["Cosine Similarity Search\nvs cache entries"]
-    S --&gt;|sim &gt; 0.93| HIT["Cache HIT\nReturn stored response"]
-    S --&gt;|sim ≤ 0.93| MISS["Cache MISS"]
-    MISS --&gt; LLM["Call LLM API"]
-    LLM --&gt; STORE["Store response + embedding\nin cache"]
-    STORE --&gt; RESP["Return response"]
-    HIT --&gt; RESP
-
-    style HIT fill:#00C9A7,stroke:#1C355E,color:#1C355E
-    style MISS fill:#FF7A5C,stroke:#1C355E,color:#1C355E
-    style LLM fill:#9B8EC0,stroke:#1C355E,color:#1C355E
-</pre>
-</div>
-<p></p></figure><p></p>
-</div>
-</div>
-</div>
+<svg viewbox="0 0 1120 420" width="100%" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Semantic cache flow: a new query is embedded and compared against cache entries; above similarity 0.93 it is a cache hit returning the stored response, otherwise a cache miss calls the LLM, stores the response and embedding, and both paths end at the returned response.">
+<defs> <marker id="cache-arrow" viewbox="0 0 10 10" refx="9" refy="5" markerwidth="6" markerheight="6" orient="auto-start-reverse"> <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--sdaia-navy)"></path> </marker> </defs> <g fill="none" stroke="var(--sdaia-navy)" stroke-width="2.5" marker-end="url(#cache-arrow)"> <path d="M 160 62 H 196"></path> <path d="M 420 62 H 456"></path> <path d="M 700 62 H 756"></path> <path d="M 580 99 V 171"></path> <path d="M 700 207 H 756"></path> <path d="M 885 239 V 296"></path> <path d="M 760 337 H 704"></path> <path d="M 885 99 V 130 H 1060 V 400 H 580 V 378"></path> </g> <g font-size="14" fill="var(--muted)" font-family="inherit"> <text x="728" y="18" text-anchor="middle">sim &gt; 0.93</text> <text x="592" y="141">sim ≤ 0.93</text> </g> <g stroke="var(--sdaia-navy)" stroke-width="2.5"> <rect x="10" y="30" width="150" height="64" rx="12" fill="var(--sdaia-code-bg)"></rect> <rect x="200" y="30" width="220" height="64" rx="12" fill="var(--sdaia-code-bg)"></rect> <rect x="460" y="25" width="240" height="74" rx="12" fill="var(--sdaia-code-bg)"></rect> <rect x="760" y="25" width="250" height="74" rx="12" fill="var(--sdaia-teal-on-dark)"></rect> <rect x="460" y="175" width="240" height="64" rx="12" fill="var(--sdaia-coral-on-dark)"></rect> <rect x="760" y="175" width="250" height="64" rx="12" fill="var(--sdaia-purple-on-dark)"></rect> <rect x="760" y="300" width="250" height="74" rx="12" fill="var(--sdaia-code-bg)"></rect> <rect x="460" y="310" width="240" height="64" rx="12" fill="var(--sdaia-code-bg)"></rect> </g> <g font-size="16" font-weight="700" text-anchor="middle" font-family="inherit"> <text x="85" y="68" fill="var(--sdaia-navy)">New Query</text> <text x="310" y="55" fill="var(--sdaia-navy)">Embed Query</text> <text x="310" y="79" fill="var(--sdaia-navy)">(sentence-transformers)</text> <text x="580" y="52" fill="var(--sdaia-navy)">Cosine Similarity Search</text> <text x="580" y="80" fill="var(--sdaia-navy)">vs cache entries</text> <text x="885" y="52" fill="#101820">Cache HIT</text> <text x="885" y="80" fill="#101820">Return stored response</text> <text x="580" y="213" fill="#101820">Cache MISS</text> <text x="885" y="213" fill="#101820">Call LLM API</text> <text x="885" y="327" fill="var(--sdaia-navy)">Store response + embedding</text> <text x="885" y="355" fill="var(--sdaia-navy)">in cache</text> <text x="580" y="348" fill="var(--sdaia-navy)">Return response</text> </g>
+</svg>
 </section>
 <section id="cost-impact-of-caching" class="slide level2">
 <h2>Cost Impact of Caching</h2>
@@ -736,29 +712,8 @@
 </section>
 <section id="alias-switching" class="slide level2">
 <h2>Alias-Switching</h2>
-<div class="cell" data-reveal="true" data-fig-width="10" data-layout-align="default">
-<div class="cell-output-display">
-<div>
-<p></p><figure class=""><p></p>
-<div>
-<pre class="mermaid mermaid-js">sequenceDiagram
-    participant App as Application
-    participant Old as Index v1 (Live)
-    participant New as Index v2 (Building)
-    participant Alias as Alias Config
-
-    App-&gt;&gt;Alias: Read: "live = v1"
-    App-&gt;&gt;Old: Serve queries
-    Note over New: Build new index&lt;br/&gt;Backfill all data
-    New-&gt;&gt;New: Verify data integrity
-    App-&gt;&gt;Alias: Write: "live = v2"
-    App-&gt;&gt;New: Serve queries (instant switch)
-    Note over Old: Delete after cooldown
-</pre>
-</div>
-<p></p></figure><p></p>
-</div>
-</div>
+<div class="lanes" style="grid-template-columns: repeat(4, 1fr)">
+<p><span class="lane-actor">Application</span> <span class="lane-actor">Index v1 (Live)</span> <span class="lane-actor">Index v2 (Building)</span> <span class="lane-actor">Alias Config</span> <span class="lane-msg" style="--from:1; --to:4">Read: “live = v1”</span> <span class="lane-msg" style="--from:1; --to:2">Serve queries</span> <span class="lane-msg" style="--from:3; --to:4">Build new index · Backfill all data</span> <span class="lane-msg reply" style="--from:3; --to:4">Verify data integrity</span> <span class="lane-msg" style="--from:1; --to:4">Write: “live = v2”</span> <span class="lane-msg" style="--from:1; --to:3">Serve queries (instant switch)</span> <span class="lane-msg reply" style="--from:2; --to:3">Delete after cooldown</span></p>
 </div>
 </section>
 <section id="code-pineconereindexer" class="slide level2">
@@ -888,43 +843,9 @@
 </section>
 <section id="a-system-architecture" class="slide level2">
 <h2>A System Architecture</h2>
-<div class="cell" data-reveal="true" data-fig-width="10" data-layout-align="default">
-<div class="cell-output-display">
-<div>
-<p></p><figure class=""><p></p>
-<div>
-<pre class="mermaid mermaid-js">flowchart LR
-    User["User Query"] --&gt; QP["Query Processor"]
-    QP --&gt;|"Expanded Queries"| AR["Advanced Retriever"]
-    AR --&gt;|"Hybrid Search"| VS[("Vector Store")]
-    AR --&gt;|"BM25 Search"| KS[("Keyword Index")]
-    VS &amp; KS --&gt; Cands["Candidate Pool"]
-    Cands --&gt; RR["Cross-Encoder&lt;br/&gt;Re-ranker"]
-    RR --&gt;|"Top K"| CM["Context Manager"]
-    CM --&gt;|"Pruned Context"| Gen["LLM Generation"]
-    Gen --&gt;|"Answer + Citations"| User
-
-    subgraph Offline Pipeline
-        Ingest["Ingestion"] --&gt; VS
-        Eval["DeepEval Suite"] -.-&gt;|"Grades"| Gen
-    end
-
-    style User fill:#9B8EC0,stroke:#1C355E,color:#fff
-    style QP fill:#9B8EC0,stroke:#1C355E,color:#fff
-    style AR fill:#00C9A7,stroke:#1C355E,color:#fff
-    style VS fill:#1C355E,stroke:#1C355E,color:#fff
-    style KS fill:#1C355E,stroke:#1C355E,color:#fff
-    style RR fill:#FF7A5C,stroke:#1C355E,color:#fff
-    style CM fill:#FF7A5C,stroke:#1C355E,color:#fff
-    style Gen fill:#FF7A5C,stroke:#1C355E,color:#fff
-    style Ingest fill:#00C9A7,stroke:#1C355E,color:#fff
-    style Eval fill:#9B8EC0,stroke:#1C355E,color:#fff
-</pre>
-</div>
-<p></p></figure><p></p>
-</div>
-</div>
-</div>
+<svg viewbox="0 0 1120 470" width="100%" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="System architecture: a user query passes through the query processor to the advanced retriever, which searches the vector store and the keyword index; candidates are re-ranked, pruned by the context manager, generated by the LLM and returned to the user. An offline pipeline ingests documents into the vector store and a DeepEval suite grades generation.">
+<defs> <marker id="arch-arrow" viewbox="0 0 10 10" refx="9" refy="5" markerwidth="6" markerheight="6" orient="auto-start-reverse"> <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--sdaia-navy)"></path> </marker> </defs> <rect x="270" y="320" width="700" height="120" rx="14" fill="none" stroke="var(--sdaia-navy)" stroke-width="2" stroke-dasharray="8 6" opacity="0.55"></rect> <text x="290" y="345" font-size="14" font-weight="700" fill="var(--muted)" font-family="inherit">Offline Pipeline</text> <g fill="none" stroke="var(--sdaia-navy)" stroke-width="2.5" marker-end="url(#arch-arrow)"> <path d="M 184 65 H 246"></path> <path d="M 454 65 H 526"></path> <path d="M 744 52 L 826 45"></path> <path d="M 744 80 L 826 136"></path> <path d="M 1030 43 H 1070 V 245 H 1034"></path> <path d="M 930 174 V 206"></path> <path d="M 826 245 H 754"></path> <path d="M 536 245 H 474"></path> <path d="M 266 245 H 224"></path> <path d="M 120 206 V 104"></path> <path d="M 820 386 H 1090 V 43 H 1034"></path> </g> <path d="M 306 386 H 120 V 284" fill="none" stroke="var(--sdaia-navy)" stroke-width="2.5" stroke-dasharray="7 5" marker-end="url(#arch-arrow)"></path> <g font-size="13" fill="var(--muted)" font-family="inherit"> <text x="490" y="20" text-anchor="middle">Expanded Queries</text> <text x="785" y="28" text-anchor="middle">Hybrid Search</text> <text x="785" y="192" text-anchor="middle">BM25 Search</text> <text x="505" y="202" text-anchor="middle">Top K</text> <text x="245" y="202" text-anchor="middle">Pruned Context</text> <text x="132" y="160">Answer + Citations</text> <text x="132" y="320">Grades</text> </g> <g stroke="var(--sdaia-navy)" stroke-width="2.5"> <rect x="20" y="30" width="160" height="70" rx="12" fill="var(--sdaia-purple-on-dark)"></rect> <rect x="250" y="30" width="200" height="70" rx="12" fill="var(--sdaia-purple-on-dark)"></rect> <rect x="530" y="30" width="210" height="70" rx="12" fill="var(--sdaia-teal-on-dark)"></rect> <rect x="830" y="12" width="200" height="62" rx="12" fill="var(--sdaia-navy)"></rect> <rect x="830" y="112" width="200" height="62" rx="12" fill="var(--sdaia-navy)"></rect> <rect x="830" y="210" width="200" height="70" rx="12" fill="var(--sdaia-code-bg)"></rect> <rect x="540" y="210" width="210" height="70" rx="12" fill="var(--sdaia-coral-on-dark)"></rect> <rect x="270" y="210" width="200" height="70" rx="12" fill="var(--sdaia-coral-on-dark)"></rect> <rect x="20" y="210" width="200" height="70" rx="12" fill="var(--sdaia-coral-on-dark)"></rect> <rect x="620" y="355" width="200" height="62" rx="12" fill="var(--sdaia-teal-on-dark)"></rect> <rect x="310" y="355" width="240" height="62" rx="12" fill="var(--sdaia-purple-on-dark)"></rect> </g> <g font-size="16" font-weight="700" text-anchor="middle" font-family="inherit"> <text x="100" y="71" fill="#101820">User Query</text> <text x="350" y="71" fill="#101820">Query Processor</text> <text x="635" y="71" fill="#101820">Advanced Retriever</text> <text x="930" y="49" fill="#ffffff">Vector Store</text> <text x="930" y="149" fill="#ffffff">Keyword Index</text> <text x="930" y="251" fill="var(--sdaia-navy)">Candidate Pool</text> <text x="645" y="238" fill="#101820">Cross-Encoder</text> <text x="645" y="262" fill="#101820">Re-ranker</text> <text x="370" y="251" fill="#101820">Context Manager</text> <text x="120" y="251" fill="#101820">LLM Generation</text> <text x="720" y="392" fill="#101820">Ingestion</text> <text x="430" y="392" fill="#101820">DeepEval Suite</text> </g>
+</svg>
 </section>
 <section id="researchassistantservice" class="slide level2">
 <h2>ResearchAssistantService</h2>
@@ -1014,32 +935,37 @@
 </section>
 <section id="agentic-rag-architecture" class="slide level2">
 <h2>Agentic RAG Architecture</h2>
-<div class="cell" data-reveal="true" data-fig-width="10" data-layout-align="default">
-<div class="cell-output-display">
-<div>
-<p></p><figure class=""><p></p>
-<div>
-<pre class="mermaid mermaid-js">flowchart LR
-    U["User Goal"] --&gt; A["Agent&lt;br/&gt;Planner"]
-    A --&gt; P["Plan&lt;br/&gt;Steps"]
-    P --&gt; R["Retrieve&lt;br/&gt;Evidence"]
-    R --&gt; O["Observe&lt;br/&gt;Results"]
-    O --&gt; D{"Goal&lt;br/&gt;Met?"}
-    D -- "No" --&gt; A
-    D -- "Yes" --&gt; S["Synthesize&lt;br/&gt;Answer"]
-
-    style U fill:#9B8EC0,stroke:#1C355E,color:#fff
-    style A fill:#9B8EC0,stroke:#1C355E,color:#fff
-    style P fill:#00C9A7,stroke:#1C355E,color:#fff
-    style R fill:#00C9A7,stroke:#1C355E,color:#fff
-    style O fill:#FF7A5C,stroke:#1C355E,color:#fff
-    style D fill:#FF7A5C,stroke:#1C355E,color:#fff
-    style S fill:#1C355E,stroke:#1C355E,color:#fff
-</pre>
+<div class="center">
+<p><span class="pill">User Goal ↓</span></p>
 </div>
-<p></p></figure><p></p>
+<div class="cycle">
+<div class="cycle-step accent-purple">
+<p><span class="t">Agent</span> <span class="s">Planner</span></p>
+</div>
+<div class="cycle-arrow">
+<p>→</p>
+</div>
+<div class="cycle-step accent-teal">
+<p><span class="t">Plan</span> <span class="s">Steps</span></p>
+</div>
+<div class="cycle-arrow">
+<p>↓</p>
+</div>
+<div class="cycle-step accent-teal">
+<p><span class="t">Retrieve</span> <span class="s">Evidence</span></p>
+</div>
+<div class="cycle-arrow">
+<p>←</p>
+</div>
+<div class="cycle-step accent-orange">
+<p><span class="t">Observe</span> <span class="s">Results</span></p>
+</div>
+<div class="cycle-arrow">
+<p>↑</p>
 </div>
 </div>
+<div class="center">
+<p><span class="pill">Goal Met? · No → back to the planner · Yes → Synthesize Answer</span></p>
 </div>
 </section>
 <section id="production-checklist" class="slide level2">

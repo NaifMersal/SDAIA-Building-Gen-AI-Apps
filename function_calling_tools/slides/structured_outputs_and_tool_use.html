@@ -9,7 +9,7 @@
 <link href="structured_outputs_and_tool_use_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.9.38">
 
-  <meta name="dcterms.date" content="2026-07-06">
+  <meta name="dcterms.date" content="2026-11-10">
   <title>Structured Outputs &amp; Tool Calling</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -98,7 +98,7 @@
     code span.vs { color: #20794d; } /* VerbatimString */
     code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="structured_outputs_and_tool_use_files/libs/revealjs/dist/theme/quarto-05b633aaffd58596cc6573a610a4b559.css">
+  <link rel="stylesheet" href="structured_outputs_and_tool_use_files/libs/revealjs/dist/theme/quarto-98a181cbe320dee6f668343ff9832aea.css">
   <link href="structured_outputs_and_tool_use_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="structured_outputs_and_tool_use_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="structured_outputs_and_tool_use_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -190,9 +190,6 @@
       margin-right: 0; 
     }
   </style>
-  <script src="structured_outputs_and_tool_use_files/libs/quarto-diagram/mermaid.min.js"></script>
-  <script src="structured_outputs_and_tool_use_files/libs/quarto-diagram/mermaid-init.js"></script>
-  <link href="structured_outputs_and_tool_use_files/libs/quarto-diagram/mermaid.css" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MCA4MCI+DQogIDxkZWZzPg0KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYSIgeDE9Ii0xLjkxMSIgeDI9IjIuOTg1IiB5MT0iLS44NDEiIHkyPSIxLjQxNCIgZ3JhZGllbnRVbml0cz0ib2JqZWN0Qm91bmRpbmdCb3giPg0KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjOTlkNjMzIi8+DQogICAgICA8c3RvcCBvZmZzZXQ9Ii41IiBzdG9wLWNvbG9yPSIjM2M5Ii8+DQogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMyNzM0NzAiLz4NCiAgICA8L2xpbmVhckdyYWRpZW50Pg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYSIgaWQ9ImQiIHgxPSItMy41NjkiIHgyPSIxLjMyOCIgeTE9Ii0xLjYwNSIgeTI9Ii42NTEiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2EiIGlkPSJlIiB4MT0iLTMuMDQ3IiB4Mj0iMS44NDkiIHkxPSItLjkwNCIgeTI9IjEuMzUyIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0iZiIgeDE9Ii0yLjg5IiB4Mj0iMi4wMDciIHkxPSItMS4yOTIiIHkyPSIuOTY0Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0iZyIgeDE9Ii0yLjQiIHgyPSIyLjQ5NyIgeTE9Ii0xLjA2NiIgeTI9IjEuMTg5Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0iaCIgeDE9Ii0uOTkyIiB4Mj0iMi42NzkiIHkxPSItLjQxOCIgeTI9IjEuMjczIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0iaSIgeDE9Ii0xLjUxMiIgeDI9IjIuMTU5IiB5MT0iLS4xOTciIHkyPSIxLjQ5NSIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYSIgaWQ9ImoiIHgxPSItLjkxNCIgeDI9IjIuNzU4IiB5MT0iLjA3OSIgeTI9IjEuNzcxIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0iayIgeDE9Ii0zLjQwNSIgeDI9IjEuNDkzIiB5MT0iLTEuMDY4IiB5Mj0iMS4xODciLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2EiIGlkPSJsIiB4MT0iLjM0NyIgeDI9IjMuMjg1IiB5MT0iLjE5OSIgeTI9IjEuNTUyIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0ibSIgeDE9Ii0uOTA1IiB4Mj0iMi43NjciIHkxPSIuMDgzIiB5Mj0iMS43NzUiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2EiIGlkPSJuIiB4MT0iLTIuMTE5IiB4Mj0iMi43NzgiIHkxPSItLjQ3NiIgeTI9IjEuNzc5Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0ibyIgeDE9Ii01LjY0NCIgeDI9Ii40ODYiIHkxPSItMi45OTgiIHkyPSIuNzQxIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0icCIgeDE9Ii0zLjQ5NSIgeDI9IjIuNjM2IiB5MT0iLTEuNjg3IiB5Mj0iMi4wNTMiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2EiIGlkPSJxIiB4MT0iLTEuNDIyIiB4Mj0iMy4xNzUiIHkxPSItLjkyMyIgeTI9IjEuODgyIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNhIiBpZD0iciIgeDE9Ii0zLjMwNiIgeDI9IjIuODI1IiB5MT0iLTIuMDcyIiB5Mj0iMS42NjgiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2EiIGlkPSJzIiB4MT0iLTEuNjgzIiB4Mj0iMi45MTQiIHkxPSItMS4wODEiIHkyPSIxLjcyMyIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYSIgaWQ9InQiIHgxPSItMS4xNTgiIHgyPSIyLjUyMSIgeTE9Ii0uMjYxIiB5Mj0iMS45ODMiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImIiIHgxPSIuMjYxIiB4Mj0iLjYyNCIgeTE9IjMuNTYiIHkyPSItMS40NjkiIGdyYWRpZW50VW5pdHM9Im9iamVjdEJvdW5kaW5nQm94Ij4NCiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzZjZiIvPg0KICAgICAgPHN0b3Agb2Zmc2V0PSIuNSIgc3RvcC1jb2xvcj0iIzYyNThhNiIvPg0KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMjczNDcwIi8+DQogICAgPC9saW5lYXJHcmFkaWVudD4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJ1IiB4MT0iLjE2MyIgeDI9Ii41MjYiIHkxPSI0LjkyNCIgeTI9Ii0uMTAzIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNiIiBpZD0idiIgeDE9Ii4zODYiIHgyPSIuNjU4IiB5MT0iMS44MjUiIHkyPSItMS45NDUiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJ3IiB4MT0iLjI1MiIgeDI9Ii42MTUiIHkxPSI0LjE4MiIgeTI9Ii0uODQ1Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNiIiBpZD0ieCIgeDE9Ii40MTciIHgyPSIuNjg5IiB5MT0iMS45IiB5Mj0iLTEuODciLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJ5IiB4MT0iLjQ4NSIgeDI9Ii43MDMiIHkxPSIuOTU2IiB5Mj0iLTIuMDYiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJ6IiB4MT0iLjM3NyIgeDI9Ii42NDkiIHkxPSIyLjQ1NSIgeTI9Ii0xLjMxNCIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYiIgaWQ9IkEiIHgxPSIuMTk5IiB4Mj0iLjU2MiIgeTE9IjQuOTIyIiB5Mj0iLS4xMDUiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJCIiB4MT0iLjQzNyIgeDI9Ii43MDkiIHkxPSIxLjYyNSIgeTI9Ii0yLjE0NSIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYiIgaWQ9IkMiIHgxPSIuMjYxIiB4Mj0iLjYyNCIgeTE9IjQuMDU1IiB5Mj0iLS45NzIiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJEIiB4MT0iLjUiIHgyPSIuNSIgeTE9IjMuMDQ1IiB5Mj0iLTEuOTI3Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNiIiBpZD0iRSIgeDE9Ii41IiB4Mj0iLjUiIHkxPSI0LjkwMSIgeTI9Ii0uMDcyIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNiIiBpZD0iRiIgeDE9Ii41IiB4Mj0iLjUiIHkxPSIyLjQzNSIgeTI9Ii0xLjI5NiIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYiIgaWQ9IkciIHgxPSIuNSIgeDI9Ii41IiB5MT0iLjkzNCIgeTI9Ii0yLjA1Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNiIiBpZD0iSCIgeDE9Ii41IiB4Mj0iLjUiIHkxPSIzLjc4NSIgeTI9Ii0xLjE4NyIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYiIgaWQ9IkkiIHgxPSIuNSIgeDI9Ii41IiB5MT0iMS44MDkiIHkyPSItMS45MjEiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2IiIGlkPSJKIiB4MT0iLjUiIHgyPSIuNSIgeTE9IjMuMDQ2IiB5Mj0iLTEuOTI4Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNiIiBpZD0iSyIgeDE9Ii41IiB4Mj0iLjUiIHkxPSIyLjc5NCIgeTI9Ii0yLjE3NyIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYyIgeDE9IjUuMDEiIHgyPSItMi4yNzciIHkxPSItMS4zODMiIHkyPSIyLjAzOSIgZ3JhZGllbnRVbml0cz0ib2JqZWN0Qm91bmRpbmdCb3giPg0KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmRiZDRkIi8+DQogICAgICA8c3RvcCBvZmZzZXQ9Ii41IiBzdG9wLWNvbG9yPSIjZjYzIi8+DQogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMyNzM0NzAiLz4NCiAgICA8L2xpbmVhckdyYWRpZW50Pg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYyIgaWQ9IkwiIHgxPSIyLjIzOSIgeDI9Ii0yLjEzNCIgeTE9Ii0uMDgyIiB5Mj0iMS45NzEiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2MiIGlkPSJNIiB4MT0iNi4wOTgiIHgyPSItMS4xOTEiIHkxPSItMS44OTMiIHkyPSIxLjUyOCIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYyIgaWQ9Ik4iIHgxPSIzLjM4NCIgeDI9Ii0yLjA4MSIgeTE9Ii0xLjA4OCIgeTI9IjEuNDc3Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iTyIgeDE9IjIuNzgiIHgyPSItMi42ODYiIHkxPSItLjgwNSIgeTI9IjEuNzYxIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iUCIgeDE9IjcuMDc0IiB4Mj0iLS4yMTIiIHkxPSItMi4zNTMiIHkyPSIxLjA2OSIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYyIgaWQ9IlEiIHgxPSI1LjA3NSIgeDI9Ii0yLjIxMSIgeTE9Ii0xLjQxNCIgeTI9IjIuMDA4Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iUiIgeDE9IjUuNzM2IiB4Mj0iLTEuNTUiIHkxPSItMi4xOTQiIHkyPSIxLjIyOCIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYyIgaWQ9IlMiIHgxPSIyLjA4MSIgeDI9Ii0xLjc4MSIgeTE9Ii0uMDQ3IiB5Mj0iMS45Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iVCIgeDE9Ii43MjkiIHgyPSItMi4zNjEiIHkxPSIuMTM1IiB5Mj0iMS42OTIiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2MiIGlkPSJVIiB4MT0iMi43MTciIHgyPSItMi40MzMiIHkxPSItLjg2OCIgeTI9IjEuNzI4Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iViIgeDE9IjEuNTE3IiB4Mj0iLTIuMzQ3IiB5MT0iLS4yNjIiIHkyPSIxLjY4NCIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYyIgaWQ9IlciIHgxPSIzLjU0NCIgeDI9Ii0xLjYwNiIgeTE9Ii0xLjI4NCIgeTI9IjEuMzEyIi8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iWCIgeDE9IjIuNjMxIiB4Mj0iLTEuMjMzIiB5MT0iLS4zMjQiIHkyPSIxLjYyMyIvPg0KICAgIDxsaW5lYXJHcmFkaWVudCBocmVmPSIjYyIgaWQ9IlkiIHgxPSIyLjAwMyIgeDI9Ii0xLjg2IiB5MT0iLS4wMDciIHkyPSIxLjk0Ii8+DQogICAgPGxpbmVhckdyYWRpZW50IGhyZWY9IiNjIiBpZD0iWiIgeDE9IjQuMTI1IiB4Mj0iLTEuMDI1IiB5MT0iLTEuMDc3IiB5Mj0iMS41MTgiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2MiIGlkPSJhYSIgeDE9IjMuMDIyIiB4Mj0iLTIuMTI3IiB5MT0iLTEuMDIxIiB5Mj0iMS41NzQiLz4NCiAgICA8bGluZWFyR3JhZGllbnQgaHJlZj0iI2MiIGlkPSJhYiIgeDE9IjQuNjgxIiB4Mj0iLS40NjkiIHkxPSItMS44NTciIHkyPSIuNzM4Ii8+DQogIDwvZGVmcz4NCiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMy44IDEpIj4NCiAgPHBhdGggZmlsbD0iIzNjOSIgZD0ibTM2LjA0MSAyNi41My0xMS40NDggNi42MTF2MTMuMjJsMTEuNDQ4IDYuNjEyIDExLjQ0Ni02LjYwOFYzMy4xNDFaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjYSkiIGQ9Ik03MS40NjQgMjAuOTF2Ny45MzJsLTYuODctMy45NjVaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjZCkiIGQ9Ik02NC4yNDkgNTIuOTdsNi44NjkgMy45NjV2LTcuOTNaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjZSkiIGQ9Im02OC4xIDQ2LjM1OSAtNi44NjkgMy45Njd2LTcuOTMyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI2YpIiBkPSJNNzIuMzkyIDM1LjM3djcuOTMybC02Ljg2OSAtMy45NjVaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjZykiIGQ9Ik01Ni42NTEgNTYuODQ3djcuOTMybC02Ljg2OSAtMy45NjVaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjaCkiIGQ9Im01Ny43OTQgNTEuNjQzIC05LjE2IC01LjI4NiA5LjE2IC01LjI5WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI2kpIiBkPSJtNTcuNzk1IDUyLjk3IC05LjE2IDUuMjlWNDcuNjg0WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI2opIiBkPSJtNTcuNzkyIDM5Ljc0OSAtOS4xNTggNS4yODZ2LTEwLjU3MloiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNrKSIgZD0ibTU4LjUgNzAuMzE4IC02Ljg2OCAzLjk2N3YtNy45MzJaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjbCkiIGQ9Im00Ny40ODcgNDYuMzYxIC0xMS40NDYgLTYuNjEyIDExLjQ0NiAtNi42MTFaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjbSkiIGQ9Im00Ni4zNDQgNjEuMDc3IC05LjE1OCA1LjI4NnYtMTAuNTcyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI24pIiBkPSJtNDUuMTk5IDc0LjAzNSAtNi44NjggMy45NjV2LTcuOTMyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI28pIiBkPSJtNzAuMDIxIDYxLjc3NSAtNi44NjkgMy45Njd2LTcuOTMyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3ApIiBkPSJtNjguMSAzMy4xNDIgLTYuODY5IDMuOTY3di03LjkzMloiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNxKSIgZD0iTTU3Ljc5NCAyNy44NTJ2MTAuNTc2bC05LjE2IC01LjI5WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3IpIiBkPSJNNDUuMjAyIDYyLjg5MXY3LjkzMmwtNi44NjkgLTMuOTY3WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3MpIiBkPSJtNDYuMzQzIDU5Ljc1NiAtOS4xNTcgLTUuMjg2IDkuMTU3IC01LjI5WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3QpIiBkPSJtMzYuMDQxIDM5Ljc1IDExLjQ0NiA2LjYxMiAtMTEuNDQ2IDYuNjA4WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI2IpIiBkPSJtNjkuMzM0IDE3LjAzMSAtNi44NjkgMy45NjV2LTcuOTNaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjdSkiIGQ9Im01OC4wODIgNS40NiAtNi44NzEgMy45Njd2LTcuOTMyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3YpIiBkPSJtNTcuNzk2IDI2LjUyOSAtOS4xNjIgNS4yODZWMjEuMjQxWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3cpIiBkPSJtNDUuMiAxNC41NDUgLTYuODY5IC0zLjk2NSA2Ljg2OSAtMy45NjdaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjeCkiIGQ9Ik00Ni4zNDQgMTkuNzQ0VjMwLjMxOWwtOS4xNTggLTUuMjg2WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI3kpIiBkPSJNMzYuMDQxIDI2LjUzdjEzLjIyTDI0LjU5MyAzMy4xNDFaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjeikiIGQ9Im0zNC44OTcgMjMuNzA5IC05LjE1OCAtNS4yODYgOS4xNTggLTUuMjlaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjQSkiIGQ9Im0zMy43NSA3LjkzMiAtNi44NyAtMy45NjUgNi44NyAtMy45NjdaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjQikiIGQ9Im0yMy40NDkgMzEuODE2IC05LjE1OCAtNS4yOSA5LjE1OCAtNS4yODVaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjQykiIGQ9Ik0xOS43NiA2LjAzOXY3LjkzMmwtNi44NjkgLTMuOTY1WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI0QpIiBkPSJtNTYuNjQ3IDIyLjY1MSAtNi44NzEgLTMuOTY3IDYuODcxIC0zLjk2N1oiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNFKSIgZD0ibTQ1LjIgMy45NjcgLTYuODY5IDMuOTY1di03LjkzMloiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNGKSIgZD0ibTQ2LjM0NCAxOC40MTcgLTkuMTU4IDUuMjg2di0xMC41NjhaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjRykiIGQ9Im00Ny40ODcgMzMuMTQxIC0xMS40NDYgNi42MTF2LTEzLjIyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI0gpIiBkPSJtMzMuNzUzIDEyLjgxNCAtNi44NzEgMy45Njd2LTcuOTMyWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI0kpIiBkPSJtMzQuODk2IDI1LjAzMyAtOS4xNTggNS4yODZ2LTEwLjU3NVoiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNKKSIgZD0ibTIyLjMgMTguNjg0IC02Ljg3IDMuOTY1di03LjkzWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI0spIiBkPSJtNy41NTYgMjQuNjM3IC02Ljg3IC0zLjk2NSA2Ljg3IC0zLjk2N1oiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNjKSIgZD0ibTMzLjc1MSA3OC4wMDEgLTYuODcxIC0zLjk2NSA2Ljg3MSAtMy45NjdaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjTCkiIGQ9Ik0zNi4wNDEgMzkuNzV2MTMuMjJsLTExLjQ0OCAtNi42MTJaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjTSkiIGQ9Ik0yMi4zIDY2Ljc2M3Y3LjkzMmwtNi44NyAtMy45NjZaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjTikiIGQ9Im0yMy40NDkgNDYuMzYyIC05LjE1OCA1LjI4NnYtMTAuNTc2WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI08pIiBkPSJtMjMuNDQ5IDMzLjE0MiAtOS4xNTggNS4yOXYtMTAuNThaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjUCkiIGQ9Ik05LjYxNiA1OS40MDF2Ny45M2wtNi44NzEgLTMuOTY1WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI1EpIiBkPSJNMTAuODUxIDI4Ljg5OXY3LjkzMmwtNi44NzEgLTMuOTY1WiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI1IpIiBkPSJtNi44NzEgNDAuMDkzIC02Ljg3MSAzLjk2NXYtNy45M1oiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNTKSIgZD0ibTM0Ljg5NCA2Ni4zNjcgLTkuMTYgLTUuMjg2IDkuMTYgLTUuMjlaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjVCkiIGQ9Im0zNi4wNDEgMzkuNzUgLTExLjQ0OCA2LjYwOHYtMTMuMjJaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjVSkiIGQ9Im0zMy43NSA2Ny40MjUgLTYuODcxIDMuOTY3di03LjkzMloiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNWKSIgZD0ibTM0Ljg5MiA1NC40NjcgLTkuMTU3IDUuMjl2LTEwLjU4MloiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNXKSIgZD0ibTIyLjI5OSA2MC44MTQgLTYuODY5IDMuOTY1di03LjkzWiIvPg0KICA8cGF0aCBmaWxsPSJ1cmwoI1gpIiBkPSJNMjMuNDQ5IDQ3LjY4M3YxMC41NzNsLTkuMTU4IC01LjI4NloiLz4NCiAgPHBhdGggZmlsbD0idXJsKCNZKSIgZD0iTTIzLjQ0OSAzNC40NTl2MTAuNTczbC05LjE1OCAtNS4yODNaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjWikiIGQ9Im0xMC44NSA1MC4zMjYgLTYuODcxIC0zLjk2NyA2Ljg3MSAtMy45NjVaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjYWEpIiBkPSJtNy4xNDUgMjYuNTMxIC02Ljg2OSAzLjk2NXYtNy45MzJaIi8+DQogIDxwYXRoIGZpbGw9InVybCgjYWIpIiBkPSJtNy41NTYgNTMuNDUyIC02Ljg3MSAzLjk2NXYtNy45MzVaIi8+DQogIDwvZz4NCjwvc3ZnPg0K">
 
 </head>
@@ -207,7 +204,7 @@
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">2026-07-06</p>
+  <p class="date">2026-11-10</p>
 </section>
 <section>
 <section id="a.-the-problem-free-text-is-unparseable" class="title-slide slide level1 sdaia-dark center" data-background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)">
@@ -525,29 +522,8 @@
 <section id="the-architectural-answer" class="slide level2">
 <h2>The Architectural Answer</h2>
 <p>The solution is not a better model. It is a better <em>architecture</em>.</p>
-<div class="cell" data-reveal="true" data-fig-width="10" data-layout-align="default">
-<div class="cell-output-display">
-<div>
-<p></p><figure class=""><p></p>
-<div>
-<pre class="mermaid mermaid-js">sequenceDiagram
-    participant U as User
-    participant L as LLM
-    participant C as Your Code
-    participant D as Live Data Source
-
-    U-&gt;&gt;L: "What is NVIDIA's stock price?"
-    Note over L: I need live data — signal need
-    L-&gt;&gt;C: (structured signal) fetch_stock_price("NVDA")
-    C-&gt;&gt;D: API call / database query
-    D--&gt;&gt;C: {"price": 142.50, "timestamp": "2026-02-23"}
-    C-&gt;&gt;L: tool result: $142.50
-    L-&gt;&gt;U: "NVIDIA is currently trading at $142.50."
-</pre>
-</div>
-<p></p></figure><p></p>
-</div>
-</div>
+<div class="lanes" style="grid-template-columns: repeat(4, 1fr)">
+<p><span class="lane-actor">User</span> <span class="lane-actor">LLM</span> <span class="lane-actor">Your Code</span> <span class="lane-actor">Live Data Source</span> <span class="lane-msg" style="--from:1; --to:2">“What is NVIDIA’s stock price?”</span> <span class="lane-msg" style="--from:2; --to:3"><em>I need live data — signal need</em></span> <span class="lane-msg" style="--from:2; --to:3">(structured signal) fetch_stock_price(“NVDA”)</span> <span class="lane-msg" style="--from:3; --to:4">API call / database query</span> <span class="lane-msg reply" style="--from:3; --to:4"><code>{"price": 142.50, "timestamp": "2026-02-23"}</code></span> <span class="lane-msg reply" style="--from:2; --to:3">tool result: $142.50</span> <span class="lane-msg reply" style="--from:1; --to:2">“NVIDIA is currently trading at $142.50.”</span></p>
 </div>
 <p>The LLM’s job: <strong>signal the need</strong> for data. Your code: <strong>fetch</strong> it. The LLM: <strong>answer</strong> with real information.</p>
 </section>
@@ -980,65 +956,25 @@ in early 2024…</code></pre>
 </section>
 <section id="enums-are-the-single-biggest-win" class="slide level2">
 <h2>Enums Are the Single Biggest Win</h2>
-<div class="cell" data-fig-width="8" data-fig-height="3" data-layout-align="default">
-<div class="cell-output-display">
-<div>
-<p></p><figure class=""><p></p>
-<div>
-<svg width="768" height="288" viewbox="0.00 0.00 274.50 201.80" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none; display: block; margin: auto auto auto auto">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 197.8)">
-<title>G</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-197.8 270.5,-197.8 270.5,4 -4,4"></polygon>
-<!-- A -->
-<g id="node1" class="node">
-<title>A</title>
-<path fill="#f7f9fc" stroke="#1c355e" stroke-width="2" d="M175.22,-193.8C175.22,-193.8 83.26,-193.8 83.26,-193.8 77.26,-193.8 71.26,-187.8 71.26,-181.8 71.26,-181.8 71.26,-169.8 71.26,-169.8 71.26,-163.8 77.26,-157.8 83.26,-157.8 83.26,-157.8 175.22,-157.8 175.22,-157.8 181.22,-157.8 187.22,-163.8 187.22,-169.8 187.22,-169.8 187.22,-181.8 187.22,-181.8 187.22,-187.8 181.22,-193.8 175.22,-193.8"></path>
-<text text-anchor="middle" x="129.24" y="-172.2" font-family="Arial" font-size="12.00">User: 'add 5 and 3'</text>
-</g>
-<!-- B -->
-<g id="node2" class="node">
-<title>B</title>
-<polygon fill="white" stroke="#1c355e" stroke-width="2" points="129.24,-120.8 42.04,-102.8 129.24,-84.8 216.44,-102.8 129.24,-120.8"></polygon>
-<text text-anchor="middle" x="129.24" y="-99.2" font-family="Arial" font-size="12.00">Schema Type?</text>
-</g>
-<!-- A&#45;&gt;B -->
-<g id="edge1" class="edge">
-<title>A-&gt;B</title>
-<path fill="none" stroke="#1c355e" stroke-width="2" d="M129.24,-157.61C129.24,-149.59 129.24,-139.85 129.24,-130.87"></path>
-<polygon fill="#1c355e" stroke="#1c355e" stroke-width="2" points="132.74,-130.83 129.24,-120.83 125.74,-130.83 132.74,-130.83"></polygon>
-</g>
-<!-- C -->
-<g id="node3" class="node">
-<title>C</title>
-<path fill="#ff7a5c" stroke="#1c355e" stroke-width="2" d="M116.72,-36.7C116.72,-36.7 11.76,-36.7 11.76,-36.7 5.76,-36.7 -0.24,-30.7 -0.24,-24.7 -0.24,-24.7 -0.24,-12.1 -0.24,-12.1 -0.24,-6.1 5.76,-0.1 11.76,-0.1 11.76,-0.1 116.72,-0.1 116.72,-0.1 122.72,-0.1 128.72,-6.1 128.72,-12.1 128.72,-12.1 128.72,-24.7 128.72,-24.7 128.72,-30.7 122.72,-36.7 116.72,-36.7"></path>
-<text text-anchor="middle" x="64.24" y="-22" font-family="Arial" font-size="12.00" fill="white">Ambiguous output:</text>
-<text text-anchor="middle" x="64.24" y="-7.6" font-family="Arial" font-size="12.00" fill="white">'plus', 'Add', 'addition'</text>
-</g>
-<!-- B&#45;&gt;C -->
-<g id="edge2" class="edge">
-<title>B-&gt;C</title>
-<path fill="none" stroke="#1c355e" stroke-width="2" d="M117.13,-87.24C111.97,-80.99 105.92,-73.57 100.55,-66.8 95,-59.79 89.07,-52.13 83.64,-45.04"></path>
-<polygon fill="#1c355e" stroke="#1c355e" stroke-width="2" points="86.4,-42.89 77.55,-37.06 80.84,-47.14 86.4,-42.89"></polygon>
-<text text-anchor="middle" x="136.09" y="-57.8" font-family="Arial" font-size="10.00">String (free text)</text>
-</g>
-<!-- D -->
-<g id="node4" class="node">
-<title>D</title>
-<path fill="#00c9a7" stroke="#1c355e" stroke-width="2" d="M230.29,-36.7C230.29,-36.7 158.2,-36.7 158.2,-36.7 152.2,-36.7 146.2,-30.7 146.2,-24.7 146.2,-24.7 146.2,-12.1 146.2,-12.1 146.2,-6.1 152.2,-0.1 158.2,-0.1 158.2,-0.1 230.29,-0.1 230.29,-0.1 236.29,-0.1 242.29,-6.1 242.29,-12.1 242.29,-12.1 242.29,-24.7 242.29,-24.7 242.29,-30.7 236.29,-36.7 230.29,-36.7"></path>
-<text text-anchor="middle" x="194.24" y="-22" font-family="Arial" font-size="12.00" fill="white">Precise output:</text>
-<text text-anchor="middle" x="194.24" y="-7.6" font-family="Arial" font-size="12.00" fill="white">'add'</text>
-</g>
-<!-- B&#45;&gt;D -->
-<g id="edge3" class="edge">
-<title>B-&gt;D</title>
-<path fill="none" stroke="#1c355e" stroke-width="2" d="M148.9,-88.79C156.89,-82.79 165.74,-75.16 172.24,-66.8 176.99,-60.7 181.02,-53.4 184.27,-46.38"></path>
-<polygon fill="#1c355e" stroke="#1c355e" stroke-width="2" points="187.52,-47.7 188.23,-37.13 181.08,-44.94 187.52,-47.7"></polygon>
-<text text-anchor="middle" x="222.87" y="-57.8" font-family="Arial" font-size="10.00">Enum (constrained)</text>
-</g>
-</g>
-</svg>
+<div class="flow">
+<div class="flow-step">
+<p><span class="t">User: ‘add 5 and 3’</span></p>
 </div>
-<p></p></figure><p></p>
+<div class="flow-arrow">
+<p>→</p>
+</div>
+<div class="flow-step">
+<p><span class="t">Schema Type?</span></p>
+</div>
+<div class="flow-arrow">
+<p>→</p>
+</div>
+<div class="flow-branch">
+<div class="flow-step accent-orange">
+<p><span class="t">Ambiguous output: ‘plus’, ‘Add’, ‘addition’</span> <span class="s">String (free text)</span></p>
+</div>
+<div class="flow-step accent-teal">
+<p><span class="t">Precise output: ‘add’</span> <span class="s">Enum (constrained)</span></p>
 </div>
 </div>
 </div>
@@ -1313,53 +1249,68 @@ in early 2024…</code></pre>
 </section>
 <section id="the-decision-tree" class="slide level2">
 <h2>The Decision Tree</h2>
-<div class="cell" data-reveal="true" data-fig-width="10" data-layout-align="default">
-<div class="cell-output-display">
-<div>
-<p></p><figure class=""><p></p>
-<div>
-<pre class="mermaid mermaid-js">graph LR
-    Start{"Who orchestrates&lt;br/&gt;the next step?"}
-    Start --&gt;|"Your code (one-shot)"| SO["Structured Outputs"]
-    Start --&gt;|"The model (in a loop)"| TC["Tool Calling"]
-    Start --&gt;|"A human (turn-by-turn)"| Chat["Standard Chat"]
-    SO --&gt;|"Example"| SEx["Extract entities&lt;br/&gt;Classify text&lt;br/&gt;Format reports"]
-    TC --&gt;|"Example"| TEx["Search database&lt;br/&gt;Call API&lt;br/&gt;Run calculation"]
-    Chat --&gt;|"Example"| CEx["Explain concept&lt;br/&gt;Write poem&lt;br/&gt;Brainstorm ideas"]
-
-    style SO fill:#9B8EC0,stroke:#1C355E,color:white
-    style TC fill:#00C9A7,stroke:#1C355E,color:#1C355E
-    style Chat fill:#FF7A5C,stroke:#1C355E,color:white
-</pre>
+<div class="card-dark tight center">
+<p><strong>Who orchestrates the next step?</strong></p>
 </div>
-<p></p></figure><p></p>
+<div class="columns">
+<div class="column" style="width:33%;">
+<div class="flow flow-col">
+<div class="flow-step accent-purple">
+<p><span class="t">Structured Outputs</span> <span class="s">Your code (one-shot)</span></p>
+</div>
+<div class="flow-arrow">
+<p>↓ <span class="s">Example</span></p>
+</div>
+<div class="flow-step">
+<p><span class="s">Extract entities</span> <span class="s">Classify text</span> <span class="s">Format reports</span></p>
 </div>
 </div>
+</div><div class="column" style="width:33%;">
+<div class="flow flow-col">
+<div class="flow-step accent-teal">
+<p><span class="t">Tool Calling</span> <span class="s">The model (in a loop)</span></p>
 </div>
+<div class="flow-arrow">
+<p>↓ <span class="s">Example</span></p>
+</div>
+<div class="flow-step">
+<p><span class="s">Search database</span> <span class="s">Call API</span> <span class="s">Run calculation</span></p>
+</div>
+</div>
+</div><div class="column" style="width:33%;">
+<div class="flow flow-col">
+<div class="flow-step accent-orange">
+<p><span class="t">Standard Chat</span> <span class="s">A human (turn-by-turn)</span></p>
+</div>
+<div class="flow-arrow">
+<p>↓ <span class="s">Example</span></p>
+</div>
+<div class="flow-step">
+<p><span class="s">Explain concept</span> <span class="s">Write poem</span> <span class="s">Brainstorm ideas</span></p>
+</div>
+</div>
+</div></div>
 <p>The axis isn’t “data vs action” — tool calls also return data. The axis is <strong>who decides what happens next</strong>: your code pre-decides the schema, the model picks tools turn after turn, or the user keeps replying.</p>
 </section>
-<section id="the-system-prompt-is-a-control-surface" class="slide level2">
+<section id="the-system-prompt-is-a-control-surface" class="slide level2 smaller">
 <h2>The System Prompt Is a Control Surface</h2>
 <p>The final control surface of an agent is the <strong>system prompt</strong>.</p>
-<div class="cell" data-reveal="true" data-fig-width="10" data-fig-height="8" data-layout-align="center">
-<div class="cell-output-display">
-<div>
-<p></p><figure class=""><p></p>
-<div>
-<pre class="mermaid mermaid-js">graph TD
-    Code["ReAct Loop&lt;br/&gt;(Identical Python Code)"]
-    
-    Code --&gt; P1["Researcher Prompt&lt;br/&gt;+ Search Tools"]
-    Code --&gt; P2["Writer Prompt&lt;br/&gt;+ Writer Tools"]
-    Code --&gt; P3["Critic Prompt&lt;br/&gt;+ Critic Tools"]
-
-    style Code fill:#1C355E,stroke:#1C355E,color:white,stroke-width:1.5px
-    style P1 fill:#9B8EC0,stroke:#9B8EC0,color:white
-    style P2 fill:#FF7A5C,stroke:#FF7A5C,color:white
-    style P3 fill:#00C9A7,stroke:#00C9A7,color:#1C355E
-</pre>
+<div class="flow">
+<div class="flow-step accent-navy">
+<p><span class="t">ReAct Loop</span> <span class="s">Identical Python Code</span></p>
 </div>
-<p></p></figure><p></p>
+<div class="flow-arrow">
+<p>→</p>
+</div>
+<div class="flow-branch">
+<div class="flow-step accent-purple">
+<p><span class="t">Researcher Prompt</span> <span class="s">+ Search Tools</span></p>
+</div>
+<div class="flow-step accent-orange">
+<p><span class="t">Writer Prompt</span> <span class="s">+ Writer Tools</span></p>
+</div>
+<div class="flow-step accent-teal">
+<p><span class="t">Critic Prompt</span> <span class="s">+ Critic Tools</span></p>
 </div>
 </div>
 </div>

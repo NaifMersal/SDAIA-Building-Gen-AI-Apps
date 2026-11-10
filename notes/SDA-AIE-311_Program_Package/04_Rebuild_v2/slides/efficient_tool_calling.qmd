@@ -1,0 +1,629 @@
+---
+title: "Efficient Tool Calling"
+subtitle: "SDA-AIE-311 — Session 2"
+description: "Routing strategies for large tool catalogs — classifier-based, semantic, and programmatic dispatch."
+builds_on: ["structured_outputs_and_tool_use"]
+duration: 65
+date: today
+format: revealjs
+---
+<!-- SDA-AIE-311 ADD (LangChain conversion) -->
+
+# A. The Routing Problem {.sdaia-dark background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)"}
+
+When 50 tools is worse than 5
+
+## Agenda
+
+- **A. The Routing Problem** — Why tool selection matters
+- **B. Classifier-Based Routing** — LLM categorizes queries
+- **C. Semantic Routing** — Embeddings over tool descriptions
+- **D. Programmatic Tool Calling** — Batch tools without round-trips
+- **E. Model-Specific Tool Formats** — String-replace vs patch
+- **F. Production-Grade Optimizations** — Latency, dynamic schemas, and counters
+- **G. Wrap-up** — Key takeaways & lab preview
+
+## The Tool Proliferation Problem
+
+Your agent starts with 3 tools. Then it grows:
+
+- `search_web`, `search_news`, `search_academic`
+- `get_stock_price`, `get_financial_report`, `calculate_roi`
+- `read_pdf`, `summarize_document`, `extract_tables`
+- `send_email`, `create_calendar_event`, `query_database`
+
+. . .
+
+**Result:** 20+ tools crammed into every context window.
+
+## Why More Tools ≠ Better Agent
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**Context Window Pollution**
+
+- Every tool schema consumes tokens
+- 20 tools = ~2000 tokens per request
+- Less space for reasoning and memory
+- Higher latency, higher cost
+:::
+
+::: {.column width="50%"}
+**Decision Confusion**
+
+- Model sees too many options
+- May pick wrong tool
+- May call multiple similar tools
+- Inconsistent behavior
+:::
+
+::::
+
+. . .
+
+::: {.callout-important}
+## The Insight
+The agent doesn't need ALL tools for EVERY query. It only needs the RELEVANT ones.
+:::
+
+## The Solution: Dynamic Tool Routing {.smaller}
+
+::: {.flow}
+::: {.flow-step .accent-teal}
+[User Query]{.t}
+:::
+::: {.flow-arrow}
+&rarr;
+:::
+::: {.flow-step .accent-navy}
+[Router]{.t}
+:::
+::: {.flow-arrow}
+&rarr;
+:::
+:::: {.flow-branch}
+::: {.flow-step}
+[Finance Tools]{.t}
+[Financial &middot; 3 tools]{.s}
+:::
+::: {.flow-step}
+[Academic Tools]{.t}
+[Academic &middot; 4 tools]{.s}
+:::
+::: {.flow-step}
+[General Tools]{.t}
+[General &middot; 5 tools]{.s}
+:::
+::::
+::: {.flow-arrow}
+&rarr;
+:::
+::: {.flow-step .accent-orange}
+[Agent]{.t}
+:::
+:::
+
+The router selects a subset of tools before the agent runs.
+
+# B. Classifier-Based Routing {.sdaia-dark background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)"}
+
+Using a small LLM to categorize queries
+
+## How Classifier Routing Works
+
+::: {.lanes style="grid-template-columns: repeat(4, 1fr)"}
+[User]{.lane-actor}
+[Classifier LLM]{.lane-actor}
+[Tool Registry]{.lane-actor}
+[Agent]{.lane-actor}
+["What's Apple's stock price?"]{.lane-msg style="--from:1; --to:2"}
+[Classify domain]{.lane-msg style="--from:2; --to:3"}
+[Domain = "Financial"]{.lane-msg .reply style="--from:2; --to:3"}
+[Get tools for "Financial"]{.lane-msg style="--from:2; --to:3"}
+[\[get_stock_price, calculate_roi\]]{.lane-msg .reply style="--from:2; --to:3"}
+[Agent + 2 tools]{.lane-msg style="--from:2; --to:4"}
+["$178.72"]{.lane-msg .reply style="--from:1; --to:4"}
+:::
+
+## The Classifier Prompt
+
+A small, fast model (GPT-4o-mini, Claude Haiku) classifies the query:
+
+```python
+CLASSIFIER_PROMPT = """Classify this query into ONE domain.
+
+Domains: financial, academic, general, technical
+
+Query: {query}
+
+Respond with ONLY the domain name, nothing else.
+"""
+```
+
+. . .
+
+**Trade-off:** Fast and cheap (~$0.0001 per query), but requires predefined categories.
+
+## Classifier Router Implementation {.smaller}
+
+```{.python code-line-numbers="|1-4|6-8|10-12|"}
+class ClassifierRouter:
+    def __init__(self, domain_tool_map: dict[str, list[str]]):
+        self.domain_tool_map = domain_tool_map
+        
+    def classify(self, query: str) -> str:
+            response = ChatOpenAI(model="gpt-4o-mini", temperature=0).invoke(
+                [HumanMessage(content=CLASSIFIER_PROMPT.format(query=query))]
+            )
+            return response.content.strip().lower()
+    
+    def select_tools(self, query: str) -> list[Tool]:
+        domain = self.classify(query)
+        tool_names = self.domain_tool_map.get(domain, [])
+        return [registry.get_tool(name) for name in tool_names]
+```
+
+## When Classifier Routing Works Well
+
+| Good For | Not Good For |
+|:---------|:-------------|
+| Clear domain boundaries | Overlapping domains |
+| Fixed tool categories | Ad-hoc tool additions |
+| Low-latency requirements | Nuanced query understanding |
+| Budget constraints | Cross-domain queries |
+
+. . .
+
+> **Rule of thumb:** If you can list your domains on one hand, classifier routing is a good starting point.
+
+# C. Semantic Routing {.sdaia-dark background-gradient="linear-gradient(135deg, #1C355E, #FF7A5C)"}
+
+When classifiers aren't enough
+
+## From Categories to Similarity
+
+**Problem with classifiers:** You must define categories upfront.
+
+**Semantic routing:** Match the query to tools based on meaning, not labels.
+
+- Embed each tool's description at startup
+- Embed the user query at runtime
+- Retrieve the top-K most similar tools — inject only those into context
+
+::: {.callout-note}
+## More on RAG in the RAG module
+The underlying technique (embeddings + similarity search) is covered in depth in the **RAG module**. The same pipeline applies here: swap documents for tool schemas.
+:::
+
+## The RoutedAgent Pattern
+
+Combine routing with the agent loop for efficient execution:
+
+```python
+class RoutedAgent:
+    def run(self, query: str) -> str:
+        selected_tools = self.router.select_tools(query)   # Route first
+        return self.base_agent.run(query, tools=selected_tools)  # Then act
+```
+
+## Context Window Savings
+
+| Scenario | Tools in Context | Tool Schema Tokens |
+|:---------|:-----------------|:-------------------|
+| Standard Agent | 20 tools | ~2000 tokens |
+| Routed Agent (top-5) | 5 tools | ~500 tokens |
+| **Savings** | -15 tools | **~1500 tokens** |
+
+. . .
+
+**Impact:** 75% less token overhead — more room for reasoning, lower latency and cost.
+
+# D. Programmatic Tool Calling {.sdaia-dark background-gradient="linear-gradient(135deg, #9B8EC0, #1C355E)"}
+
+Eliminate round-trips for multi-tool workflows
+
+## The Round-Trip Problem
+
+Traditional tool calling: **N tools = N model round-trips**
+
+::::{.columns}
+::: {.column width="50%"}
+::: {.lanes style="grid-template-columns: repeat(2, 1fr)"}
+[Model]{.lane-actor}
+[Tools]{.lane-actor}
+[Call tool_1]{.lane-msg style="--from:1; --to:2"}
+[Result (in context)]{.lane-msg .reply style="--from:1; --to:2"}
+[Call tool_2]{.lane-msg style="--from:1; --to:2"}
+[&hellip;]{.lane-msg style="--from:1; --to:3"}
+[Call tool_n]{.lane-msg style="--from:1; --to:2"}
+[Result (in context)]{.lane-msg .reply style="--from:1; --to:2"}
+[Final answer]{.lane-msg style="--from:1; --to:2"}
+:::
+:::
+:::{.column width="50%" .callout-note}
+Each round-trip: latency + token overhead + cost
+:::
+::::
+
+
+
+## How Programmatic Tool Calling Works {.smaller}
+
+Claude writes **code** that calls your tools — no model in the loop:
+
+::::{.columns}
+:::{.column width="60%"}
+::: {.lanes style="grid-template-columns: repeat(3, 1fr)"}
+[Model]{.lane-actor}
+[Code Execution]{.lane-actor}
+[Tools]{.lane-actor}
+[Write code to call tools]{.lane-msg style="--from:1; --to:2"}
+[tool_1()]{.lane-msg style="--from:2; --to:3"}
+[Result]{.lane-msg .reply style="--from:2; --to:3"}
+[&hellip;]{.lane-msg style="--from:2; --to:4"}
+[tool_n()]{.lane-msg style="--from:2; --to:3"}
+[Result]{.lane-msg .reply style="--from:2; --to:3"}
+[Process/filter results]{.lane-msg style="--from:2; --to:3"}
+[Final output only]{.lane-msg .reply style="--from:1; --to:2"}
+[Response]{.lane-msg style="--from:1; --to:2"}
+:::
+:::
+:::{.column width="40%" .callout-tip}
+**Key insight:** Tool results stay in code execution — only final output reaches context
+:::
+::::
+
+## The `allowed_callers` Pattern
+
+Mark tools as callable from code execution:
+
+```python
+tools = [
+    {"type": "code_execution_20260120", "name": "code_execution"},
+    {
+        "name": "query_database",
+        "description": "Execute a SQL query. Returns JSON.",
+        "input_schema": {"type": "object", "properties": {"sql": {"type": "string"}}},
+        "allowed_callers": ["code_execution_20260120"],  # <-- Key field
+    },
+]
+```
+
+
+| `allowed_callers` | Meaning |
+|:------------------|:--------|
+| `["direct"]` | Only model can call (default) |
+| `["code_execution_20260120"]` | Only from code execution |
+| Both | Callable either way |
+
+::: {.callout-note}
+The `code_execution_20260120` tag is a pinned beta version — check the [Anthropic docs](https://docs.anthropic.com/en/docs/agents-and-tools/tool-use/code-execution-tool) for the current identifier before shipping.
+:::
+
+## Example: Batch Processing {.smaller}
+
+Query sales for 5 regions, return only the top performer:
+
+```python
+# Claude writes this code internally
+regions = ["West", "East", "Central", "North", "South"]
+results = {}
+
+for region in regions:
+    data = await query_database(f"SELECT SUM(revenue) FROM sales WHERE region='{region}'")
+    results[region] = data[0]["sum"]
+
+top_region = max(results.items(), key=lambda x: x[1])
+print(f"Top region: {top_region[0]} with ${top_region[1]:,}")
+```
+
+**What reaches context:** `"Top region: West with $2,340,000"` — not all 5 query results
+
+## Token & Latency Gains
+
+The numbers below are **illustrative** for a 5-tool workflow with ~2KB results per call — your mileage will vary with tool count, result size, and model. The shape of the win (fewer turns, less context bloat) is consistent.
+
+| Metric | Traditional (5 tools) | Programmatic |
+|:-------|:----------------------|:-------------|
+| Model turns | 5 round-trips | 1 turn |
+| Tool results in context | All 5 | None (filtered) |
+| Latency | ~15 seconds | ~5 seconds |
+| Tokens consumed | ~10,000 | ~2,000 |
+
+. . .
+
+::: {.callout-tip}
+## The Multiplier Effect
+Calling 10 tools directly uses ~10x the tokens of calling them programmatically and returning a summary.
+:::
+
+## Advanced Patterns
+
+**Early termination** — stop as soon as success criteria met:
+
+```python
+for endpoint in ["us-east", "eu-west", "apac"]:
+    status = await check_health(endpoint)
+    if status == "healthy":
+        print(f"Found healthy: {endpoint}")
+        break
+```
+
+**Conditional tool selection** — choose tool based on data:
+
+```python
+file_info = await get_file_info(path)
+if file_info["size"] < 10000:
+    content = await read_full_file(path)
+else:
+    content = await read_file_summary(path)
+```
+
+## When to Use Programmatic Calling
+
+| Good For | Less Ideal |
+|:---------|:-----------|
+| 3+ dependent tool calls | Single tool call |
+| Large result filtering | Simple responses |
+| Loops over many items | Need user feedback each step |
+| Batch data processing | Very fast single operations |
+
+. . .
+
+::: {.callout-warning}
+## Vendor Note
+This pattern is currently Claude-specific (requires their code execution container). The concept generalizes — you can implement client-side with your own sandbox.
+:::
+
+## Alternative: Self-Managed Execution
+
+Not using Claude? You can implement the pattern yourself:
+
+1. Give Claude a code execution tool (e.g., Python sandbox)
+2. Describe available functions in that environment
+3. Claude writes code → you execute → return result
+
+```python
+# Your code execution tool
+{
+    "name": "execute_python",
+    "description": "Run Python code. Available functions: search(), query_db(), send_email()",
+    ...
+}
+```
+
+**Trade-off:** More control, but you manage security and infrastructure.
+
+# E. Model-Specific Tool Formats {.sdaia-dark background-gradient="linear-gradient(135deg, #00C9A7, #1C355E)"}
+
+Same tool, different native shapes
+
+## Why Tool Shape Matters {.smaller}
+
+A `file_edit` tool can be expressed in two very different schemas — and providers have **trained their models on different ones.**
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**🧵 String replacement (Anthropic-native)**
+
+```python
+file_edit(
+    path="app.py",
+    old_string="def greet(name):\n    print(name)",
+    new_string="def greet(name: str) -> None:\n    print(f'Hi {name}')"
+)
+```
+Find an exact span, replace it.
+:::
+
+::: {.column width="50%"}
+**📜 Patch / diff (OpenAI-native)**
+
+```diff
+--- app.py
++++ app.py
+@@ -1,2 +1,2 @@
+-def greet(name):
+-    print(name)
++def greet(name: str) -> None:
++    print(f'Hi {name}')
+```
+Unified-diff hunks, like `git diff`.
+:::
+
+::::
+
+. . .
+
+> Either model can use either format — but giving a model the **unfamiliar** one costs extra reasoning tokens and produces more mistakes.
+
+## The Harness Implication
+
+::: {.callout-important}
+## "Model-agnostic" wrappers leave performance on the table
+A harness that picks one tool shape and applies it to every provider underperforms a harness that **swaps the shape per provider**. Same model, different harness → measurably different scores.
+:::
+
+. . .
+
+| You pick… | Claude does | GPT does |
+|:---|:---|:---|
+| String-replace only | Native, fewer mistakes | Out-of-distribution, more errors |
+| Patch only | Out-of-distribution, more errors | Native, fewer mistakes |
+| Per-provider native | ✅ Native | ✅ Native |
+
+. . .
+
+::: {.callout-tip}
+## Treat your tool layer as model-aware
+Production harnesses (Cursor, Claude Code) ship **different tool schemas per provider**. The shape of the tool is not glue code — it is a tuning lever. [Patterns of Collaboration](../slides/patterns_of_collaboration.html) generalises this idea: the whole orchestration layer (specialist roles, quality gates, handoff topology) is also a product surface, not framework boilerplate.
+:::
+
+::: {.footer}
+Further reading: [Cursor — Continually Improving Agent Harness](https://cursor.com/blog/continually-improving-agent-harness) · [Anthropic — Harness Design for Long-Running Application Development](https://www.anthropic.com/engineering/harness-design-long-running-apps)
+:::
+
+# F. Production-Grade Optimizations {.sdaia-dark background-gradient="linear-gradient(135deg, #00C9A7, #1C355E)"}
+
+Tuning latency, dynamic schemas, and safety in scaling tool catalogs
+
+## The Latency Killer: Environment Probes
+
+To prevent models from hallucinating unavailable tools, every tool can provide a `check_fn()` to verify system-level dependencies at runtime.
+
+. . .
+
+**Typical Environment Checks:**
+
+* Verifying if a binary is installed (`is_playwright_installed()`)
+* Checking if a service is running (`is_docker_active()`)
+* Confirming the existence of dynamic API keys
+
+. . .
+
+> Running these checks on every single LLM call is a massive performance bottleneck.
+
+## Solution: Thread-Safe TTL Caching
+
+We cache check results for `~30 s` using a Time-To-Live (TTL) cache to eliminate redundant network or process probes.
+
+```python
+# [NousResearch/hermes-agent tools/registry.py](https://github.com/NousResearch/hermes-agent/blob/main/tools/registry.py) (simplified)
+_CHECK_FN_TTL_SECONDS = 30.0
+_check_fn_cache: Dict[Callable, tuple[float, bool]] = {}
+_check_fn_cache_lock = threading.Lock()
+
+def _check_fn_cached(fn: Callable) -> bool:
+    now = time.monotonic()
+    with _check_fn_cache_lock:
+        cached = _check_fn_cache.get(fn)
+        if cached and (now - cached[0] < _CHECK_FN_TTL_SECONDS):
+            return cached[1]
+    
+    value = bool(fn())  # Run the actual check
+    with _check_fn_cache_lock:
+        _check_fn_cache[fn] = (now, value)
+    return value
+```
+
+## Bending the Contract: Dynamic Overrides
+
+Static JSON schemas cannot react to dynamic system conditions.
+
+. . .
+
+**The Scenario:** A system has a task-delegation tool `delegate_task`. The system has limits on the maximum active subagent tasks (`max_spawn_depth`, `max_concurrent_children`).
+
+If a user dynamically changes these settings, the static schema description sent to the LLM becomes **outdated**—leading the model to make out-of-bounds requests.
+
+. . .
+
+**The Registry Solution:** Accept dynamic overrides:
+
+```python
+# Inside registry.get_definitions()
+if entry.dynamic_schema_overrides is not None:
+    try:
+        overrides = entry.dynamic_schema_overrides()
+        if isinstance(overrides, dict):
+            schema_with_name.update(overrides)  # Shallow merge overrides
+    except Exception as exc:
+        logger.warning(f"Failed overrides for {name}, using static schema")
+```
+
+## The Counter Pattern: Schema Memoization
+
+Filtering and assembling JSON schemas for 50+ tools on every single turn is CPU-heavy.
+
+. . .
+
+**The Insight:** We should never re-generate or re-filter schemas unless a registry change actually occurs.
+
+. . .
+
+`ToolRegistry` maintains a monotonically-increasing **generation counter**:
+
+```python
+class ToolRegistry:
+    def __init__(self):
+        self._tools = {}
+        self._generation = 0
+        
+    def register(self, ...):
+        with self._lock:
+            # ... register tool ...
+            self._generation += 1  # Bump counter on mutations
+```
+
+Orchestration layers (like `model_tools.py`) key their cache memo directly on the `_generation` ID—preventing CPU waste on static configurations.
+
+## Exception Sanitization at Dispatch
+
+In theoretical slides, handlers always return a clean success or error dict. In production, unhandled tracebacks are common.
+
+. . .
+
+**The Danger:** Raw system exceptions returning tracebacks can leak sensitive data or inject framing sequences (Markdown fences, XML tags) that disrupt the LLM's parsing context.
+
+. . .
+
+**The Registry Solution:** Catch exceptions at dispatch and sanitize formatting:
+
+```python
+def dispatch(self, name: str, args: dict, **kwargs) -> str:
+    entry = self.get_entry(name)
+    try:
+        return entry.handler(args, **kwargs)
+    except Exception as e:
+        raw_err = f"Tool execution failed: {type(e).__name__}: {e}"
+        sanitized = _sanitize_tool_error(raw_err)  # Clean traceback tokens
+        return json.dumps({"error": sanitized})
+```
+
+# G. Wrap-up {.sdaia-dark background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)"}
+
+## Key Takeaways
+
+1. **Tool proliferation** hurts performance — route or scope definitions dynamically.
+2. **Classifier routing** uses a small LLM to categorize queries (fast, rigid).
+3. **Semantic routing** applies RAG on tool descriptions.
+4. **Programmatic calling** compiles tool sequences (e.g. loops) into code executions.
+5. **Optimize latency and safety:** Use TTL caching on env probes, dynamic schema overrides, generation-based memoization, and strict exception sanitization.
+
+## Lab Preview: Efficient Tool Calling
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**Part 1: Classifier Router**
+
+- Implement `ClassifierRouter`
+- Map domains to tool sets
+
+**Part 2: Semantic Router**
+
+- Build `SemanticToolSelector`
+- Index tool descriptions
+:::
+
+::: {.column width="50%"}
+**Part 3: Routed Agents**
+
+- Create `RoutedAgent` wrapper
+- Compare context usage
+
+**Part 4: Programmatic Calling**
+
+- Explore `allowed_callers` pattern
+- Measure token savings
+:::
+
+::::
+
+## Questions? {background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)"}
+
+::: {.r-fit-text}
+Session 3 Complete
+:::

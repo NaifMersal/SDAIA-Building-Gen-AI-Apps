@@ -1,0 +1,754 @@
+---
+title: "Patterns of Collaboration"
+subtitle: "SDA-AIE-311 — Session 6"
+description: "Multi-agent orchestration — specialist roles, pipeline / hub-and-spoke / workspace patterns, and review gates."
+builds_on: ["structured_outputs_and_tool_use"]
+duration: 50
+lab_duration: 90
+date: today
+format: revealjs
+---
+
+# A. Why Multi-Agent? {.sdaia-dark background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)"}
+
+Scaling from one brain to a team
+
+## Agenda
+
+- **A. Why Multi-Agent?** — Bottlenecks, and when a skills library is the lighter answer
+- **B. Specialist Roles** — Researcher, Writer, Fact-Checker
+- **C. Reasoning Patterns, Named** — ReAct, Plan-and-Execute, Reflection at two altitudes
+- **D. Orchestration Patterns** — Pipeline, Hub-and-Spoke, Workspace
+- **E. Quality Gates** — Fact-checking and revision loops
+- **F. Wrap-up** — Key takeaways & lab preview
+
+## The Single-Agent Bottleneck
+
+The `run_agent` loop from the [tool-calling module](../slides/structured_outputs_and_tool_use.html) is powerful, but a single agent doing everything has limits:
+
+::: {.incremental}
+1. **Context window saturation** — research + writing + self-review crams everything into one conversation
+2. **Role confusion** — "research thoroughly AND write concisely" produces mediocre results at both
+3. **Self-review blind spot** — an agent rarely catches its own misreads in the same pass
+4. **Sequential execution** — one agent can only do one thing at a time
+:::
+
+## What is a Multi-Agent System?
+
+Multiple specialized agents, coordinated by an orchestrator, each with distinct roles and tools:
+
+<svg viewBox="0 0 1120 390" width="100%" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Hub-and-spoke diagram: an orchestrator dispatches to a researcher, a writer and a fact-checker, which return findings, a draft and a verdict; the fact-checker also sends revisions back to the writer.">
+  <defs>
+    <marker id="mas-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--sdaia-navy)"/>
+    </marker>
+  </defs>
+  <g fill="none" stroke="var(--sdaia-navy)" stroke-width="2.5" marker-end="url(#mas-arrow)">
+    <path d="M 480 96 L 205 244"/>
+    <path d="M 250 246 L 525 98"/>
+    <path d="M 535 96 V 244"/>
+    <path d="M 585 246 V 98"/>
+    <path d="M 640 96 L 915 244"/>
+    <path d="M 870 246 L 595 98"/>
+    <path d="M 960 330 V 356 H 560 V 334" stroke-dasharray="8 6"/>
+  </g>
+  <g font-size="15" fill="var(--muted)" text-anchor="middle" font-family="inherit">
+    <text x="170" y="155">findings</text>
+    <text x="635" y="175">draft</text>
+    <text x="950" y="155">verdict</text>
+    <text x="760" y="378">revisions</text>
+  </g>
+  <g stroke="var(--sdaia-navy)" stroke-width="2.5">
+    <rect x="420" y="20" width="280" height="76" rx="12" fill="var(--sdaia-navy)"/>
+    <rect x="40" y="246" width="240" height="80" rx="12" fill="var(--sdaia-teal)"/>
+    <rect x="440" y="246" width="240" height="80" rx="12" fill="var(--sdaia-orange)"/>
+    <rect x="840" y="246" width="240" height="80" rx="12" fill="var(--sdaia-purple)"/>
+  </g>
+  <g font-size="19" font-weight="700" text-anchor="middle" font-family="inherit">
+    <text x="560" y="65" fill="#ffffff">Orchestrator</text>
+    <text x="160" y="294" fill="#101820">Researcher</text>
+    <text x="560" y="294" fill="#101820">Writer</text>
+    <text x="960" y="294" fill="#101820">Fact-Checker</text>
+  </g>
+</svg>
+
+This module steps up from one agent doing everything to a small team with clear handoffs.
+
+## When Multi-Agent Actually Helps
+
+| Scenario | Single Agent | Multi-Agent |
+|:---------|:-------------|:------------|
+| Simple research question | Perfect | Overkill |
+| Deep research + polished report | Context overload by step 8 | Specialists stay focused |
+| Compare 3+ independent topics | Sequential, slow | Parallel research agents |
+| Tasks needing quality gates | Agent grades its own work | Fact-Checker re-reads Writer's draft against the research |
+| User needs progress by stage | One blob at the end | Stream results per specialist |
+
+## The Multi-Agent Reality Check
+
+- **Premature decomposition** — creating 5 agents for a task one agent handles fine. Always start single-agent; only split when you hit a real bottleneck.
+- **Hardest to debug** — failures span agents and handoffs, not a single trace.
+- **Highest cost and latency** — every specialist call is another round-trip.
+
+## Before You Split: Skills vs. a Team {.smaller}
+
+A multi-agent system isn't the only way to handle many specialized jobs. Often the lighter answer is **one general-purpose agent with a library of skills** it loads on demand.
+
+Take a logistics operation with **100 process variants** (product type, route, SLA, hazmat flag, region). Four ways to serve them:
+
+| Approach | What breaks |
+|:---------|:------------|
+| One giant system prompt | Context rot + every-turn token cost |
+| RAG over the runbooks | A vector DB whose chunking quality has nothing to do with the actual procedures |
+| Multi-agent — one sub-agent per process | 100 deployments, 100 eval surfaces, a complex routing layer |
+| **One agent + 100 skills** | Progressive disclosure ≈ 100 × ~50 tokens of always-on metadata; the 101st variant is a **new folder, not a new deployment** |
+
+. . .
+
+Strong activation cues (SKU, origin, weight, SLA) make the skill descriptions sharp — so selection stays reliable even with a large library.
+
+## Skills Didn't Kill Multi-Agent {.smaller}
+
+The skills option collapses many systems that were multi-agent *by default*. But multi-agent is still the right call **by design** when you have:
+
+::: {.incremental}
+- **Genuine parallelism** — independent sub-problems running at once
+- **Real capability boundaries** — different access, security postures, or external systems per agent
+- **Adversarial / check-and-balance** setups — one agent reviews another (our Fact-Checker gate, Section E)
+- **Heterogeneous models** — a cheap router, an expensive reasoner, a vision specialist
+:::
+
+. . .
+
+::: {.callout-tip}
+## The reframing
+Skills restored the **single-agent option** for work that was multi-agent *by default*, not *by design*. Start with the lightest primitive that holds; reach for a team only when a boundary above is real.
+:::
+
+
+# B. Specialist Roles {.sdaia-dark background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)"}
+
+Same brain, different personalities
+
+## The Specialization Pattern
+
+Every specialist runs the **same call path** — only two things change:
+
+- A **focused system prompt** that constrains its role
+- A **curated tool set** (only the researcher gets `search_web`; writer and analyst are pure generation)
+
+. . .
+
+```python
+# Same function for every specialist — only the prompt and tools differ
+SPECIALIST_PROMPTS = {"researcher": ..., "analyst": ..., "writer": ...}
+
+async def call_specialist(specialist, task):
+    llm = ChatOpenAI(model=MODEL_NAME, temperature=0)
+    if specialist == "researcher":
+        llm = llm.bind_tools(SEARCH_TOOL_SCHEMA)   # only the researcher gets tools
+    resp = await llm.ainvoke([
+        SystemMessage(content=SPECIALIST_PROMPTS[specialist]),
+        HumanMessage(content=task),
+    ])
+    ...   # researcher resolves any search_web tool call, then re-invokes
+```
+
+## The Specialization Recipe {.smaller}
+
+Each specialist prompt must define:
+
+| Component | Purpose |
+|:----------|:--------|
+| **Role boundary** | "ONLY do X — never do Y" |
+| **Quality standard** | What good output looks like |
+| **Failure behavior** | What to do when the primary approach doesn't work |
+| **Output format** | Raw findings / polished prose / structured verdict |
+
+. . .
+
+| Specialist | Tools | Output |
+|:-----------|:------|:-------|
+| Researcher | `search_web` (fail-soft web search) | Raw findings with citations |
+| Writer | None — pure generation | Polished document for target audience |
+| Analyst | None — reads findings + draft | Evaluation of the research, then a fact-check **verdict**: `approved` or revision notes |
+
+::: {.callout-note}
+## The Analyst wears two hats
+In the lab the Analyst can run **before** the Writer (evaluate findings, flag contradictions) *and* **after** it as a fact-checker. The pre-Writer pass is optional — modern models reason while drafting. The load-bearing role is the **post-Writer fact-check**: re-reading the draft against the original research with fresh context. That's the gate we build in Section E.
+:::
+
+# C. Reasoning Patterns, Named <!-- SDA-AIE-311 ADD (G2) --> {.sdaia-dark background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)"}
+
+Three names you already saw separately
+
+## Three Patterns, One Idea Each {.smaller}
+
+<!-- SDA-AIE-311 ADD (G2) -->
+
+:::: {.columns}
+
+::: {.column width="34%"}
+**ReAct** — *reason, then act, then read*
+
+Think → call a tool → read the result → think again. One step at a time, model decides each next move.
+
+You built this in the tool module: [`run_agent`](../slides/structured_outputs_and_tool_use.html#the-agent-loop-demystified) *is* a ReAct loop.
+:::
+
+::: {.column width="33%"}
+**Plan-and-Execute** — *decide the route first*
+
+Write a full, inspectable plan up front, then run it. Re-plan only when reality breaks the plan.
+
+You will see in §D that Pattern 4 (this deck) is Plan-and-Execute at **team** level.
+:::
+
+::: {.column width="33%"}
+**Reflection** — *check your own work*
+
+Produce → critique against evidence → revise, bounded by a limit.
+
+You will see in §E: Quality Gates is Reflection at **team** level — the critic is a separate agent.
+:::
+
+::::
+
+::: {.callout-note}
+## Why name them?
+The same three ideas keep reappearing — inside one agent's loop, and across a team's workflow. Naming them lets you pick one deliberately instead of rediscovering it by accident.
+:::
+
+## Same Concept, Two Altitudes {.smaller}
+
+<!-- SDA-AIE-311 ADD (G2) -->
+
+Each pattern exists at two scales. The mechanism is identical; only *who does the thinking* changes.
+
+| Pattern | Per-agent (inside one loop) | Team-level (across agents) |
+|:------------|:-------------------------------------|:--------------------------------------|
+| **ReAct** | `run_agent`: think → tool → observe | *(no team analogue — it's the atom)* |
+| **Plan-and-Execute** | One agent writes a scratchpad plan | Orchestrator emits a typed `Plan`, specialists execute |
+| **Reflection** | "Let me double-check my answer" in the same context | Fact-checker agent with fresh context reviews the draft |
+
+. . .
+
+::: {.callout-important}
+## Altitude matters for quality
+A self-reviewing agent grades its own context — it shares the misreads it is looking for. A separate critic reads with fresh eyes — preview of §E: the cheapest fix isn't a smarter model, it's a fact-checker. Same pattern, higher altitude, better signal.
+:::
+
+## Choosing a Pattern: Cost vs Steps {.smaller}
+
+<!-- SDA-AIE-311 ADD (G2) -->
+
+Each pattern buys reliability with model calls. On one fixed task, the newsroom lab runs all three shapes on the same stub model and counts **model calls, tool calls, and tokens** per run:
+
+| Pattern shape | Model calls | Typical failure it prevents |
+|:------------------|:-----------:|:----------------------------------|
+| ReAct loop | 1 per step + 1 final | acting without information |
+| Plan-and-Execute | 1 plan + 1 per step | misrouted / forgotten subtasks |
+| + Reflection gate | +1 critic (+1 revise) per gate | wrong-but-polished output |
+
+. . .
+
+Measured numbers for the three runs (same task, same stub model) are produced live in the lab — `labs/multi_agent_newsroom.ipynb`, stretch section. *(measured — you will generate them in class)*
+
+::: {.callout-tip}
+## Rule of thumb
+Reach for the cheapest pattern that meets the failure risk: exploration → ReAct; known decomposition → plan first; anything user-visible → add a gate.
+:::
+
+# D. Orchestration Patterns {.sdaia-dark background-gradient="linear-gradient(135deg, #1C355E, #FF7A5C)"}
+
+Three ways to coordinate agents
+
+## Pattern 1: Pipeline (Relay Race) {.smaller auto-animate=true}
+
+Agents execute **sequentially**, each passing output to the next.
+
+::: {.flow}
+::: {.flow-step .accent-teal}
+[Researcher]{.t}
+:::
+::: {.flow-arrow}
+&rarr;
+[findings]{.s}
+:::
+::: {.flow-step .accent-orange}
+[Writer]{.t}
+:::
+::: {.flow-arrow}
+&rarr;
+[report]{.s}
+:::
+::: {.flow-step .accent-navy}
+[Output]{.t}
+:::
+:::
+
+. . .
+
+**Each agent trusts its input.** If the Researcher cites a stale source, the Writer confidently builds an entire narrative around the wrong numbers — headline, supporting prose, conclusion all hang together — and the pipeline ships work that reads polished and internally consistent but is built on a misread at step 1.
+
+. . .
+
+- **Pros:** Simple, predictable; each step is easy to debug in isolation
+- **Cons:** Slow (no parallelism); **early errors cascade** — the Writer normalizes the misread into a coherent (wrong) story
+- **Use when:** Tasks have clear sequential dependencies **and** you can place a review gate at the end (Section E)
+
+## Pattern 2: Hub-and-Spoke (Supervisor) {auto-animate=true}
+
+A central **Orchestrator** assigns tasks and collects results.
+
+<svg viewBox="0 0 1120 400" width="100%" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Supervisor diagram: a central orchestrator assigns work to two researchers and a writer, and each returns results or a draft to the orchestrator.">
+  <defs>
+    <marker id="hub-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--sdaia-navy)"/>
+    </marker>
+  </defs>
+  <g fill="none" stroke="var(--sdaia-navy)" stroke-width="2.5" marker-end="url(#hub-arrow)" marker-start="url(#hub-arrow)">
+    <path d="M 304 178 L 776 78"/>
+    <path d="M 304 200 H 776"/>
+    <path d="M 304 222 L 776 322"/>
+  </g>
+  <g font-size="15" fill="var(--muted)" text-anchor="middle" font-family="inherit">
+    <text x="540" y="110">assign</text>
+    <text x="540" y="152">results</text>
+    <text x="540" y="186">assign</text>
+    <text x="540" y="228">results</text>
+    <text x="540" y="256">assign</text>
+    <text x="540" y="298">draft</text>
+  </g>
+  <g stroke="var(--sdaia-navy)" stroke-width="2.5">
+    <rect x="40" y="150" width="264" height="100" rx="12" fill="var(--sdaia-navy)"/>
+    <rect x="780" y="30" width="280" height="76" rx="12" fill="var(--sdaia-teal)"/>
+    <rect x="780" y="162" width="280" height="76" rx="12" fill="var(--sdaia-teal)"/>
+    <rect x="780" y="294" width="280" height="76" rx="12" fill="var(--sdaia-orange)"/>
+  </g>
+  <g font-size="19" font-weight="700" text-anchor="middle" font-family="inherit">
+    <text x="172" y="192" fill="#ffffff">Orchestrator</text>
+    <text x="172" y="220" fill="#ffffff">(Supervisor)</text>
+    <text x="920" y="76" fill="#101820">Researcher 1</text>
+    <text x="920" y="208" fill="#101820">Researcher 2</text>
+    <text x="920" y="340" fill="#101820">Writer</text>
+  </g>
+</svg>
+
+. . .
+
+- **Pros:** Parallel execution, orchestrator controls flow
+- **Cons:** Orchestrator is a single point of failure
+- **Use when:** Tasks have independent sub-problems
+
+## Parallel Dispatch — Recap from [Tool Calling](../slides/structured_outputs_and_tool_use.html)
+
+| Scenario | Parallelize? | Why |
+|:---------|:-------------|:----|
+| Research Topic A and Topic B | **Yes** | Independent, no shared state |
+| Research then Write | **No** | Writing depends on research results |
+| Fact-check claims A, B, C independently | **Yes** | Each check is self-contained |
+| Write then Fact-Check | **No** | The check depends on the draft |
+
+. . .
+
+> **Rule (unchanged):** Parallelize calls that share no **data dependencies** — whether they are tool executions or specialist agents.
+
+## Aside: Sharing the Conversation History
+
+Topology answers *who calls whom*. There's a separate question: **does each agent see every event, or only its own?**
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**Shared, unified history**
+
+All agents append to one log.
+
+- Tight coupling, full visibility
+- Easy handoffs
+- Context costs grow per agent
+:::
+
+::: {.column width="50%"}
+**Separate, private histories**
+
+Each agent keeps its own log; only final outputs cross.
+
+- Strong encapsulation
+- Lower per-agent context cost
+- Need a contract ([A2A](../slides/agent_interoperability.html), agent-as-tool)
+:::
+
+::::
+
+
+## Pattern 3: Shared Workspace {auto-animate=true}
+
+Agents read from and write to a **shared state**.
+
+<svg viewBox="0 0 1120 400" width="100%" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Shared workspace diagram: a researcher writes findings into a shared workspace; the writer and the fact-checker both read from it and write their draft and verdict back into it.">
+  <defs>
+    <marker id="ws-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--sdaia-navy)"/>
+    </marker>
+  </defs>
+  <g fill="none" stroke="var(--sdaia-navy)" stroke-width="2.5" marker-end="url(#ws-arrow)">
+    <path d="M 200 298 L 440 126"/>
+  </g>
+  <g fill="none" stroke="var(--sdaia-navy)" stroke-width="2.5" marker-end="url(#ws-arrow)" marker-start="url(#ws-arrow)">
+    <path d="M 560 298 V 124"/>
+    <path d="M 890 298 L 670 126"/>
+  </g>
+  <g font-size="15" fill="var(--muted)" text-anchor="middle" font-family="inherit">
+    <text x="196" y="196">write findings</text>
+    <text x="452" y="188">read findings,</text>
+    <text x="452" y="208">write draft</text>
+    <text x="648" y="200">read</text>
+    <text x="982" y="182">read findings + draft,</text>
+    <text x="982" y="202">write verdict</text>
+    <text x="752" y="262">read</text>
+  </g>
+  <g stroke="var(--sdaia-navy)" stroke-width="2.5">
+    <rect x="390" y="20" width="340" height="100" rx="12" fill="var(--sdaia-navy)"/>
+    <rect x="20" y="300" width="300" height="80" rx="12" fill="var(--sdaia-teal)"/>
+    <rect x="410" y="300" width="300" height="80" rx="12" fill="var(--sdaia-orange)"/>
+    <rect x="800" y="300" width="300" height="80" rx="12" fill="var(--sdaia-purple)"/>
+  </g>
+  <g font-size="19" font-weight="700" text-anchor="middle" font-family="inherit">
+    <text x="560" y="58" fill="#ffffff">Shared Workspace</text>
+    <text x="560" y="88" fill="#ffffff">(entries by type)</text>
+    <text x="170" y="348" fill="#101820">Researcher</text>
+    <text x="560" y="348" fill="#101820">Writer</text>
+    <text x="950" y="348" fill="#101820">Fact-Checker</text>
+  </g>
+</svg>
+
+. . .
+
+- **Pros:** Flexible, agents can iterate on shared context
+- **Cons:** Coordination complexity — who reads what and when?
+- **Use when:** Tasks require iterative refinement
+
+## Pattern 4: Plan-and-Execute {.smaller auto-animate=true}
+
+The Orchestrator first writes an **explicit, inspectable plan**, then runs it.
+
+::: {.flow}
+::: {.flow-step .accent-navy}
+[Query]{.t}
+:::
+::: {.flow-arrow}
+&rarr;
+:::
+::: {.flow-step .accent-purple}
+[Planner]{.t}
+:::
+::: {.flow-arrow}
+&rarr;
+[typed Plan: ordered steps + depends_on]{.s}
+:::
+::: {.flow-step .accent-navy}
+[Executor]{.t}
+:::
+::: {.flow-arrow}
+&rarr;
+:::
+:::: {.flow-branch}
+::: {.flow-step .accent-teal}
+[Researcher]{.t}
+:::
+::: {.flow-step .accent-purple}
+[Analyst]{.t}
+:::
+::: {.flow-step .accent-orange}
+[Writer]{.t}
+:::
+::::
+:::
+
+. . .
+
+A specialization of **Hub-and-Spoke**: the supervisor emits a typed `Plan` (a list of `PlanStep`s — `task`, `specialist`, `depends_on`) *before* dispatching. The plan is data you can log, validate, and replan.
+
+- **Pros:** Transparent and debuggable — you see the whole plan up front; dependencies are explicit
+- **Cons:** Planner quality gates everything downstream; a bad plan misroutes the work
+- **Use when:** Tasks decompose into a known set of specialist steps with clear dependencies
+
+## Combining Patterns {auto-animate=true}
+
+Plan-and-Execute rarely stands alone — most real systems mix **Hub-and-Spoke** + **Shared Workspace** under a plan:
+
+<svg viewBox="0 0 1120 500" width="100%" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Combined pattern: an orchestrator dispatches three phases to researchers, a writer and an analyst; the researchers write findings to a shared workspace, the writer reads findings and writes a draft there, the analyst reads findings plus draft, and returns a verdict to the orchestrator.">
+  <defs>
+    <marker id="cmb-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--sdaia-navy)"/>
+    </marker>
+  </defs>
+  <g fill="none" stroke="var(--sdaia-navy)" stroke-width="2.5" marker-end="url(#cmb-arrow)">
+    <path d="M 140 188 V 68 H 386"/>
+    <path d="M 252 240 H 386"/>
+    <path d="M 180 292 V 412 H 386"/>
+    <path d="M 642 68 H 940 V 166"/>
+    <path d="M 642 228 H 796"/>
+    <path d="M 798 258 H 644"/>
+    <path d="M 940 312 V 412 H 644"/>
+    <path d="M 460 452 V 482 H 100 V 294"/>
+  </g>
+  <g font-size="15" fill="var(--muted)" text-anchor="middle" font-family="inherit">
+    <text x="265" y="54">Phase 1</text>
+    <text x="319" y="226">Phase 2</text>
+    <text x="285" y="400">Phase 3</text>
+    <text x="790" y="54">write findings</text>
+    <text x="719" y="214">write draft</text>
+    <text x="721" y="284">read findings</text>
+    <text x="790" y="400">read findings + draft</text>
+    <text x="280" y="470">verdict / revisions</text>
+  </g>
+  <g stroke="var(--sdaia-navy)" stroke-width="2.5">
+    <rect x="30" y="190" width="220" height="100" rx="12" fill="var(--sdaia-navy)"/>
+    <rect x="390" y="30" width="250" height="76" rx="12" fill="var(--sdaia-teal)"/>
+    <rect x="390" y="202" width="250" height="76" rx="12" fill="var(--sdaia-orange)"/>
+    <rect x="390" y="374" width="250" height="76" rx="12" fill="var(--sdaia-purple)"/>
+    <rect x="800" y="168" width="280" height="144" rx="12" fill="var(--sdaia-code-bg)"/>
+  </g>
+  <g font-size="19" font-weight="700" text-anchor="middle" font-family="inherit">
+    <text x="140" y="247" fill="#ffffff">Orchestrator</text>
+    <text x="515" y="75" fill="#101820">Researcher(s)</text>
+    <text x="515" y="247" fill="#101820">Writer</text>
+    <text x="515" y="405" fill="#101820">Analyst</text>
+    <text x="515" y="431" fill="#101820">(Fact-Checker)</text>
+    <text x="940" y="233" fill="var(--sdaia-navy)">Shared</text>
+    <text x="940" y="261" fill="var(--sdaia-navy)">Workspace</text>
+  </g>
+</svg>
+
+## Production Hardening: DAG & Capability Profiles {.smaller}
+
+As these patterns grow up, two refinements recur:
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**DAG orchestration** — Plan-and-Execute, hardened
+
+- **Decoupled state** — handoffs don't accumulate in the prompt
+- **File / message bus** — pass *schema references*, not raw text
+- **Protected attention** — payloads stay out of the model's context window
+:::
+
+::: {.column width="50%"}
+**Capability Profiles** — swappable "personas"
+
+A version-controlled bundle of active skills + tools + guardrails + model/params. The orchestrator **tears down** one profile (flushing stale state) before loading the next.
+:::
+
+::::
+
+. . .
+
+| Architecture | Mechanism | Best for |
+|:---|:---|:---|
+| Linear pipeline | Sequential text passing | Single-domain, low-complexity |
+| DAG orchestration | Graph + file-bus state via schema refs | Multi-agent, high-reliability |
+| Capability profiles | Swappable tool / skill bundles | Role-based, domain-specific agents |
+
+# E. Quality Gates {.sdaia-dark background-gradient="linear-gradient(135deg, #1C355E, #9B8EC0)"}
+
+Where the Analyst earns its keep
+
+## Why Quality Gates? Recall the Cascade
+
+:::: {.columns}
+
+::: {.column width="55%"}
+**The Pipeline failure mode**
+
+::: {.incremental}
+1. Researcher **misreads** a source
+2. Writer builds a polished narrative **around wrong numbers**
+3. Each step is *locally correct*
+4. Pipeline ships a **wrong answer**
+:::
+:::
+
+::: {.column width="45%"}
+::: {.fragment}
+::: {.callout-important}
+## The cheapest fix isn't a smarter model — it's a fact-checker.
+A second specialist re-reads the draft against the original findings and catches the misread **before it ships**.
+:::
+:::
+:::
+
+::::
+
+## The Review Loop: Enter the Fact-Checker {.smaller}
+
+After the Writer produces a draft, the **Analyst** (acting as fact-checker) re-reads it **against the original research findings** — with fresh context, no investment in the prose:
+
+<svg viewBox="0 0 1120 350" width="100%" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Review loop: the research findings and the writer's draft both feed the analyst, which either approves to final output or sends revision notes back to the writer.">
+  <defs>
+    <marker id="rev-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--sdaia-navy)"/>
+    </marker>
+  </defs>
+  <g fill="none" stroke="var(--sdaia-navy)" stroke-width="2.5" marker-end="url(#rev-arrow)">
+    <path d="M 282 96 L 426 138"/>
+    <path d="M 282 224 L 426 182"/>
+    <path d="M 702 160 H 846"/>
+    <path d="M 565 212 V 320 H 158 V 292"/>
+  </g>
+  <g font-size="15" fill="var(--muted)" text-anchor="middle" font-family="inherit">
+    <text x="774" y="146">APPROVED</text>
+    <text x="360" y="308">revision notes</text>
+  </g>
+  <g stroke="var(--sdaia-navy)" stroke-width="2.5">
+    <rect x="30" y="30" width="250" height="90" rx="12" fill="var(--sdaia-teal)"/>
+    <rect x="30" y="200" width="250" height="90" rx="12" fill="var(--sdaia-orange)"/>
+    <rect x="430" y="110" width="270" height="100" rx="12" fill="var(--sdaia-purple)"/>
+    <rect x="850" y="110" width="230" height="100" rx="12" fill="var(--sdaia-teal)"/>
+  </g>
+  <g font-size="19" font-weight="700" text-anchor="middle" font-family="inherit">
+    <text x="155" y="66" fill="#101820">Research</text>
+    <text x="155" y="94" fill="#101820">findings</text>
+    <text x="155" y="236" fill="#101820">Writer</text>
+    <text x="155" y="264" fill="#101820">produces draft</text>
+    <text x="565" y="150" fill="#101820">Analyst</text>
+    <text x="565" y="178" fill="#101820">fact-checks draft</text>
+    <text x="965" y="166" fill="#101820">Final Output</text>
+  </g>
+</svg>
+
+. . .
+
+A thorough fact-check *could* watch for all of these:
+
+1. **Every claim is supported** by the research findings (citation traceability)
+2. **No fabricated specifics** — numbers, names, dates, quotes the research didn't contain
+3. **Confidence preserved** — uncertain findings aren't upgraded to confident statements
+4. **No missing critical findings** that the research surfaced but the draft dropped
+
+## Implementing the Quality Gate
+
+```python
+async def _quality_gate(draft, findings, max_revisions=2):
+    for revision in range(max_revisions):
+        verdict = await analyst_review(draft, findings)   # -> ReviewVerdict
+        if verdict.approved:
+            return draft                                  # Done
+        draft = await writer_revise(draft, verdict.feedback, findings)
+    return draft                                          # Ship after max revisions
+```
+
+. . .
+
+::: {.callout-important}
+## Always Set max_revisions
+Without a limit, the Analyst and Writer can enter an infinite review loop.
+:::
+
+## The Complete Workflow {.smaller}
+
+::: {.lanes style="grid-template-columns: repeat(4, 1fr)"}
+[Orchestrator]{.lane-actor}
+[Researcher(s)]{.lane-actor}
+[Writer]{.lane-actor}
+[Analyst (Fact-Checker)]{.lane-actor}
+[Phase 1: Research (parallel)]{.lane-msg style="--from:1; --to:2"}
+[Raw findings]{.lane-msg .reply style="--from:1; --to:2"}
+[Phase 2: Write report (with findings)]{.lane-msg style="--from:1; --to:3"}
+[Draft]{.lane-msg .reply style="--from:1; --to:3"}
+[Phase 3: Fact-check draft against findings]{.lane-msg style="--from:1; --to:4"}
+["Revision needed"]{.lane-msg .reply style="--from:1; --to:4"}
+[Revise with notes]{.lane-msg style="--from:1; --to:3"}
+[Revised draft]{.lane-msg .reply style="--from:1; --to:3"}
+[Fact-check again]{.lane-msg style="--from:1; --to:4"}
+["APPROVED"]{.lane-msg .reply style="--from:1; --to:4"}
+:::
+
+# F. Wrap-up {.sdaia-dark background-gradient="linear-gradient(135deg, #1C355E, #00C9A7)"}
+
+*Now that you've seen the building blocks — specialists, patterns, gates — here's the strategic claim.*
+
+## Mitigations Live in the Harness
+
+So how do you stop early errors from poisoning everything downstream? Not by demanding each agent be 99% reliable — you fix it in the **scaffolding around the agents**:
+
+| Pressure point | Harness-level mitigation |
+|:---|:---|
+| Bad early decisions | Cheap upfront planning review (catch the misread before it propagates) |
+| Hand-off corruption | Structured contracts (typed schemas, not free-text) |
+| Silent quality drops | Quality gates after agents (Section E) |
+| Cascade visibility | One trace ID across all specialists ([Observability & Evaluation](../slides/observability_and_evaluation.html)) |
+
+. . .
+
+::: {.callout-tip}
+## The agents are commodity. The harness is the product.
+Two teams building on the **same model** will get dramatically different end-to-end results based on the orchestration layer they ship around it.
+:::
+
+## Harness as a Product {.smaller}
+
+::: {style="text-align:center; font-size:1.05em; margin: 0.2em 0 0.8em;"}
+Same model. Same task. **Different harness → different outcome.**
+:::
+
+:::: {.columns}
+
+::: {.column width="50%"}
+::: {style="text-align:center;"}
+[20×]{style="font-size:3.8em; color:var(--sdaia-teal); font-weight:800; line-height:1;"}
+
+**cost — and dramatically better output**
+
+[Anthropic · same model, same task]{style="font-size:0.7em; color:var(--muted);"}
+:::
+
+::: {style="font-size:0.82em; margin-top:0.6em;"}
+| Setup | Time | Cost | Output |
+|:---|:---:|:---:|:---|
+| Solo agent | 20 min | \$9 | "barely worked" |
+| Planner + Generator + Playwright evaluator | 4 hr | \$124 | dramatically better |
+:::
+:::
+
+::: {.column width="50%"}
+::: {style="text-align:center;"}
+[+10 pts]{style="font-size:3.8em; color:var(--sdaia-teal); font-weight:800; line-height:1;"}
+
+**SWE-bench Pro — harness alone**
+
+[Cursor · same model, three scaffolds]{style="font-size:0.7em; color:var(--muted);"}
+:::
+
+::: {style="font-size:0.82em; margin-top:0.6em;"}
+| Harness | Score |
+|:---|:---:|
+| Minimal scaffold | 46% |
+| Cursor harness | 50% |
+| Claude Code harness | **55%** |
+:::
+:::
+
+::::
+
+. . .
+
+::: {.callout-tip}
+**Treat the harness as a product** — versioned, A/B-tested, measured. *Keep rate* ([Observability & Evaluation](../slides/observability_and_evaluation.html)) is the north-star; Production Deployment wires it through CI.
+:::
+
+::: {.footer}
+Sources: [Anthropic — *Harness Design*](https://www.anthropic.com/engineering/harness-design-long-running-apps) · [Cursor — *Continually Improving Agent Harness*](https://cursor.com/blog/continually-improving-agent-harness)
+:::
+
+## Key Takeaways
+
+1. **Multi-agent is not always better** — start with single agent, split at bottlenecks
+2. **Specialization = prompt + tools** — same `call_specialist` path, different role
+3. **Four patterns:** Pipeline, Hub-and-Spoke, Shared Workspace, and **Plan-and-Execute**
+4. **Parallelism of agents**
+5. **The harness is the product** — mitigations live in the scaffolding, not the model
+6. **Quality gates stop cascades** — one narrow grounded judge, stack judges not prompts, always cap `max_revisions`
